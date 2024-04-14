@@ -106,6 +106,18 @@ class PurchaseController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        //deleting purchase info from purchase and sale table
+      $response = $this->purchaseRepo->delete($id);
+      if($response)
+      {
+
+        return back()->withSuccess('Purchase details Deleted Successfully'); 
+      }
+      else{
+        return back()->withError('Failed to delete'); 
+
+      }
+    
+
     }
 }

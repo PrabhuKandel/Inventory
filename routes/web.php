@@ -38,6 +38,7 @@ Route::post('/logout', [logoutController::class,'logout'])->name('logout');
 Route::resource('branchs', BranchController::class);
 Route::get('branchs/{id}',[BranchController::class,'show'])->name('branchs.show');
 
+
 //warehouse controller
 
 
@@ -45,6 +46,8 @@ Route::resource('warehouses', WarehouseController::class);
 Route::get('branchs/{id}/warehouses',[WarehouseController::class,'index'])->name('warehouses.index');
 Route::get('branchs/{id}/warehouses/create',[WarehouseController::class,'create'])->name('warehouses.create');
 Route::get('warehouses/create',[WarehouseController::class,'create'])->name('warehouses.create');
+Route::get('branchs/{id}/warehouses/{warehouse}/edit',[WarehouseController::class,'edit'])->name('branchWarehouses.edit');
+Route::get('warehouses/{warehouse}/edit',[WarehouseController::class,'edit'])->name('headquarterWarehouses.edit');
 //contact controller
 Route::resource('contacts', ContactController::class);
 Route::get('branchs/{id}/contacts',[ContactController::class,'show']);
@@ -98,4 +101,7 @@ Route::post('branchs/{id}/sellproducts',[SaleController::class,'store'])->name( 
 
 
 //dashboards
-Route::resource('dashboards', DashboardController::class);
+// Route::resource('dashboards', DashboardController::class);
+
+Route::get('dashboards',[DashboardController::class,'index'])->name('dashboards.main');
+Route::get('branchs/{id}/dashboards',[DashboardController::class,'index'])->name( 'dashboards.branch');

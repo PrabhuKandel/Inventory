@@ -21,21 +21,22 @@
         </ul>
     </div>
 @endif
-<form class="ml-5 form-group"  action="{{route('branchs.update',$branch->id)}}" method="POST >
+
+<form class="ml-5 form-group"  action="{{route('branchs.update',$branch1->id) }}" method="POST" >
   @csrf
  @method('PUT')
-  <div class="form-col ">
+  <div class="form-col">
     <div class="col-md-4 mb-3">
       <label for="validationDefault01">Branch name</label>
-      <input type="text" class="form-control" id="validationDefault01" placeholder="" value="{{$branch->name}}" name="name" >
+      <input type="text" class="form-control" id="validationDefault01" placeholder="" value="{{$branch1->name}}" name="name" >
     </div>
     <div class="col-md-4 mb-3">
       <label for="validationDefault02">Branch address</label>
-      <input type="text" class="form-control" id="validationDefault02" placeholder="" value="{{$branch->address}}" name="address" >
+      <input type="text" class="form-control" id="validationDefault02" placeholder="" value="{{$branch1->address}}" name="address" >
     </div>
     <div class="col-md-4 mb-3">
       <label for="validationDefault02">Date</label>
-      <input type="date" id="date" class="form-control" name="date" pattern="" value="{{$branch->created_date}}" readonly>
+      <input type="date" id="date" class="form-control" name="date" pattern="" value="{{$branch1->created_date}}" readonly>
       
     </div>
     <div class="col-md-4 mb-3 d-flex justify-content-center">

@@ -48,73 +48,64 @@ class SaleRepository implements SaleRepositoryInterface{
   {
     
     try{
-      // dd($request->toArray());
 
-    $transcation = new  Transcation([
-      'type'=>"out",
-      'quantity'=>$request->quantity,
-      'amount'=>$request->total,
-      'warehouse_id'=>$request->warehouse,
-      'contact_id'=>$request->contact,//not necessary 
-      'product_id'=>$request->product,
-      'user_id'=>1,
-      'created_date'=>$request->date,
-      'office_id'=>$branch?$branch:null,
-    ]);
+      if($request->available_quantity)
+      {
 
-    // dd($transcation);
-    $transcation->save();
+        if($request->quantity<=$request->available_quantity)
+        {
 
+          $purchaseSale = new PurchaseSale([
 
-$purchaseSale = new PurchaseSale([
+            'warehouse_id'=>$request->warehouse,
+              'product_id'=>$request->product,
+              'quantiy'=>$request->quantity,
+              'type'=>'sale',
+              'contact_id'=>$request->contact,
+              'office_id'=>$branch?$branch:null,
+          
+          
+          ]);
+          $purchaseSale->save();
+    
+          $transcation = new  Transcation([
+            'type'=>"out",
+            'quantity'=>$request->quantity,
+            'amount'=>$request->total,
+            'warehouse_id'=>$request->warehouse,
+            'contact_id'=>$request->contact,//not necessary 
+            'product_id'=>$request->product,
+            'user_id'=>1,
+            'created_date'=>$request->date,
+            'office_id'=>$branch?$branch:null,
+            'purchaseSale_id' => $purchaseSale->id,
+          ]);
+      
+          // dd($transcation);
+          $transcation->save();
+    
+    
+          return "Product has been sold..";
 
-  'warehouse_id'=>$request->warehouse,
-    'product_id'=>$request->product,
-    'quantiy'=>$request->quantity,
-    'type'=>'sale',
-    'contact_id'=>$request->contact,
-    'office_id'=>$branch?$branch:null,
-
-
-]);
-$purchaseSale->save();
-  
-return true ;
+        }
+        else
+        {
+          return 'Quantity exceed';
+        }
+      }
+      else
+      {
+        return 'The quantity is not present in warehouse';
+      }
+   
+    
     }
 catch(\Exception $e){
-dd($e);
-  return false;
+
+  return "Transcation failed";
   }
 
 
-//   // Check if a record with the same combination of warehouse_id and product_id exists
-// $productWarehouse = Warehouse_has_Product::where('warehouse_id', $request->warehouse)
-// ->where('product_id', $request->product)
-// ->first();
-
-//check if product is present in particular warehouse
-
-//   if ($productWarehouse) {
-//     //if product present there update there
-//     if($request->quantity<= $productWarehouse->quantity)
-//     {
-  
-    
-//     // If the record exists, update the quantity column
-//     $productWarehouse->quantity -= $request->quantity;
-//     $productWarehouse->save();
-//     return true;
-//     }
-//     else{
-//   //else quantity amount exceed
-//       return false;
-//     }
-//   } 
-//   else
-//   {
-//     //if product isnot present in warehouse
-//    dd("product not present in this warehouse");
-//   }
 
 
 
@@ -124,6 +115,12 @@ dd($e);
   }
   public function delete(string $id)
   {
+    try{
+      PurchaseSale::where('id',$id)->delete();
+     return true;
+ }catch(Exception $e){
+     return false;
+ }
 
   }
 

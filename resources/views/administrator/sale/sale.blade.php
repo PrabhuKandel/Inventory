@@ -32,7 +32,7 @@
       
       <label for="inputState">Product</label>
       <select id="inputProduct" class="form-control" name="product">
-        <option selected disabled>Choose...</option>
+        <option selected >Choose...</option>
         @foreach($products as $product)
 
     
@@ -43,8 +43,8 @@
     </div>
     <div class="form-group col-md-4">
       <label for="inputState">Warehouse</label>
-      <select id="inputState" class="form-control" name="warehouse">
-        <option selected disabled>Select Warehouse...</option>
+      <select id="inputWarehouse" class="form-control" name="warehouse">
+        <option selected value="0" >Select Warehouse...</option>
      @foreach ($warehouses as $warehouse )
        
      <option value="{{$warehouse->id}}">{{$warehouse->name}}</option>
@@ -73,6 +73,10 @@
   <div class="form-group col-md-2">
     <label for="inputZip">Rate</label>
     <input type="number" class="form-control" id="productRate" name="rate" readonly>
+  </div>
+  <div class="form-group col-md-2">
+    <label for="inputZip">Available Quantity</label>
+    <input type="number" class="form-control" id="availability" name="available_quantity" readonly>
   </div>
   <div class="form-group row">
     <label for="inputZip">Total (Rs)</label>
@@ -143,5 +147,68 @@ function calculateTotal() {
         totalInput.value = '';
     }
 }
+
+// Add event listener to total input to recalculate quantity
+totalInput.addEventListener('input', calculateQuantity);
+
+// Function to calculate quantity based on total and rate
+function calculateQuantity() {
+    const total = parseFloat(totalInput.value);
+    const rate = parseFloat(rateInput.value);
+    if (!isNaN(total) && !isNaN(rate) && rate !== 0) {
+        // Calculate the quantity
+        const quantity = total / rate;
+        // Update the quantity input field
+        quantityInput.value = quantity.toFixed(2);
+    } else {
+        // If either total or rate is not a valid number, reset the quantity field
+        quantityInput.value = '';
+    }
+}
+
+
+
+
+
+const selectWarehouse = document.getElementById('inputWarehouse');
+const selectProduct = document.getElementById('inputProduct');
+let url;
+let branchId = {!! json_encode($branch) !!}?{!! json_encode($branch) !!}:0;
+
+function fetchData(productId, warehouseId) {
+  // Fetch request to check quantity availability
+  // var url_1= '/api/products/'+productId+'/availibility';
+url  =  '/api/branchs/'+branchId +'/products/'+productId+'/warehouses/'+warehouseId +'/availability';
+  
+  //  url= '/api/products/'+productId+'/warehouses/'+warehouseId +'/availability';
+    fetch(url)
+        .then(response => {
+            return  response.json(); // returns promise
+        }).then(data=>{
+          console.log(data.quantity);
+          document.getElementById('availability').value = data.quantity;
+        })
+        .catch(error => {
+            // Handle errors
+            console.log(error);
+            
+            console.log('There was a problem with the fetch operation:', error);
+        });
+}
+
+// Event listeners to fetch data when options are selected
+selectWarehouse.addEventListener('change', function() {
+    const warehouseId = this.value;
+    const productId = selectProduct.value;
+    fetchData(productId, warehouseId);
+});
+
+selectProduct.addEventListener('change', function() {
+    const productId = this.value;
+    const warehouseId = selectWarehouse.value? selectWarehouse.value : 0; 
+    fetchData(productId, warehouseId);
+});
+
+
   </script>
 @endsection

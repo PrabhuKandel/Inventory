@@ -83,6 +83,21 @@ return true;
 
   
   }
+  public function delete($id)
+  {
+    try{
+      User::where('id',$id)->delete();
+   
+      return true;
+  
+  }
+  catch(\Exception $e){
+
+    return false;
+  }
+
+
+  }
   
 
 

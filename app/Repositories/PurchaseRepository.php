@@ -47,9 +47,21 @@ class PurchaseRepository implements PurchaseRepositoryInterface{
 
     try{
       // dd($request->toArray());
+      $purchaseSale = new PurchaseSale([
+
+        'warehouse_id'=>$request->warehouse,
+          'product_id'=>$request->product,
+          'quantiy'=>$request->quantity,
+          'type'=>'purchase',
+          'contact_id'=>$request->contact,
+          'office_id'=>$branch?$branch:null,
+      
+      
+      ]);
+      $purchaseSale->save();
 
     $transcation = new  Transcation([
-      'type'=>"out",
+      'type'=>"in",
       'quantity'=>$request->quantity,
       'amount'=>$request->total,
       'warehouse_id'=>$request->warehouse,
@@ -58,43 +70,33 @@ class PurchaseRepository implements PurchaseRepositoryInterface{
       'user_id'=>1,
       'created_date'=>$request->date,
       'office_id'=>$branch?$branch:null,
+      'purchaseSale_id' =>$purchaseSale->id,
     ]);
 
     // dd($transcation);
     $transcation->save();
 
   // Check if a record with the same combination of warehouse_id and product_id exists
-// $productWarehouse = Warehouse_has_Product::where('warehouse_id', $request->warehouse)
-// ->where('product_id', $request->product)
-// ->first();
-// if ($productWarehouse) {
-//   // If the record exists, update the quantity column
-//   $productWarehouse->quantity += $request->quantity;
-//   $productWarehouse->save();
-// } 
-// else
-// {
-//     //save in ware_ouse has products
-//   $productWarehouse = new Warehouse_has_Product([
-//     'warehouse_id'=>$request->warehouse,
-//     'product_id'=>$request->product,
-//     'quantity'=>$request->quantity,
-//   ]);
-//   $productWarehouse->save();
-
-// }
-$purchaseSale = new PurchaseSale([
-
-  'warehouse_id'=>$request->warehouse,
+$productWarehouse = Warehouse_has_Product::where('warehouse_id', $request->warehouse)
+->where('product_id', $request->product)
+->first();
+if ($productWarehouse) {
+  // If the record exists, update the quantity column
+  $productWarehouse->quantity += $request->quantity;
+  $productWarehouse->save();
+} 
+else
+{
+    //save in ware_ouse has products
+  $productWarehouse = new Warehouse_has_Product([
+    'warehouse_id'=>$request->warehouse,
     'product_id'=>$request->product,
-    'quantiy'=>$request->quantity,
-    'type'=>'purchase',
-    'contact_id'=>$request->contact,
-    'office_id'=>$branch?$branch:null,
+    'quantity'=>$request->quantity,
+  ]);
+  $productWarehouse->save();
 
+}
 
-]);
-$purchaseSale->save();
   
 return true ;
     }
@@ -106,6 +108,13 @@ catch(\Exception $e){
 
   public function delete(string $id)
   {
+
+    try{
+      PurchaseSale::where('id',$id)->delete();
+     return true;
+ }catch(Exception $e){
+     return false;
+ }
 
   }
 

@@ -11,11 +11,12 @@ use Illuminate\Support\Facades\Session;
 class BranchController extends Controller
 {
    
-
+public $branch;
     private BranchRepositoryInterface $branchRepository;
-    public function __construct(BranchRepositoryInterface $branchRepository) {
+    public function __construct(BranchRepositoryInterface $branchRepository,Request $request ){
 
             $this->branchRepository = $branchRepository;
+
 
     }
 
@@ -74,20 +75,24 @@ class BranchController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(string $id, Request $request)
     {
-        $branch = $this->branchRepository->getById($id);
-  
-         return view('administrator.branch.edit_branch',['branch'=>$branch]);
+                
+        $branch = explode("/",$request->route()->uri)[0]=='branchs'?$request->route()->parameters['branch']:false;
+        $branch1 = $this->branchRepository->getById($branch);
+
+         return view('administrator.branch.edit_branch',['branch1'=>$branch1],compact('branch'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update( int $id,Request $request)
     {
+        
+    
         $response = $this->branchRepository->update( $request ,$id);
-     
+
         if($response)
         {
 
@@ -101,7 +106,17 @@ class BranchController extends Controller
      */
     public function destroy(string $id)
     {
-        //
-        dd( 'branch destroy is called with id'. $id);
+        
+            $response = $this->branchRepository->delete($id);
+            if($response)
+            {
+
+                return back()->withSuccess("Branch successfully deleted");
+            }
+            else
+            {
+                return back()->withSuccess("Failed to delete");
+            }
+      
     }
 }

@@ -88,10 +88,15 @@ class ContactController extends Controller
      */
     public function destroy(string $id)
     {
+        
        $response=$this->contactRepository->delete($id);
        if($response)
        {
         return back()->withSuccess('Deleted Successfully');
+       }
+       else
+       {
+        return back()->withSuccess('Failed to delete');
        }
     }
 }

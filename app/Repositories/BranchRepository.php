@@ -24,7 +24,7 @@ class BranchRepository  implements BranchRepositoryInterface
     public function update(Request $request, string $id)
     {
 
-      
+     
       $request->validate([
 
         'name' => 'required|string',
@@ -36,7 +36,9 @@ class BranchRepository  implements BranchRepositoryInterface
     $office->name = $request->input('name');
     $office->address = $request->input('address');
        // Save the updated branch record
+       
        $office->save();
+       return true;
        
 
 
@@ -59,6 +61,20 @@ $office->created_date = $request->date;
   return true;
 
 
+}
+public function delete($id)
+{
+
+  try{
+    Office::where('id',$id)->delete();
+ 
+    return true;
+
+}
+catch(\Exception $e){
+
+  return false;
+}
 }
   }
 

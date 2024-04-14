@@ -143,5 +143,12 @@ function calculateTotal() {
         totalInput.value = '';
     }
 }
+
+//to check available product quantity
+
+const product_id =1;
+const warehouse_id = 1;
+
+
   </script>
 @endsection

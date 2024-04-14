@@ -18,8 +18,7 @@ class UserController extends Controller
        $this->userRepo  = $userRepo;
 
     }
-
-    public function index()
+     public function index()
     {
         $offices = $this->userRepo->allOffice();
         $roles =  $this->userRepo->getRole();
@@ -86,6 +85,13 @@ class UserController extends Controller
      */
     public function destroy(string $id)
     {
-        dd("requested to destroy");
+        $response = $this->userRepo->delete($id);
+        if($response){
+            return back()->withSuccess('User deleted');
+        }
+        else {
+
+            return back()->withError('Sorry cant delete user');
+        }
     }
 }

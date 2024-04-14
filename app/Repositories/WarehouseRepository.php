@@ -3,6 +3,7 @@ namespace App\Repositories;
 use App\Interfaces\WarehouseRepositoryInterface;
 use Illuminate\Http\Request;
 use App\Models\Warehouse;
+use App\Models\Warehouse_has_Product;
 
 class  WarehouseRepository implements WarehouseRepositoryInterface{
 
@@ -63,6 +64,21 @@ public function store(Request $request){
 ]);
 $warehouse->save();
 return true;
+
+}
+public function delete($id)
+{
+
+  try{
+    Warehouse::where('id',$id)->delete();
+ 
+    return true;
+
+}
+catch(\Exception $e){
+
+  return false;
+}
 
 }
 }

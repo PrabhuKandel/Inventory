@@ -3,18 +3,28 @@
   $branch = explode("/",  $request->route()->uri)[0]=='branchs' && isset($request->route()->parameters['id'])?$request->route()->parameters['id']:false;
   @endphp --}}
   @php( $branches=(\App\Models\Office::all()));
+  
 
   @php($headquater=isset($branch) && $branch ?true:false )
   <nav id="sidebarMenu" class="collapse d-lg-block sidebar collapse bg-white">
     <div class="position-sticky">
       <div class="list-group list-group-flush mx-3 mt-4">
         <a
-          href="{{route('dashboards.index')}}"
+        href="{{ (isset($branch) && $branch) ? '/branchs/'.$branch.'/dashboards': '/dashboards' }}" 
           class="list-group-item list-group-item-action py-2 ripple "
           aria-current="true"
         >
           <i class="fas fa-tachometer-alt fa-fw me-3 "></i><span>Main dashboard</span>
         </a>
+        @if(!$headquater)
+        <a
+        href="{{route('branchs.index')}}" 
+          class="list-group-item list-group-item-action py-2 ripple "
+          aria-current="true"
+        >
+          <i class="fas fa-tachometer-alt fa-fw me-3 "></i><span>Create Branch</span>
+        </a>
+        @endif
         {{-- <a href="{{route('branchs.index')}}" class="list-group-item list-group-item-action py-2 ripple ">
           <i class="fas fa-chart-area fa-fw me-3"></i><span>
     
@@ -28,25 +38,54 @@
         </a> --}}
 
         {{-- dropdown to go to branch --}}
-     
+        <div class="dropdown">
+          <button class="btn btn-secondary dropdown-toggle"  type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+             @if (isset($branch) && $branch)
+            
+              @php($branch_name=(\App\Models\Office::find($branch))->name)
+              {{$branch_name}}
+              @else
+              Headquarter 
+            @endif
+          </button>
+          {{-- <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+            
+            <a class="dropdown-item"   id="headquarter" href="{{ route('branchs.show','') }}">Headquarter</a>
+            
+            @foreach($branches as $branch1)
+              @if($branch1->type!='headquarter')
+            <a class="dropdown-item" id="branch" href="{{route('branchs.show',$branch1->id)}}">{{$branch1->name}}</a>
+            @endif
+            @endforeach
 
-        <select id="inputState" class="form-control" name="branch" onchange="navigateToRoute(this)">
-          @foreach ($branches as $branch)
-              <option value="{{ route('branchs.show', $branch->id) }}" >
-                  {{ $branch->type == 'headquarter' ? 'Headquarter' : $branch->name }}
-              </option>
-          @endforeach
-      </select>
+          </div> --}}
+          <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+            
+            <a class="dropdown-item"   id="headquarter" href="{{ route('dashboards.main','') }}">Headquarter</a>
+            @if (isset($branch) && !$branch)
+                @foreach($branches as $branch1)
+                @if($branch1->type!='headquarter')
+                <a class="dropdown-item" id="branch" href="{{route('dashboards.branch',$branch1->id)}}">{{$branch1->name}}</a>
+                @endif
+                @endforeach
+              @endif
+          </div>
           <script>
-            function navigateToRoute(selectElement) {
-                // Get the selected option's value (i.e., the route URL)
-                let selectedRoute = selectElement.value;
-                
-                // Navigate to the selected route
-                window.location.href = selectedRoute;
-            }
+             
+
+            const dropdownItems = document.querySelectorAll('.dropdown-item');
+            dropdownItems.forEach(item => {
+              item.addEventListener('click', function(event) {
+                event.preventDefault();
+
+                window.location.href = this.getAttribute('href');
+              });
+            });
+         
         </script>
-    
+        </div>
+      
+          
 
         <a href="{{ (isset($branch) && $branch) ? '/branchs/'.$branch.'/warehouses': '/warehouses' }}"  class="list-group-item list-group-item-action py-2 ripple"
           ><i class="fas fa-chart-bar fa-fw me-3"></i><span>Warehouse</span></a

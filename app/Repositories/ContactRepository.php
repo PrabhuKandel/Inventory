@@ -60,7 +60,18 @@ class ContactRepository implements ContactRepositoryInterface{
   public function delete(string $id)
   {
 
-    return Contact::where('id',$id)->delete();
+    try{
+
+
+      Contact::where('id',$id)->delete();
+      return true;
+     }
+     catch(\Exception $e)
+     {
+      dd($e);
+       return false;
+     }
+      
   }
 
 

@@ -122,5 +122,9 @@ class ProductController extends Controller
         {
             return back()->withSuccess('Product deleted');
         }
+        else
+        {
+            return back()->withSuccess('Product deletion failed');
+        }
     }
 }

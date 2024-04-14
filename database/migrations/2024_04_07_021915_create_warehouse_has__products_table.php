@@ -14,7 +14,7 @@ return new class extends Migration
         //if name chnaged then change in purchase reposirory
         Schema::create('warehouse_has__products', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('product_id');
+            $table->unsignedBigInteger('product_id')->nullable();
             $table->unsignedBigInteger('warehouse_id');
             $table->float('quantity');
             $table->foreign('product_id')->references('id')->on('products');

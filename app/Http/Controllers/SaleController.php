@@ -71,16 +71,12 @@ class SaleController extends Controller
           ]);
 
             $res=  $this->saleRepo->store($request, $branch);
-             if($res){
-                   return  back()->withSuccess("Product has been sold....");
-               }else {
-              dd($res);
-               }
+           
+                   return  back()->withSuccess($res);
+             
+               
     
-    }
-
-
-     
+    }  
 
 //show sales details for specified branch    
     public function show(string $id, Request $request)
@@ -110,6 +106,15 @@ class SaleController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $response = $this->saleRepo->delete($id);
+        if($response)
+        {
+  
+          return back()->withSuccess('Sale details Deleted Successfully'); 
+        }
+        else{
+          return back()->withError('Failed to delete'); 
+  
+        }
     }
 }

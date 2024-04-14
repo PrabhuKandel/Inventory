@@ -2,7 +2,9 @@
 namespace App\Repositories;
 use Illuminate\Http\Request;
 use App\Models\Category;
+use App\Models\Product;
 use App\Interfaces\CategoryRepositoryInterface;
+
 
 class CategoryRepository implements CategoryRepositoryInterface{
 
@@ -56,8 +58,17 @@ class CategoryRepository implements CategoryRepositoryInterface{
   public function delete(string $id)
   {
 
-    return Category::where('id',$id)->delete();
+    try{
+      Category::where('id',$id)->delete();
+   
+      return true;
+  
+  }
+  catch(\Exception $e){
+
+    return false;
   }
 
 
+}
 }

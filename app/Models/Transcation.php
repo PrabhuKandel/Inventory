@@ -9,6 +9,7 @@ use App\Models\Warehouse;
 use App\Models\Product;
 use App\Models\Office;
 use App\Models\Contact;
+use App\Models\PurchaseSale;
 
 
 class Transcation extends Model
@@ -47,5 +48,9 @@ class Transcation extends Model
     public function contact()
     {
         return $this->belongsTo(Contact::class);
+    }
+    public function PurchaseSale()
+    {
+        return $this->belongsTo(PurchaseSale::class,purchaseSale_id);
     }
 }

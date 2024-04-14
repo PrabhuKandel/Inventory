@@ -131,7 +131,16 @@ return $AllproductsArray;
   }
   public function delete(string $id){
 
-    return Product::where('id',$id)->delete();
+    try{
+
+
+     Product::where('id',$id)->delete();
+     return true;
+    }
+    catch(\Exception $e)
+    {
+      return false;
+    }
 
   }
 

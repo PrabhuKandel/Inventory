@@ -20,7 +20,7 @@ return new class extends Migration
             $table->unsignedBigInteger('contact_id');
             $table->unsignedBigInteger('product_id');
             $table->unsignedBigInteger('user_id');
-            $table->unsignedBigInteger('purchaseSale_id')->nullable();
+            $table->unsignedBigInteger('purchaseSale_id');
             $table->unsignedBigInteger('office_id')->nullable();
             $table->date('created_date');
             $table->timestamps();
@@ -32,8 +32,8 @@ return new class extends Migration
             $table->foreign('product_id')->references('id') ->on('products');
             
             $table->foreign('user_id')->references('id') ->on('users');
-            $table->foreign('office_id')->references('id') ->on('offices');
-            $table->foreign('purchaseSale_id')->references('id') ->on('purchase_sales');
+            $table->foreign('office_id')->references('id') ->on('offices') ;
+            $table->foreign('purchaseSale_id')->references('id') ->on('purchase_sales') ->onDelete('cascade');
             
         });
     }

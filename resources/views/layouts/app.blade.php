@@ -29,7 +29,7 @@ rel="stylesheet"
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
 </head>
-<body>
+<body >
     <!--Main Navigation-->
 <header>
   @include('layouts.sidebar')
@@ -42,8 +42,8 @@ rel="stylesheet"
   <!--Main Navigation-->
   
   <!--Main layout-->
-  <main style="margin-top: 58px; ">
-    <div class="container pt-4 " >
+  <main style="margin-top: 58px;">
+    <div class="container pt-4 ">
 
       @yield('content')
     </div>

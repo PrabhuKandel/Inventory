@@ -2,6 +2,7 @@
 namespace App\Repositories;
 use Illuminate\Http\Request;
 use App\Models\Unit;
+use App\Models\Product;
 use App\Interfaces\UnitRepositoryInterface;
 
 class UnitRepository implements UnitRepositoryInterface{
@@ -55,8 +56,16 @@ class UnitRepository implements UnitRepositoryInterface{
   }
   public function delete(string $id)
   {
+    try{
+      Unit::where('id',$id)->delete();
+   
+      return true;
+  
+  }
+  catch(\Exception $e){
 
-    return Unit::where('id',$id)->delete();
+    return false;
+  }
   }
 
 

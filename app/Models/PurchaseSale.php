@@ -8,6 +8,7 @@ use App\Models\Warehouse;
 use App\Models\Product;
 use App\Models\Office;
 use App\Models\Contact;
+use App\Models\Transcation;
 
 class PurchaseSale extends Model
 {
@@ -36,6 +37,10 @@ class PurchaseSale extends Model
     public function contact()
     {
         return $this->belongsTo(Contact::class);
+    }
+    public function transcation()
+    {
+        return $this->hasMany(Transcation::class,purchaseSale_id);
     }
 }
 

@@ -54,7 +54,7 @@
         </td>
         <td >
         <div class="d-flex">
-          <a href="{{route('warehouses.edit',$warehouse->id) }}" class="  rounded btn  btn-success px-2 pb-1 pt-1 mr-2 " >Edit</a>
+          <a href="{{ (isset($branch) && $branch) ? '/branchs/'.$branch.'/warehouses/'.$warehouse->id.'/edit': '/warehouses/'.$warehouse->id.'/edit' }}" class="  rounded btn  btn-success px-2 pb-1 pt-1 mr-2 " >Edit</a>
           <form action="{{ route('warehouses.destroy', $warehouse->id) }}" method="POST">
             @csrf
             @method('DELETE')

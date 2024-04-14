@@ -9,14 +9,20 @@ use App\Interfaces\BranchRepositoryInterface;
 
 class WarehouseController extends Controller
 {
+   
+    public  $branch_id;
     private WarehouseRepositoryInterface $warehouseRepo;
     private BranchRepositoryInterface $branchRepo;
-     public function __construct(WarehouseRepositoryInterface $warehouseRepo, BranchRepositoryInterface $branchRepo)
+     public function __construct(WarehouseRepositoryInterface $warehouseRepo, BranchRepositoryInterface $branchRepo,Request $request)
 
      {
-
+        
         $this->warehouseRepo  = $warehouseRepo;
         $this->branchRepo = $branchRepo;
+
+        $this->branch = explode("/",$request->route()->uri)[0]=='branchs' && isset($request->route()->parameters['id'])?$request->route()->parameters['id']:false;
+
+      
      }
     public function index(Request $request)
     {
@@ -24,14 +30,8 @@ class WarehouseController extends Controller
         
        
         $branch = explode("/",$request->route()->uri)[0]=='branchs' && isset($request->route()->parameters['id'])?$request->route()->parameters['id']:false;
-        if ($branch) {
-                        $warehouses = $this->warehouseRepo->getWarehousesOfBranch($branch);
-        }else{
-           
-            $warehouses = $warehouses = $this->warehouseRepo->getWarehousesOfBranch($branch);
-        }
-
-        
+      
+ 
         return  view('administrator.warehouse.warehouse_details',compact('warehouses','branch'));
         // //get warehouses of branch
  
@@ -108,22 +108,33 @@ class WarehouseController extends Controller
         
   
     }
+     public function edit( Request $request)
+    {
+        $branch = $this->branch;
+      $warehouse_id  =  isset($request->route()->parameters['warehouse'])?$request->route()->parameters['warehouse']:false;
+      
+        $warehouse = $this->warehouseRepo->getById($warehouse_id);
 
+        return view('administrator.warehouse.edit_warehouse',['warehouse'=>$warehouse],compact('branch'));
+    }
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
-    {
-        $warehouse = $this->warehouseRepo->getById($id);
+    // public function edit( string $branch_id = null, string $warehouse_id, Request $request)
+    // {
+    //             $branch = explode("/",$request->route()->uri)[0]=='branchs' && isset($request->route()->parameters['id'])?$request->route()->parameters['id']:false;
+        
+    //     $warehouse = $this->warehouseRepo->getById($warehouse_id);
 
-        return view('administrator.warehouse.edit_warehouse',['warehouse'=>$warehouse]);
-    }
+    //     return view('administrator.warehouse.edit_warehouse',['warehouse'=>$warehouse],compact('branch'));
+    // }
 
     /**
      * Update the specified resource in storage.
      */
     public function update(Request $request, string $id)
     {
+    
         $response = $this->warehouseRepo->update($request ,$id);
         if($response){
             return back()->withSuccess('Warehouse Updated Successfully!');
@@ -137,6 +148,13 @@ class WarehouseController extends Controller
     public function destroy(string $id)
     {
         //
-        dd("requested to delete");
+        $response = $this->warehouseRepo->delete($id);
+        if($response){
+            return back()->withSuccess('Warehouse deleted');
+        }
+        else {
+
+            return back()->withSuccess('Sorry cant delete, Product present in warehouse');
+        }
     }
 }

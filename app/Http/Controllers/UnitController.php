@@ -87,9 +87,15 @@ class UnitController extends Controller
     public function destroy(string $id)
     {
         $response = $this->unitRepo->delete($id);
+     
+
         if($response)
         {
             return back()->withSuccess('Unit Deleted Successfully!');
+        }
+        else{
+            return back()->withError(' Sorry can\'t delete, Unit is being used!');
+
         }
     }
 }
