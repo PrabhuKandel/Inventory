@@ -13,7 +13,14 @@ class Office extends Model
 {
     use HasFactory;
     protected $table = 'offices';
-
+    
+    protected $fillable = [
+        'name',
+        'address',
+        'type',
+        'created_date'
+    ];
+    
     public function warehouse()
     {
        return  $this->hasMany(Warehouse::class);

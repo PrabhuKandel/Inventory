@@ -31,7 +31,7 @@
     </div>
     <div class="col-md-4 mb-3">
       <label for="validationDefault03">Category</label>
-      <select id="inputState" class="form-control" name="category">
+      <select id="inputState" class="form-control" name="category_id">
         <option  value = "{{$product->category->id}}" selected >{{$product->category->name}}</option>
         @foreach ($categories as $category)
         @if($product->category->id != $category->id)
@@ -42,7 +42,7 @@
     </div>
     <div class="col-md-4 mb-3">
       <label for="validationDefault04">Unit</label>
-      <select id="inputState" class="form-control" name="unit">
+      <select id="inputState" class="form-control" name="unit_id">
         <option  value = "{{$product->unit->id}}" selected >{{$product->unit->name}}</option>
         @foreach ($units as $unit)
         @if($product->unit->id != $unit->id)
@@ -55,7 +55,7 @@
     </div>
     <div class="col-md-4 mb-3">
       <label for="validationDefault02"> Created Date</label>
-      <input type="date" id="date" class="form-control" name="date" value={{$product->created_date}} pattern="" readonly>
+      <input type="date" id="date" class="form-control" name="created_date" value={{$product->created_date}} pattern="" readonly>
       
     </div>
     <div class="col-md-4 mb-3 d-flex justify-content-center">

@@ -19,12 +19,12 @@ class PurchaseRepository implements PurchaseRepositoryInterface{
 
     if($id)
     {
-      return  PurchaseSale::with('warehouse','product','office','contact')->where('office_id',$id)->get();
+      return  PurchaseSale::where('office_id',$id)->get();
 
     }
     else 
     {
-      return  PurchaseSale::with('warehouse','product','office','contact')->whereNull('office_id')->get();
+      return  PurchaseSale::whereNull('office_id')->get();
   
     }
   }
@@ -49,11 +49,11 @@ class PurchaseRepository implements PurchaseRepositoryInterface{
       // dd($request->toArray());
       $purchaseSale = new PurchaseSale([
 
-        'warehouse_id'=>$request->warehouse,
-          'product_id'=>$request->product,
+        'warehouse_id'=>$request->warehouse_id,
+          'product_id'=>$request->product_id,
           'quantiy'=>$request->quantity,
           'type'=>'purchase',
-          'contact_id'=>$request->contact,
+          'contact_id'=>$request->contact_id,
           'office_id'=>$branch?$branch:null,
       
       
@@ -64,9 +64,9 @@ class PurchaseRepository implements PurchaseRepositoryInterface{
       'type'=>"in",
       'quantity'=>$request->quantity,
       'amount'=>$request->total,
-      'warehouse_id'=>$request->warehouse,
-      'contact_id'=>$request->contact,//not necessary 
-      'product_id'=>$request->product,
+      'warehouse_id'=>$request->warehouse_id,
+      'contact_id'=>$request->contact_id,//not necessary 
+      'product_id'=>$request->product_id,
       'user_id'=>1,
       'created_date'=>$request->date,
       'office_id'=>$branch?$branch:null,
@@ -75,34 +75,11 @@ class PurchaseRepository implements PurchaseRepositoryInterface{
 
     // dd($transcation);
     $transcation->save();
-
-  // Check if a record with the same combination of warehouse_id and product_id exists
-$productWarehouse = Warehouse_has_Product::where('warehouse_id', $request->warehouse)
-->where('product_id', $request->product)
-->first();
-if ($productWarehouse) {
-  // If the record exists, update the quantity column
-  $productWarehouse->quantity += $request->quantity;
-  $productWarehouse->save();
-} 
-else
-{
-    //save in ware_ouse has products
-  $productWarehouse = new Warehouse_has_Product([
-    'warehouse_id'=>$request->warehouse,
-    'product_id'=>$request->product,
-    'quantity'=>$request->quantity,
-  ]);
-  $productWarehouse->save();
-
-}
-
-  
-return true ;
+    return  back()->withSuccess("Product has been purchased....");
     }
 catch(\Exception $e){
-  dd($e);
-  return false;
+ 
+  return  back()->withSuccess("Fail to purchase");
   }
 }
 

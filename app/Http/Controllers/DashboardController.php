@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\Auth;
 class DashboardController extends Controller
 {
     /**
@@ -11,7 +11,8 @@ class DashboardController extends Controller
      */
 
     public $branch;
- 	public function __construct(Request $request) {
+    public function __construct(Request $request) {
+        $this->middleware('auth');  
         $this->branch = explode("/",$request->route()->uri)[0]=='branchs'?$request->route()->parameters['id']:false;
  
     }

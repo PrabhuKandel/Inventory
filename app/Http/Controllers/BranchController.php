@@ -3,8 +3,12 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Interfaces\BranchRepositoryInterface;
+use App\Repositories\BranchRepository;
 use App\Models\Office;
+use Illuminate\Support\Facades\Auth;
+
+use Spatie\Permission\Models\Role;
+use Spatie\Permission\Models\Permission;
 use Illuminate\Support\Facades\Session;
 
 
@@ -12,11 +16,13 @@ class BranchController extends Controller
 {
    
 public $branch;
-    private BranchRepositoryInterface $branchRepository;
-    public function __construct(BranchRepositoryInterface $branchRepository,Request $request ){
+    private  $branchRepository;
+    public function __construct(BranchRepository $branchRepository,Request $request ){
 
             $this->branchRepository = $branchRepository;
-
+            $this->middleware('auth');
+            $this->middleware('permission:create branch',['only'=>['index','create','store']]);
+            $this->middleware('permission:delete branch',['only'=>['index','create','store','destroy']]);
 
     }
 
@@ -42,13 +48,26 @@ public $branch;
     public function store(Request $request)
     {
         //branch details will be stored
+       $data =  $request->validate([
+
+            'name' => 'required|string|unique:offices',
+            'address' => 'required|string',
+            'created_date'=>'required',
+       
+        ]);
+ 
 
         
-     $response =  $this->branchRepository->store($request); 
+     $response =  $this->branchRepository->store($data); 
+     
                  
          if($response)
          {
          return back()->withSuccess('Branch created !!!!');
+         }
+         else
+         {
+            return back()->withSuccess('Failed to create');
          }
         
         
@@ -62,12 +81,7 @@ public $branch;
     public function show(string $id, Request $request)
     
     {
-       //change url to branch/{id}//not used
      
-        
-        $branch = explode("/",$request->route()->uri)[0]=='branchs'?$request->route()->parameters['branch']:false;
-        $branches = $this->branchRepository->getAll();
-        return view('administrator.branch.branch_details',compact('branches', 'branch'));
 
         
     }
@@ -79,7 +93,7 @@ public $branch;
     {
                 
         $branch = explode("/",$request->route()->uri)[0]=='branchs'?$request->route()->parameters['branch']:false;
-        $branch1 = $this->branchRepository->getById($branch);
+        $branch1 = $this->branchRepository->find($branch);
 
          return view('administrator.branch.edit_branch',['branch1'=>$branch1],compact('branch'));
     }
@@ -89,9 +103,14 @@ public $branch;
      */
     public function update( int $id,Request $request)
     {
+        $data = $request->validate([
+
+            'name' => 'required|string',
+            'address' => 'required|string',
+        ]);
         
     
-        $response = $this->branchRepository->update( $request ,$id);
+        $response = $this->branchRepository->update( $data ,$id);
 
         if($response)
         {

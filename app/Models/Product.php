@@ -22,7 +22,6 @@ class Product extends Model
         'rate',
         'category_id',
         'unit_id',
-
         'created_date'
     ];
     public function category() {

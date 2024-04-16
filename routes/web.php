@@ -31,7 +31,7 @@ Route::get('/', function () {
 });
 Route::get('/login', [loginController::class,'index'])->name('login.index');
 Route::post('/login', [loginController::class,'submit'])->name('login.submit');
-Route::post('/logout', [logoutController::class,'logout'])->name('logout');
+Route::post('/logout', [logoutController::class,'submit'])->name('logout');
 
 
 //branch controller
@@ -66,7 +66,6 @@ Route::resource('units', UnitController::class);
 
 //products
 Route::resource('products', ProductController::class);
-Route::get('branchs/{id}/products',[ProductController::class,'getProductsOfBranch'])->name( 'products.getProductsOfBranch');
 Route::get('products',[ProductController::class,'index'])->name('products.index');
 Route::get('branchs/{id}/products',[ProductController::class,'show']);
 
@@ -103,5 +102,5 @@ Route::post('branchs/{id}/sellproducts',[SaleController::class,'store'])->name( 
 //dashboards
 // Route::resource('dashboards', DashboardController::class);
 
-Route::get('dashboards',[DashboardController::class,'index'])->name('dashboards.main');
-Route::get('branchs/{id}/dashboards',[DashboardController::class,'index'])->name( 'dashboards.branch');
+Route::get('dashboards',[DashboardController::class,'index'])->middleware('auth')->name('dashboards.main');
+Route::get('branchs/{id}/dashboards',[DashboardController::class,'index'])->middleware('auth')->name( 'dashboards.branch');

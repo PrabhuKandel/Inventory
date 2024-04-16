@@ -22,28 +22,22 @@ class loginController extends Controller
         if (Auth::attempt($credentials)){
          $email = $request->email;
          $user = User::where('email', $email)->with('office')->first();
-        
+
             $officeType = $user->office->type;
             if($officeType=='headquarter')
             {
-                $user = Auth::user();
-                return redirect()->intended('dashboard');
-
+                $request->session()->regenerate();
+                
+                return redirect()->intended('dashboards');
+                
 
             }
             else if($officeType=="branch"){
-                $user = Auth::user();
-                return redirect()->intended($user->id . '/dashboard');
-
-
-
+            
+                $branch = $user->office->id;
+                return redirect()->intended('branchs/'.$branch. '/dashboards');
                 dd('Authentication failed.You dont have permissions.');
-
-
-
-            }
-        
-         
+            }   
         }
         else
         {

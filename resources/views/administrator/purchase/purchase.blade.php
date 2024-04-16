@@ -20,7 +20,7 @@
   <div class="form-row">
     <div class="form-group col-md-4">
       <label for="inputState">Supplier</label>
-      <select id="inputState" class="form-control" name="contact">
+      <select id="inputState" class="form-control" name="contact_id">
         <option selected disabled>Choose Supplier...</option>
        @foreach ($customers as $customer )
        <option value="{{$customer->id}}">{{$customer->name}}</option>
@@ -31,7 +31,7 @@
       
       
       <label for="inputState">Product</label>
-      <select id="inputProduct" class="form-control" name="product">
+      <select id="inputProduct" class="form-control" name="product_id">
         <option selected disabled>Choose...</option>
         @foreach($products as $product)
 
@@ -43,7 +43,7 @@
     </div>
     <div class="form-group col-md-4">
       <label for="inputState">Warehouse</label>
-      <select id="inputState" class="form-control" name="warehouse">
+      <select id="inputState" class="form-control" name="warehouse_id">
         <option selected disabled>Select Warehouse...</option>
      @foreach ($warehouses as $warehouse )
        
@@ -54,7 +54,7 @@
     </div>
     <div class="col-md-4 mb-3">
       <label for="validationDefault02">Date</label>
-      <input type="date" id="date" class="form-control" name="date" pattern="" required>
+      <input type="date" id="date" class="form-control" name="created_date" pattern="" required>
     </div>
   </div>
   <div>

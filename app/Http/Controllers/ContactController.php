@@ -3,14 +3,12 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Interfaces\ContactRepositoryInterface;
-
-
+use App\Repositories\ContactRepository;
 class ContactController extends Controller
 {
-    private ContactRepositoryInterface $contactRepository;
+    private  $contactRepository;
 
-    public function __construct(ContactRepositoryInterface $contactRepository)
+    public function __construct(ContactRepository $contactRepository)
     {
 
         $this->contactRepository = $contactRepository;
@@ -35,7 +33,17 @@ class ContactController extends Controller
      */
     public function store(Request $request)
     {
-         $response = $this->contactRepository->store($request); 
+        
+        
+        $data = $request->validate([
+
+            'name' => 'required|string|unique:contacts',
+            'address' => 'required|string',
+            'type'=>'required|string',
+            'created_date'=>'required',
+        ]);
+        
+         $response = $this->contactRepository->store($data); 
                  
          if($response)
          {
@@ -65,7 +73,7 @@ class ContactController extends Controller
     public function edit(string $id)
     {
         //
-        $contact = $this->contactRepository->getById($id);
+        $contact = $this->contactRepository->find($id);
         return view('administrator.contact.edit_contact',['contact'=>$contact]);
     }
 
@@ -74,7 +82,12 @@ class ContactController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $response = $this->contactRepository->update($request,$id);
+       $data =  $request->validate([
+
+            'name' => 'required|string|unique:contacts,name,'.$id,
+            'address' => 'required|string',
+        ]);
+        $response = $this->contactRepository->update($data,$id);
         if($response)
         {
             return back()->withSuccess('Contact updated succesfully !!!!');

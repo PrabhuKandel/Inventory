@@ -19,6 +19,8 @@ use App\Interfaces\SaleRepositoryInterface;
 use  App\Repositories\SaleRepository;
 use App\Interfaces\UserRepositoryInterface;
 use  App\Repositories\UserRepository;
+use App\Interfaces\RepositoryInterface;
+use  App\Repositories\CommonRepository;
 
 
 
@@ -30,6 +32,7 @@ class RepositoryServiceProvider extends ServiceProvider
     public function register(): void
     {
         //
+        $this->app->bind(RepositoryInterface::class, CommonRepository::class);
         $this->app->bind(BranchRepositoryInterface::class, BranchRepository::class);
         $this->app->bind(ContactRepositoryInterface::class, ContactRepository::class);
         $this->app->bind(CategoryRepositoryInterface::class, CategoryRepository::class);

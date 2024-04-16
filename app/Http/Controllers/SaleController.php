@@ -3,27 +3,26 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Interfaces\SaleRepositoryInterface;
-use App\Interfaces\WarehouseRepositoryInterface;
+
+use App\Repositories\WarehouseRepository;
 use App\Models\Contact;
 use App\Models\Product;
+use App\Models\Warehouse;
+use App\Models\Transcation;
+use App\Models\PurchaseSale;
 class SaleController extends Controller
 {
-    
-    private SaleRepositoryInterface $saleRepo;
-    private WarehouseRepositoryInterface $warehouseRepo;
-    public function __construct(SaleRepositoryInterface $saleRepo,  WarehouseRepositoryInterface $warehouseRepo)
-
+    private  $warehouseRepo;
+    public function __construct(  WarehouseRepository $warehouseRepo)
     {
 
-       $this->saleRepo  = $saleRepo;
        $this->warehouseRepo = $warehouseRepo;
 
     }
     public function index(Request $request)
     {//branch id is needed
         $branch = explode("/",$request->route()->uri)[0]=='branchs'?$request->route()->parameters['id']:false;
-        $salesDetails = $this->saleRepo->show($branch,$request);
+        $salesDetails =$branch? PurchaseSale::where('office_id',$branch)->get():PurchaseSale::whereNull('office_id')->get();  
         
         return view('administrator.sale.sale_details',compact('branch','salesDetails'));
     }
@@ -33,15 +32,7 @@ class SaleController extends Controller
 
      
         $branch = explode("/",$request->route()->uri)[0]=='branchs'?$request->route()->parameters['id']:false;
-        if($branch)
-        {
-
-            $warehouses = $this->saleRepo->getById($branch);
-        }
-        else 
-        {
-            $warehouses = $warehouses = $this->warehouseRepo->getWarehousesOfBranch($branch);
-        }
+        $warehouses =$branch? Warehouse::where('office_id',$branch)->get():Warehouse::whereNull('office_id')->get();
         $customers = Contact::where('type','customer')->select('id','name')->get();
         $products = Product::all();
         
@@ -69,14 +60,69 @@ class SaleController extends Controller
             'quantity'=>'required',
             'total'=>'required'
           ]);
+          try{
 
-            $res=  $this->saleRepo->store($request, $branch);
-           
-                   return  back()->withSuccess($res);
-             
-               
-    
-    }  
+            if($request->available_quantity)
+            {
+      
+              if($request->quantity<=$request->available_quantity)
+              {
+      
+                $purchaseSale = new PurchaseSale([
+      
+                  'warehouse_id'=>$request->warehouse,
+                    'product_id'=>$request->product,
+                    'quantiy'=>$request->quantity,
+                    'type'=>'sale',
+                    'contact_id'=>$request->contact,
+                    'office_id'=>$branch?$branch:null,
+                
+                
+                ]);
+                $purchaseSale->save();
+          
+                $transcation = new  Transcation([
+                  'type'=>"out",
+                  'quantity'=>$request->quantity,
+                  'amount'=>$request->total,
+                  'warehouse_id'=>$request->warehouse,
+                  'contact_id'=>$request->contact,//not necessary 
+                  'product_id'=>$request->product,
+                  'user_id'=>1,
+                  'created_date'=>$request->date,
+                  'office_id'=>$branch?$branch:null,
+                  'purchaseSale_id' => $purchaseSale->id,
+                ]);
+            
+                // dd($transcation);
+                $transcation->save();
+          
+          
+                return back()->withSuccess("Product has been sold..");
+      
+              }
+              else
+              {
+                
+                return back()->withSuccess("Quantity exceed...");
+              }
+            }
+            else
+            {
+            
+                return back()->withSuccess("The quantity is not present in warehouse..");
+            }
+         
+          
+          }
+      catch(\Exception $e){
+      
+       
+        return back()->withSuccess("Transcation failed..");
+        }
+      
+      
+        }
 
 //show sales details for specified branch    
     public function show(string $id, Request $request)
@@ -106,15 +152,12 @@ class SaleController extends Controller
      */
     public function destroy(string $id)
     {
-        $response = $this->saleRepo->delete($id);
-        if($response)
-        {
-  
-          return back()->withSuccess('Sale details Deleted Successfully'); 
-        }
-        else{
-          return back()->withError('Failed to delete'); 
-  
-        }
+    
+        try{
+            PurchaseSale::where('id',$id)->delete();
+            return back()->withSuccess('Sales details Deleted Successfully'); 
+       }catch(Exception $e){
+        return back()->withError('Failed to delete'); 
+       }
     }
 }

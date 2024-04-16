@@ -45,14 +45,14 @@
     </div>
     <div class="col-md-4 mb-3">
       <label for="validationDefault02">Date</label>
-      <input type="date" id="date" class="form-control" name="date" pattern="" >
+      <input type="date" id="date" class="form-control" name="created_date" pattern="" >
     </div>
   </div>
     
   <div class="form-col mt-3">
     <label for="validationDefault02">Select Office </label>
     <div class="col-md-4 mb-3 mr-4">
-      <select id="inputState" class="form-control" name="branch" >
+      <select id="inputState" class="form-control" name="office_id" >
         @foreach($offices as $office)
 		    <option value="{{$office->id}}"> {{$office->name}}</option>
         @endforeach
@@ -60,7 +60,7 @@
     </div>
       <label for="validationDefault02">Select Roles </label>
       <div class="col-md-4 mb-3 mx-2">
-        <select id="inputState" class="form-control" name="role" >
+        <select id="inputState" class="form-control" name="role_id" >
           @foreach ($roles as $role)
           <option value="{{$role->id}}"> {{$role->name}}</option>
           @endforeach

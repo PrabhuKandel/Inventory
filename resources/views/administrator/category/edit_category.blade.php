@@ -38,7 +38,7 @@
  
     <div class="col-md-4 mb-3">
       <label for="validationDefault02">Date</label>
-      <input type="date" id="categorydate" class="form-control"  value="{{$category->created_date}}" name="createdDate" pattern="" readonly >
+      <input type="date" id="categorydate" class="form-control"  value="{{$category->created_date}}" name="created_date" pattern="" readonly >
       
     </div>
     <div class="col-md-4 mb-3 d-flex justify-content-center">

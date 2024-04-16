@@ -3,25 +3,29 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Interfaces\UserRepositoryInterface;
+use Spatie\Permission\Models\Role;
+use Illuminate\Support\Facades\Hash;
+use App\Models\User;
+use App\Repositories\BranchRepository;
+use App\Repositories\UserRepository;
 
 
 class UserController extends Controller
 {
     
+    private $branchRepository;
 
-    private UserRepositoryInterface $userRepo;
-    public function __construct(UserRepositoryInterface $userRepo)
-
+    private UserRepository $userRepo;
+    public function __construct(UserRepository $userRepo, BranchRepository  $branchRepository)
     {
-
+        $this->branchRepository = $branchRepository;
        $this->userRepo  = $userRepo;
 
     }
      public function index()
     {
-        $offices = $this->userRepo->allOffice();
-        $roles =  $this->userRepo->getRole();
+        $offices = $this->branchRepository->getAll();
+        $roles = Role::all();
         return view('administrator.user.create_user',['offices'=>$offices,'roles'=>$roles]);
     }
 
@@ -33,23 +37,31 @@ class UserController extends Controller
         //
     }
     
-    public function getUsersOfBranch($id, Request $request)
-    {
-        $branch = explode("/",$request->route()->uri)[0]=='branchs'?$request->route()->parameters['id']:false;
-        $users = $this->userRepo->getUsersOfBranch($id);
-        return view('administrator.user.user_details',compact('users','branch'));
-        // dd($products);
-    }
  /**
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
     {
-      $response = $this->userRepo->store($request);
+        $data = $request->validate([
+            'name'=>'required',
+            'email'=>'required|unique:users',
+            'password'=>'required',
+            'address'=>'required',
+            'created_date'=>'required',
+            'role_id'=>'required',
+            'office_id'=>'required'
+          ]);
+          $data['password'] = Hash::make($data['password']);
+
+          $response = $this->userRepo->store($data);
       if($response)
       {
 
         return back()->withSuccess("User has been added");
+      }
+      else
+      {
+        return back()->withSuccess("Failed to create new user");
       }
        
     }

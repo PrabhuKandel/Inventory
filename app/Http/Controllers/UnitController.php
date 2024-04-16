@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Interfaces\UnitRepositoryInterface;
+use App\Repositories\UnitRepository;
 use App\Models\Unit;
 
 class UnitController extends Controller
@@ -11,8 +11,8 @@ class UnitController extends Controller
     /**
      * Display a listing of the resource.
      */
-    private UnitRepositoryInterface $unitRepo;
-    public function __construct(UnitRepositoryInterface $unitRepo)
+    private  $unitRepo;
+    public function __construct(UnitRepository $unitRepo)
 
     {
 
@@ -39,7 +39,14 @@ class UnitController extends Controller
      */
     public function store(Request $request)
     {
-        $response =  $this->unitRepo->store($request);
+       
+       $data =  $request->validate([
+
+            'name' => 'required|string|unique:units',
+            'description' => 'required|string',
+            'created_date'=>'date|required',
+        ]);
+        $response =  $this->unitRepo->store($data);
 
         if($response)
         {
@@ -62,7 +69,7 @@ class UnitController extends Controller
      */
     public function edit(string $id)
     {
-        $unit = $this->unitRepo->getById($id);
+        $unit = $this->unitRepo->find($id);
         return view('administrator.unit.edit_unit',['unit'=>$unit]);
     }
 
@@ -71,8 +78,13 @@ class UnitController extends Controller
      */
     public function update(Request $request, string $id)
     {
+        $data = $request->validate([
+
+            'name' => 'required|string|unique:units,name,'.$id,
+            'description' => 'required|string',
+        ]);
         
-        $response = $this->unitRepo->update( $request , $id);
+        $response = $this->unitRepo->update( $data , $id);
 
         if($response)
         {

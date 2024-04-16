@@ -3,17 +3,18 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Interfaces\WarehouseRepositoryInterface;
-use App\Interfaces\BranchRepositoryInterface;
+use App\Models\Warehouse;
+use App\Repositories\WarehouseRepository;
+use App\Repositories\BranchRepository;
 
 
 class WarehouseController extends Controller
 {
    
     public  $branch_id;
-    private WarehouseRepositoryInterface $warehouseRepo;
-    private BranchRepositoryInterface $branchRepo;
-     public function __construct(WarehouseRepositoryInterface $warehouseRepo, BranchRepositoryInterface $branchRepo,Request $request)
+    private  $warehouseRepo;
+    private $branchRepo;
+     public function __construct(WarehouseRepository $warehouseRepo, BranchRepository $branchRepo,Request $request)
 
      {
         
@@ -26,22 +27,11 @@ class WarehouseController extends Controller
      }
     public function index(Request $request)
     {
-
-        
-       
-        $branch = explode("/",$request->route()->uri)[0]=='branchs' && isset($request->route()->parameters['id'])?$request->route()->parameters['id']:false;
-      
+        $branch = $this->branch;
+              $warehouses =   $branch ? Warehouse::where('office_id', $branch)->get() : Warehouse::whereNull('office_id')->get();
  
         return  view('administrator.warehouse.warehouse_details',compact('warehouses','branch'));
-        // //get warehouses of branch
- 
-        // $branch = explode("/",$request->route()->uri)[0]=='branchs' && isset($request->route()->parameters['id'])?$request->route()->parameters['id']:false;
-        // $warehouses = $this->warehouseRepo->getWarehousesOfBranch($id);
-        
-        // return  view('administrator.warehouse.warehouse_details', ['branchId'=>$branchId],compact('warehouses','branch'));
 
-
-        // return  view('administrator.warehouse.warehouse_details');
     }
 
     /**
@@ -49,48 +39,29 @@ class WarehouseController extends Controller
      */
     public function create(Request  $request)
     {
-        // $branch = explode("/",$request->route()->uri)[0]=='branchs' && isset($request->route()->parameters['id'])?$request->route()->parameters['id']:false;
-        // if($branch)
-        // {}
+        
           
-            $branch = explode("/",$request->route()->uri)[0]=='branchs' && isset($request->route()->parameters['id'])?$request->route()->parameters['id']:false;
-
+            // $branch = explode("/",$request->route()->uri)[0]=='branchs' && isset($request->route()->parameters['id'])?$request->route()->parameters['id']:false;
+            $branch = $this->branch;
             return view('administrator.warehouse.create_warehouse',compact('branch'));
 
         
-        // else{
-        //     //since branch is not set so it is for headquarter
-         
-        //     return view('administrator.warehouse.create_warehouse');
-
-        
         
     }
-    public function createWithId($id, Request $request)
-    {
-        $branch = explode("/",$request->route()->uri)[0]=='branchs' && isset($request->route()->parameters['id'])?$request->route()->parameters['id']:false;
-     $branchIn = $this->branchRepo->getById($id);
-     return view('administrator.warehouse.create_warehouse',['branchIn'=>$branchIn],compact('branch'));
-
-
-    }
-    public function getWarehousesOfBranch($id,Request $request)
-    {
-        //not used
-       
-        // $branchId = $id;
-        // $branch = explode("/",$request->route()->uri)[0]=='branchs' && isset($request->route()->parameters['id'])?$request->route()->parameters['id']:false;
-        // $warehouses = $this->warehouseRepo->getWarehousesOfBranch($id);
-        
-        // return  view('administrator.warehouse.warehouse_details', ['branchId'=>$branchId],compact('warehouses','branch'));
-    }
+   
 
     /**
      * Store a newly created warehouses in storage.
      */
     public function store(Request $request)
     {
-         $response = $this->warehouseRepo->store($request);
+        
+        $data =   $request->validate([
+        'name'=>'required|unique:warehouses',
+        'address'=>'required',
+        'created_date'=>'required',
+      ]);
+         $response = $this->warehouseRepo->store($data);
          if($response)
          {
             return back()->withSuccess('Warehouse created...');
@@ -100,42 +71,28 @@ class WarehouseController extends Controller
     /**
      * Display the warehouse details.
      */
-    public function show(string $id)
-    {
-        //here id is not of warehouse it is of branch like warehouses/1 means warehouses of branch 1
-        
-        return view('administrator.warehouse.warehouse_details');
-        
-  
-    }
+
      public function edit( Request $request)
     {
         $branch = $this->branch;
       $warehouse_id  =  isset($request->route()->parameters['warehouse'])?$request->route()->parameters['warehouse']:false;
-      
-        $warehouse = $this->warehouseRepo->getById($warehouse_id);
-
+        $warehouse = $this->warehouseRepo->find($warehouse_id);
         return view('administrator.warehouse.edit_warehouse',['warehouse'=>$warehouse],compact('branch'));
     }
-    /**
-     * Show the form for editing the specified resource.
-     */
-    // public function edit( string $branch_id = null, string $warehouse_id, Request $request)
-    // {
-    //             $branch = explode("/",$request->route()->uri)[0]=='branchs' && isset($request->route()->parameters['id'])?$request->route()->parameters['id']:false;
-        
-    //     $warehouse = $this->warehouseRepo->getById($warehouse_id);
-
-    //     return view('administrator.warehouse.edit_warehouse',['warehouse'=>$warehouse],compact('branch'));
-    // }
+   
 
     /**
      * Update the specified resource in storage.
      */
     public function update(Request $request, string $id)
     {
+        $data =  $request->validate([
+            'name'=>'required|unique:warehouses,name,' . $id ,
+            'address'=>'required',
+           
+          ]);
     
-        $response = $this->warehouseRepo->update($request ,$id);
+        $response = $this->warehouseRepo->update($data ,$id);
         if($response){
             return back()->withSuccess('Warehouse Updated Successfully!');
         }

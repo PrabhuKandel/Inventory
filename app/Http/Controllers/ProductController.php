@@ -3,18 +3,19 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Interfaces\ProductRepositoryInterface;
-use App\Interfaces\CategoryRepositoryInterface;
-use App\Interfaces\UnitRepositoryInterface;
+use App\Models\Product;
+use App\Repositories\ProductRepository;
+use App\Repositories\CategoryRepository;
+use App\Repositories\UnitRepository;
 
 class ProductController extends Controller
 {
 
-    private ProductRepositoryInterface $productRepo;
-    private CategoryRepositoryInterface $categoryRepo;
-    private UnitRepositoryInterface $unitRepo;
-    public function __construct(ProductRepositoryInterface $productRepo,CategoryRepositoryInterface $categoryRepo,
-    UnitRepositoryInterface $unitRepo)
+    private  $productRepo;
+    private  $categoryRepo;
+    private  $unitRepo;
+    public function __construct(ProductRepository $productRepo,CategoryRepository $categoryRepo,
+    UnitRepository $unitRepo)
     {
         $this->productRepo = $productRepo;
         $this->categoryRepo = $categoryRepo;
@@ -25,17 +26,12 @@ class ProductController extends Controller
      
     public function index()
     {
-        $products = $this->productRepo->getAll();
        
-    
+        $products = $this->productRepo->getAll();
+
         return view('administrator.product.product_details',compact('products'));
     }
-    public function listedProducts()
-    {
-      
-      
-    }
-
+   
     /**
      * Show the form for creating a new resource.
      */
@@ -47,27 +43,30 @@ class ProductController extends Controller
     }
 
 
-    public function getProductsOfBranch($id ,Request $request)
-    {
-        $branchId = $id;
-        $branch = explode("/",$request->route()->uri)[0]=='branchs'?$request->route()->parameters['id']:false;
-        $products = $this->productRepo->getProductsOfBranch($id);
-        // dd($products);
-        return view('administrator.view_product.view_products',['branchId'=>$branchId, 'products' => $products],compact('branch'));
-
-
-    }
+   
     /**
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
     {
-        $response = $this->productRepo->store($request); 
+        $data =   $request->validate([
+            'name'=>'required|unique:products',
+            'rate'=>'required|numeric',
+            'category_id'=>'required',
+            'unit_id'=>'required',
+            'created_date'=>'required',
+          ]);
+          
+        $response = $this->productRepo->store($data); 
                  
         if($response)
         {
             return back()->withSuccess('Product created !!!!');
 
+        }
+        else
+        {
+            return back()->withSuccess('Failed to create product !!!!'); 
         }
     }
 
@@ -76,6 +75,7 @@ class ProductController extends Controller
      */
     public function show(string $id ,Request $request)
     {
+        //show products for each branch
         $branch = explode("/",$request->route()->uri)[0]=='branchs'?$request->route()->parameters['id']:false;
         $products = $this->productRepo->getAll();
     
@@ -89,10 +89,9 @@ class ProductController extends Controller
 
     {
 
-        $data = $this->productRepo->getById($id);
-        $product = $data['product'];
-        $categories =$data['categories'];
-        $units = $data['units'];
+        $product = $this->productRepo->find($id);
+        $categories =$this->categoryRepo->getAll();
+        $units =$this->unitRepo->getAll();
 
        
         return view('administrator.product.edit_product',['product'=>$product],compact('categories','units'));
@@ -103,7 +102,14 @@ class ProductController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $response = $this->productRepo->update($request , $id);
+        $data =   $request->validate([
+            'name'=>'required|unique:products',
+            'rate'=>'required|numeric',
+            'category_id'=>'required',
+            'unit_id'=>'required',
+            'created_date'=>'required',
+          ]);
+        $response = $this->productRepo->update($data , $id);
 
         if($response)
         {

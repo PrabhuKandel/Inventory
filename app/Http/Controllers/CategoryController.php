@@ -3,13 +3,13 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Interfaces\CategoryRepositoryInterface;
+use App\Repositories\CategoryRepository;
 use App\Models\Category;
 
 class CategoryController extends Controller
 {
-    private CategoryRepositoryInterface $categoryRepo;
-     public function __construct(CategoryRepositoryInterface $categoryRepo)
+    private  $categoryRepo;
+     public function __construct(CategoryRepository $categoryRepo)
 
      {
 
@@ -19,6 +19,7 @@ class CategoryController extends Controller
     public function index()
     {
         $categories = $this->categoryRepo->getAll();
+        
         return view('administrator.category.category_details',compact('categories'));
     }
 
@@ -36,8 +37,14 @@ class CategoryController extends Controller
      */
     public function store(Request $request)
     {
+       $data =  $request->validate([
+
+            'name' => 'required|string|unique:categories',
+            'description' => 'required|string',
+            'created_date'=>'date|required',
+        ]);
        
-       $response =  $this->categoryRepo->store($request);
+       $response =  $this->categoryRepo->store( $data);
 
        if($response)
        {
@@ -60,7 +67,7 @@ class CategoryController extends Controller
      */
     public function edit(string $id)
     {
-        $category = $this->categoryRepo->getById($id);
+        $category = $this->categoryRepo->find($id);
       
         return view('administrator.category.edit_category',['category'=>$category]);
     }
@@ -70,8 +77,13 @@ class CategoryController extends Controller
      */
     public function update(Request $request, string $id)
     {
-      
-        $response = $this->categoryRepo->update( $request , $id);
+        $data =  $request->validate([
+
+            'name' => 'required|string|unique:categories,name,' . $id ,
+            'description' => 'required|string',
+            'created_date'=>'date|required',
+        ]);
+        $response = $this->categoryRepo->update($data , $id);
 
         if($response)
         {

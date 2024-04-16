@@ -35,7 +35,7 @@
     </div>
     <div class="col-md-4 mb-3">
       <label for="validationDefault02">Date</label>
-      <input type="date" id="date" class="form-control" name="date" pattern="" required>
+      <input type="date" id="date" class="form-control" name="created_date" pattern="" required>
       
     </div>
     <div class="col-md-4 mb-3 d-flex justify-content-center">
