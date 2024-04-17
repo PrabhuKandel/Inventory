@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\Auth;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 use Illuminate\Support\Facades\Session;
+use App\Http\Middleware\BranchAccessMiddleware; 
+
 
 
 class BranchController extends Controller
@@ -17,21 +19,26 @@ class BranchController extends Controller
    
 public $branch;
     private  $branchRepository;
-    public function __construct(BranchRepository $branchRepository,Request $request ){
-
-            $this->branchRepository = $branchRepository;
-            $this->middleware('auth');
-            $this->middleware('permission:create branch',['only'=>['index','create','store']]);
-            $this->middleware('permission:delete branch',['only'=>['index','create','store','destroy']]);
-
+    public function __construct(BranchRepository $branchRepository ){
+    
+         $this->branchRepository = $branchRepository;
+         
+         $this->middleware('permission:create-branch', ['only' => ['index','create','store']]);
+         $this->middleware('permission:edit-branch', ['only' => ['index','edit','update']]);
+         $this->middleware('permission:delete-branch', ['only' => ['index','destroy']]);
+         
     }
-
     public function index(Request $request)
     {
-       $branches = $this->branchRepository->getAll();
-       $branch = explode("/",$request->route()->uri)[0]=='branchs' && isset($request->route()->parameters['id'])?$request->route()->parameters['id']:false;
-       return view('administrator.branch.branch_details',compact('branches', 'branch'));
-    }
+        $user = Auth::user();
+// Dump the user's permissions
+           $branches = $this->branchRepository->getAll();
+           $branch = explode("/",$request->route()->uri)[0]=='branchs' && isset($request->route()->parameters['id'])?$request->route()->parameters['id']:false;
+           return view('administrator.branch.branch_details',compact('branches', 'branch'));
+
+}
+
+
 
     /**
      * Show the form for creating a new resource.
@@ -138,4 +145,5 @@ public $branch;
             }
       
     }
+
 }

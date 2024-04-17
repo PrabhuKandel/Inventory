@@ -30,7 +30,7 @@ Route::get('/', function () {
     return view('layouts.app');
 });
 Route::get('/login', [loginController::class,'index'])->name('login.index');
-Route::post('/login', [loginController::class,'submit'])->name('login.submit');
+Route::post('/signin', [loginController::class,'submit'])->name('login.submit');
 Route::post('/logout', [logoutController::class,'submit'])->name('logout');
 
 

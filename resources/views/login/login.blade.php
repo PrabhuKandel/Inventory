@@ -24,6 +24,11 @@
                   </ul>
               </div>
           @endif
+          @if($message = Session::get('error'))
+<div id ="success-message" class="alert alert-danger alert-block">
+  <strong> {{ $message}}</strong>
+</div>
+@endif
               <form action="{{route('login.submit')}}" method="POST">
                 <!-- Email input -->
                 @csrf

@@ -17,6 +17,8 @@
           <i class="fas fa-tachometer-alt fa-fw me-3 "></i><span>Main dashboard</span>
         </a>
         @if(!$headquater)
+        
+   
         <a
         href="{{route('branchs.index')}}" 
           class="list-group-item list-group-item-action py-2 ripple "
@@ -24,6 +26,8 @@
         >
           <i class="fas fa-tachometer-alt fa-fw me-3 "></i><span>Create Branch</span>
         </a>
+       
+
         @endif
         {{-- <a href="{{route('branchs.index')}}" class="list-group-item list-group-item-action py-2 ripple ">
           <i class="fas fa-chart-area fa-fw me-3"></i><span>
@@ -48,19 +52,9 @@
               Headquarter 
             @endif
           </button>
-          {{-- <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-            
-            <a class="dropdown-item"   id="headquarter" href="{{ route('branchs.show','') }}">Headquarter</a>
-            
-            @foreach($branches as $branch1)
-              @if($branch1->type!='headquarter')
-            <a class="dropdown-item" id="branch" href="{{route('branchs.show',$branch1->id)}}">{{$branch1->name}}</a>
-            @endif
-            @endforeach
-
-          </div> --}}
+          
+          @if (Auth::user()->hasRole('Super Admin'))
           <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-            
             <a class="dropdown-item"   id="headquarter" href="{{ route('dashboards.main','') }}">Headquarter</a>
             @if (isset($branch) && !$branch)
                 @foreach($branches as $branch1)
@@ -68,8 +62,9 @@
                 <a class="dropdown-item" id="branch" href="{{route('dashboards.branch',$branch1->id)}}">{{$branch1->name}}</a>
                 @endif
                 @endforeach
+                @endif
+              </div>
               @endif
-          </div>
           <script>
              
 

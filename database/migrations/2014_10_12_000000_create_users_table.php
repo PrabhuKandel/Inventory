@@ -17,9 +17,9 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->string('password');
             $table->string('address');
-            $table->unsignedBigInteger('role_id');
-            $table->unsignedBigInteger('office_id');
-            $table->date('created_date');
+            $table->unsignedBigInteger('role_id')->nullable();
+            $table->unsignedBigInteger('office_id')->nullable();
+            $table->date('created_date')->nullable();
             $table->rememberToken();
             $table->timestamps();
 

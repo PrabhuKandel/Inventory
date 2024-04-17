@@ -9,7 +9,7 @@ use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use App\Models\Office;
-
+use Spatie\Permission\Models\Role;
 use App\Models\Transcation;
 
 class User extends Authenticatable

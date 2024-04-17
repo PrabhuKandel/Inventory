@@ -5,8 +5,6 @@ namespace Database\Seeders;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Permission;
-use Spatie\Permission\Models\Role;
-use Spatie\Permission\PermissionRegistrar;
 
 class PermissionSeeder extends Seeder
 {
@@ -15,15 +13,38 @@ class PermissionSeeder extends Seeder
      */
     public function run(): void
     {
-             // Reset cached roles and permissions
-             app()[PermissionRegistrar::class]->forgetCachedPermissions();
-        Permission::create(['name'=>'create branch']);
-        Permission::create(['name'=>'delete branch']);
-        $role = Role::create(['name'=>'admin']);
-        $role->givePermissionTo('create branch');
-
-        $role = Role::create(['name'=>'user']);
-        $role->givePermissionTo('delete branch');
-
+        $permissions = [
+            'create-branch',
+            'edit-branch',
+            'delete-branch',
+            'create-category',
+            'edit-category',
+            'delete-category',
+            'create-unit',
+            'edit-unit',
+            'delete-unit',
+            'create-product',
+            'edit-product',
+            'delete-product',
+            'create-warehouse',
+            'edit-warehouse',
+            'delete-warehouse',
+            'create-contact',
+            'edit-contact',
+            'delete-contact',
+            'create-user',
+            'edit-user',
+            'delete-user',
+            'create-purchase',
+            'edit-purchase',
+            'delete-purchase',
+            'create-sale',
+            'edit-sale',
+            'delete-sale',
+            
+         ];
+         foreach ($permissions as $permission) {
+            Permission::create(['name' => $permission]);
+          }
     }
 }

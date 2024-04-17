@@ -3,6 +3,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 use App\Models\Office;
 
@@ -10,6 +11,7 @@ class loginController extends Controller
 {
     public function index()
     {
+    
         return view('login.login');
     }
     public function submit(Request $request){
@@ -19,29 +21,33 @@ class loginController extends Controller
         ]);
         
         $credentials = $request->only('email', 'password');
+     
         if (Auth::attempt($credentials)){
          $email = $request->email;
          $user = User::where('email', $email)->with('office')->first();
 
-            $officeType = $user->office->type;
-            if($officeType=='headquarter')
-            {
+           
+
                 $request->session()->regenerate();
-                
-                return redirect()->intended('dashboards');
+
+                if($user->office)
+                {
+                    return redirect()->intended('branchs/'.$user->office_id. '/dashboards');
+                }
+
+                else
+                {
+
+                    return redirect()->intended('dashboards');
+                }
                 
 
             }
-            else if($officeType=="branch"){
-            
-                $branch = $user->office->id;
-                return redirect()->intended('branchs/'.$branch. '/dashboards');
-                dd('Authentication failed.You dont have permissions.');
-            }   
-        }
-        else
-        {
-            dd('user is not registered');
+             
+            else
+            {
+                return back()->withError("User not found with given credentials");
+            }
         }
 
 
@@ -49,5 +55,5 @@ class loginController extends Controller
        
 
     }
-}
+
 

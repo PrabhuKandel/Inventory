@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Models\Warehouse;
 use App\Repositories\WarehouseRepository;
 use App\Repositories\BranchRepository;
+use App\Http\Middleware\BranchAccessMiddleware; 
+
 
 
 class WarehouseController extends Controller
@@ -20,7 +22,7 @@ class WarehouseController extends Controller
         
         $this->warehouseRepo  = $warehouseRepo;
         $this->branchRepo = $branchRepo;
-
+        $this->middleware(BranchAccessMiddleware::class);
         $this->branch = explode("/",$request->route()->uri)[0]=='branchs' && isset($request->route()->parameters['id'])?$request->route()->parameters['id']:false;
 
       

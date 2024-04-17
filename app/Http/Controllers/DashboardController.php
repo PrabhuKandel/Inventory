@@ -9,16 +9,15 @@ class DashboardController extends Controller
     /**
      * Display a listing of the resource.
      */
-
     public $branch;
     public function __construct(Request $request) {
-        $this->middleware('auth');  
+    
         $this->branch = explode("/",$request->route()->uri)[0]=='branchs'?$request->route()->parameters['id']:false;
  
     }
 
     public function index(Request $request)
-    {    
+    {   
         $branch=$this->branch;
         return view('administrator.dashboard.index', compact('branch'));
     }
