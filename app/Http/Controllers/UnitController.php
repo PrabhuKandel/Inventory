@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Repositories\UnitRepository;
 use App\Models\Unit;
+use App\Http\Middleware\BranchAccessMiddleware; 
 
 class UnitController extends Controller
 {
@@ -16,6 +17,11 @@ class UnitController extends Controller
 
     {
 
+        $this->middleware(BranchAccessMiddleware::class);
+        $this->middleware('permission:view-unit|create-unit|edit-unit|delete-unit')->only('index');
+        $this->middleware('permission:create-unit|edit-unit', ['only' => ['create','store']]);
+        $this->middleware('permission:edit-unit|delete-unit', ['only' => ['edit','update']]);
+        $this->middleware('permission:delete-unit', ['only' => ['destroy']]);
        $this->unitRepo  = $unitRepo;
 
     }

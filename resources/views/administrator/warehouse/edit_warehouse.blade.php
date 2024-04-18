@@ -21,7 +21,7 @@
         </ul>
     </div>
 @endif
-<form class="ml-5 form-group"  action="{{route('warehouses.update',$warehouse->id)}}" method="POST" >
+<form class="ml-5 form-group"  action="{{ $branch?'/branchs/'.$branch.'/warehouses/'.$warehouse->id.'/update':route('warehouses.update',$warehouse->id)}}" method="POST" >
   @csrf
  @method('PUT')
   <div class="form-col ">

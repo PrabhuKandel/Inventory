@@ -65,7 +65,7 @@
       <td>
         <div class="d-flex">
           <a href="{{route('sales.edit',$detail->id) }}" class="  rounded btn  btn-success px-2 pb-1 pt-1 mr-2 " >Edit</a>
-          <form action="{{ route('sales.destroy', $detail->id) }}" method="POST">
+          <form action="{{ $branch?'/branchs/'.$branch. '/sales/'.$detail->id.'/destroy' :route('sales.destroy', $detail->id) }}"method="POST">
             @csrf
             @method('DELETE')
             <button type="submit" class="rounded btn-danger px-2 pb-1 pt-1">Delete</button>

@@ -9,12 +9,19 @@ use App\Models\Warehouse;
 use App\Models\PurchaseSale;
 use App\Models\Transcation;
 use App\Repositories\WarehouseRepository;
+use App\Http\Middleware\BranchAccessMiddleware; 
+use Illuminate\Support\Facades\Auth;
 class PurchaseController extends Controller
 {
     private  $warehouseRepo;
     public function __construct(  WarehouseRepository $warehouseRepo)
 
     {
+        $this->middleware(BranchAccessMiddleware::class);
+        $this->middleware('permission:view-purchase|create-purchase|edit-purchase|delete-purchase')->only('index');
+        $this->middleware('permission:create-purchase|edit-purchase', ['only' => ['create','store']]);
+        $this->middleware('permission:edit-purchase|delete-purchase', ['only' => ['edit','update']]);
+        $this->middleware('permission:delete-purchase', ['only' => ['destroy']]);
        $this->warehouseRepo = $warehouseRepo;
 
     }
@@ -81,7 +88,7 @@ class PurchaseController extends Controller
             'warehouse_id'=>$request->warehouse_id,
             'contact_id'=>$request->contact_id,//not necessary 
             'product_id'=>$request->product_id,
-            'user_id'=>1,
+            'user_id'=>Auth::user()->id,
             'created_date'=>$request->created_date,
             'office_id'=>$branch?$branch:null,
             'purchaseSale_id' =>$purchaseSale->id,
@@ -125,9 +132,10 @@ class PurchaseController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Request $request)
     {
         //deleting purchase info from purchase and sale table
+     $id = $request->route('purchase');
         try{
             PurchaseSale::where('id',$id)->delete();
             return back()->withSuccess('Purchase details Deleted Successfully'); 

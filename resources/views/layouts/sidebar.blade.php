@@ -24,7 +24,7 @@
           class="list-group-item list-group-item-action py-2 ripple "
           aria-current="true"
         >
-          <i class="fas fa-tachometer-alt fa-fw me-3 "></i><span>Create Branch</span>
+        <i class="fa-solid fa-plus fa-fw me-3"></i><span>Create Branch</span>
         </a>
        
 
@@ -53,7 +53,7 @@
             @endif
           </button>
           
-          @if (Auth::user()->hasRole('Super Admin'))
+          @if (Auth::user()->hasRole('Super Admin')||Auth::user()->hasRole('Headquarter Admin')||Auth::user()->hasRole('Headquarter User'))
           <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
             <a class="dropdown-item"   id="headquarter" href="{{ route('dashboards.main','') }}">Headquarter</a>
             @if (isset($branch) && !$branch)
@@ -83,7 +83,7 @@
           
 
         <a href="{{ (isset($branch) && $branch) ? '/branchs/'.$branch.'/warehouses': '/warehouses' }}"  class="list-group-item list-group-item-action py-2 ripple"
-          ><i class="fas fa-chart-bar fa-fw me-3"></i><span>Warehouse</span></a
+          ><i class="fa-solid fa-warehouse fa-fw me-3"></i><span>Warehouse</span></a
         >
         {{-- <a href="{{ (isset($branch) && $branch) ? '/branchs/'.$branch.'/users': '/users' }}"  class="list-group-item list-group-item-action py-2 ripple"
         ><i class="fas fa-chart-bar fa-fw me-3"></i><span>Users</span></a> --}}
@@ -94,18 +94,18 @@
           
           @if (!$headquater)
           <a href="{{route('users.index')}}" class="list-group-item list-group-item-action py-2 ripple"
-          ><i class="fas fa-lock fa-fw me-3"></i><span>Add Users</span></a
+          ><i class="fa-solid fa-user fa-fw me-3"></i><span>Add Users</span></a
         >
           @endif
 
           @if (!$headquater)
           <a href="{{route('categories.index')}}" class="list-group-item list-group-item-action py-2 ripple"
-          ><i class="fas fa-globe fa-fw me-3"></i><span>Category</span></a>
+          ><i class="fa-solid fa-list fa-fw me-3"></i><span>Category</span></a>
      
           @endif
     @if (!$headquater)
     <a href="{{route('units.index')}}" class="list-group-item list-group-item-action py-2 ripple"
-    ><i class="fas fa-building fa-fw me-3"></i><span>Unit</span></a>
+    ><i class="fa-solid fa-list fa-fw me-3"></i><span>Unit</span></a>
     @endif
 {{-- 
         <a href="{{ (isset($branch) && $branch) ? '/branchs/'.$branch.'/products': '/products' }}" class="list-group-item list-group-item-action py-2 ripple"
@@ -114,7 +114,7 @@
           ><i class="fas fa-chart-line fa-fw me-3"></i><span> Products</span></a
         >
         <a href="{{ (isset($branch) && $branch) ? '/branchs/'.$branch.'/purchasesdetails': '/purchasesdetails' }}" class="list-group-item list-group-item-action py-2 ripple"
-        ><i class="fas fa-chart-line fa-fw me-3"></i><span>Purchase</span></a
+        ><i class="fa-solid fa-cart-shopping fa-fw me-3"></i><span>Purchase</span></a
       >
         <a href="{{ (isset($branch) && $branch) ? '/branchs/'.$branch.'/salesdetails': '/salesdetails' }}" class="list-group-item list-group-item-action py-2 ripple"
         ><i class="fas fa-chart-line fa-fw me-3"></i><span>Sell</span></a
@@ -122,7 +122,7 @@
 
        
  @if (!$headquater)
- <a href="" class="list-group-item list-group-item-action py-2 ripple"
+ <a href="{{route('roles.index')}}" class="list-group-item list-group-item-action py-2 ripple"
  ><i class="fas fa-users fa-fw me-3"></i><span>Roles</span></a
 > 
  @endif

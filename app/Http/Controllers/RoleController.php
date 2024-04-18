@@ -3,26 +3,15 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use App\Http\Middleware\BranchAccessMiddleware; 
-class DashboardController extends Controller
+
+class RoleController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public $branch;
-    public function __construct(Request $request) {
-    
-        $this->middleware(BranchAccessMiddleware::class);
-        $this->branch = explode("/",$request->route()->uri)[0]=='branchs'?$request->route()->parameters['id']:false;
- 
-    }
-
-    public function index(Request $request)
-    {   
-       
-        $branch=$this->branch;
-        return view('administrator.dashboard.index', compact('branch'));
+    public function index()
+    {
+        return view('administrator.role.role_details');
     }
 
     /**

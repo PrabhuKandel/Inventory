@@ -55,7 +55,7 @@
         <td >
         <div class="d-flex">
           <a href="{{ (isset($branch) && $branch) ? '/branchs/'.$branch.'/warehouses/'.$warehouse->id.'/edit': '/warehouses/'.$warehouse->id.'/edit' }}" class="  rounded btn  btn-success px-2 pb-1 pt-1 mr-2 " >Edit</a>
-          <form action="{{ route('warehouses.destroy', $warehouse->id) }}" method="POST">
+          <form action="{{ (isset($branch) && $branch) ? '/branchs/'.$branch.'/warehouses/'.$warehouse->id.'/destroy': '/warehouses/'.$warehouse->id.'/destroy' }}" method="POST">
             @csrf
             @method('DELETE')
             <button type="submit" class="rounded btn-danger px-2 pb-1 pt-1">Delete</button>

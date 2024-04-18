@@ -14,28 +14,79 @@ class RoleSeeder extends Seeder
     public function run(): void
     {
         Role::create(['name' => 'Super Admin']);
-        $admin = Role::create(['name' => 'Admin']);
-        $user = Role::create(['name' => 'User']);
-
-        $admin->givePermissionTo([
+        $headquarterAdmin = Role::create(['name' => 'Headquarter Admin']);
+        $headquarterUser = Role::create(['name' => 'Headquarter User']);
+        $branchAdmin = Role::create(['name' => 'Branch Admin']);
+        $branchUser = Role::create(['name' => 'Branch User']);
+      
+        $headquarterUser->givePermissionTo([
+            'view-branch',
+            'create-branch',
+            'edit-branch',
+            'view-category',
+            'create-category',
+            'edit-category',
+            'view-unit',
+            'create-unit',
+            'edit-unit',
+            'view-product',
+            'create-product',
+            'edit-product',
+            'view-warehouse',
             'create-warehouse',
             'edit-warehouse',
             'delete-warehouse',
+            'view-contact',
+            'create-contact',
+            'edit-contact',
+            'view-user',
+            'view-purchase',
             'create-purchase',
             'edit-purchase',
             'delete-purchase',
+            'view-sale',
             'create-sale',
             'edit-sale',
             'delete-sale',
+            'view-role',
+            
         ]);
-        $user->givePermissionTo([
+
+        $branchAdmin->givePermissionTo([
+            'view-branch',
+            'view-category',
+            'view-unit',
+            'view-product',
+            'view-warehouse',
+            'create-warehouse',
+            'edit-warehouse',
+            'delete-warehouse',
+            'view-contact',
+            'view-user',
+            'view-purchase',
             'create-purchase',
             'edit-purchase',
             'delete-purchase',
+            'view-sale',
             'create-sale',
             'edit-sale',
             'delete-sale',
             
         ]);
+        $branchUser->givePermissionTo([
+            'view-category',
+            'view-unit',
+            'view-product',
+            'view-warehouse',
+            'view-contact',
+            'view-user',
+            'view-purchase',
+            'create-purchase',
+            'view-sale',
+            'create-sale',
+            
+        ]);
+
+        
     }
 }

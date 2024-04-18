@@ -17,13 +17,10 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->string('password');
             $table->string('address');
-            $table->unsignedBigInteger('role_id')->nullable();
             $table->unsignedBigInteger('office_id')->nullable();
             $table->date('created_date')->nullable();
             $table->rememberToken();
             $table->timestamps();
-
-            $table->foreign('role_id')->references('id')->on('roles');
             $table->foreign('office_id')->references('id')->on('offices');
         });
     }

@@ -6,13 +6,18 @@ use Illuminate\Http\Request;
 use App\Repositories\CategoryRepository;
 use App\Models\Category;
 use Illuminate\Support\Facades\Auth;
-
+use App\Http\Middleware\BranchAccessMiddleware; 
 class CategoryController extends Controller
 {
     private  $categoryRepo;
      public function __construct(CategoryRepository $categoryRepo)
 
      {
+        $this->middleware(BranchAccessMiddleware::class);
+        $this->middleware('permission:view-category|create-category|edit-category|delete-category')->only('index');
+        $this->middleware('permission:create-category|edit-category', ['only' => ['create','store']]);
+        $this->middleware('permission:edit-category|delete-category', ['only' => ['edit','update']]);
+        $this->middleware('permission:delete-category', ['only' => ['destroy']]);
 
         $this->categoryRepo  = $categoryRepo;
 

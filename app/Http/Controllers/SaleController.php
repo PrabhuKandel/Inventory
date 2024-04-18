@@ -10,12 +10,19 @@ use App\Models\Product;
 use App\Models\Warehouse;
 use App\Models\Transcation;
 use App\Models\PurchaseSale;
+use App\Http\Middleware\BranchAccessMiddleware; 
+use Illuminate\Support\Facades\Auth;
 class SaleController extends Controller
 {
     private  $warehouseRepo;
     public function __construct(  WarehouseRepository $warehouseRepo)
     {
 
+      $this->middleware(BranchAccessMiddleware::class);
+      $this->middleware('permission:view-sale|create-sale|edit-sale|delete-sale')->only('index');
+      $this->middleware('permission:create-sale|edit-sale', ['only' => ['create','store']]);
+      $this->middleware('permission:edit-sale|delete-sale', ['only' => ['edit','update']]);
+      $this->middleware('permission:delete-sale', ['only' => ['destroy']]);
        $this->warehouseRepo = $warehouseRepo;
 
     }
@@ -88,7 +95,7 @@ class SaleController extends Controller
                   'warehouse_id'=>$request->warehouse,
                   'contact_id'=>$request->contact,//not necessary 
                   'product_id'=>$request->product,
-                  'user_id'=>1,
+                  'user_id'=>Auth::user()->id,
                   'created_date'=>$request->date,
                   'office_id'=>$branch?$branch:null,
                   'purchaseSale_id' => $purchaseSale->id,
@@ -150,9 +157,11 @@ class SaleController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Request $request)
     {
     
+      $id = $request->route('sale');
+      
         try{
             PurchaseSale::where('id',$id)->delete();
             return back()->withSuccess('Sales details Deleted Successfully'); 

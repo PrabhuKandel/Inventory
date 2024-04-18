@@ -23,7 +23,7 @@
         </ul>
     </div>
 @endif
-<form class="ml-5 form-group"  action="{{route('warehouses.store')}}" method="POST" >
+<form class="ml-5 form-group"  action="{{$branch?'/branchs/'.$branch.'/warehouses/store' : '/warehouses/store'}}" method="POST" >
   @csrf
 
   <div class="form-col ">

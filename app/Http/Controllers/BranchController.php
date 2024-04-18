@@ -6,7 +6,6 @@ use Illuminate\Http\Request;
 use App\Repositories\BranchRepository;
 use App\Models\Office;
 use Illuminate\Support\Facades\Auth;
-
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 use Illuminate\Support\Facades\Session;
@@ -22,10 +21,11 @@ public $branch;
     public function __construct(BranchRepository $branchRepository ){
     
          $this->branchRepository = $branchRepository;
-         
-         $this->middleware('permission:create-branch', ['only' => ['index','create','store']]);
-         $this->middleware('permission:edit-branch', ['only' => ['index','edit','update']]);
-         $this->middleware('permission:delete-branch', ['only' => ['index','destroy']]);
+         $this->middleware(BranchAccessMiddleware::class);
+         $this->middleware('permission:view-branch|create-branch|edit-branch|delete-branch')->only('index');
+         $this->middleware('permission:create-branch|edit-branch', ['only' => ['create','store']]);
+         $this->middleware('permission:edit-branch|delete-branch', ['only' => ['edit','update']]);
+         $this->middleware('permission:delete-branch', ['only' => ['destroy']]);
          
     }
     public function index(Request $request)

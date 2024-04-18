@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 use App\Models\Office;
 
+
 class loginController extends Controller
 {
     public function index()

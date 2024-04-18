@@ -24,24 +24,5 @@ class SuperAdminSeeder extends Seeder
         ]);
         $superAdmin->assignRole('Super Admin');
 
-        //creating admin
-        $admin = User::create([
-            'name' => 'Peter', 
-            'email' => 'admin@gmail.com',
-            'password' => Hash::make('123'),
-            'address'=>'kathmandu'
-
-        ]);
-        $admin->assignRole('Admin');
-
-        //creating user
-        $user = User::create([
-            'name' => 'Rony', 
-            'email' => 'user@gmail.com',
-            'password' => Hash::make('user'),
-            'address'=>'kathmandu',
-            
-        ]);
-        $user->assignRole('User');
     }
 }

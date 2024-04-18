@@ -4,13 +4,18 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Repositories\ContactRepository;
+use App\Http\Middleware\BranchAccessMiddleware; 
 class ContactController extends Controller
 {
     private  $contactRepository;
 
     public function __construct(ContactRepository $contactRepository)
     {
-
+        $this->middleware(BranchAccessMiddleware::class);
+        $this->middleware('permission:view-contact|create-contact|edit-contact|delete-contact')->only('index');
+        $this->middleware('permission:create-contact|edit-contact', ['only' => ['create','store']]);
+        $this->middleware('permission:edit-contact|delete-contact', ['only' => ['edit','update']]);
+        $this->middleware('permission:delete-contact', ['only' => ['destroy']]);
         $this->contactRepository = $contactRepository;
     }
     public function index()

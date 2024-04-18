@@ -7,6 +7,7 @@ use App\Models\Product;
 use App\Repositories\ProductRepository;
 use App\Repositories\CategoryRepository;
 use App\Repositories\UnitRepository;
+use App\Http\Middleware\BranchAccessMiddleware; 
 
 class ProductController extends Controller
 {
@@ -17,6 +18,11 @@ class ProductController extends Controller
     public function __construct(ProductRepository $productRepo,CategoryRepository $categoryRepo,
     UnitRepository $unitRepo)
     {
+        $this->middleware(BranchAccessMiddleware::class);
+        $this->middleware('permission:view-product|create-product|edit-product|delete-product')->only('index');
+        $this->middleware('permission:create-product|edit-product', ['only' => ['create','store']]);
+        $this->middleware('permission:edit-product|delete-product', ['only' => ['edit','update']]);
+        $this->middleware('permission:delete-product', ['only' => ['destroy']]);
         $this->productRepo = $productRepo;
         $this->categoryRepo = $categoryRepo;
         $this->unitRepo = $unitRepo;

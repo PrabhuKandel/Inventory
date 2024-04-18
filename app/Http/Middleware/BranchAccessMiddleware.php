@@ -16,9 +16,10 @@ class BranchAccessMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
+       
         $branchId = (int)$request->route('id');
         
-   if(Auth::check() && Auth::user()->hasRole('Super Admin'))
+   if(Auth::check() && (Auth::user()->hasRole('Super Admin')|| Auth::user()->hasRole('Headquarter Admin')|| Auth::user()->hasRole('Headquarter User')))
    {
     return $next($request);
    }
@@ -30,5 +31,6 @@ class BranchAccessMiddleware
             abort(403,'You  do not have permission for this action');
         }
         return $next($request);
+       
     }
 }

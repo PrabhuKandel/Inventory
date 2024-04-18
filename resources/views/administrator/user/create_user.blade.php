@@ -53,6 +53,7 @@
     <label for="validationDefault02">Select Office </label>
     <div class="col-md-4 mb-3 mr-4">
       <select id="inputState" class="form-control" name="office_id" >
+        <option value="">Headquarter</option>
         @foreach($offices as $office)
 		    <option value="{{$office->id}}"> {{$office->name}}</option>
         @endforeach

@@ -7,6 +7,8 @@ use App\Models\Warehouse;
 use App\Repositories\WarehouseRepository;
 use App\Repositories\BranchRepository;
 use App\Http\Middleware\BranchAccessMiddleware; 
+use Illuminate\Support\Facades\Auth;
+
 
 
 
@@ -20,9 +22,14 @@ class WarehouseController extends Controller
 
      {
         
+        
         $this->warehouseRepo  = $warehouseRepo;
         $this->branchRepo = $branchRepo;
         $this->middleware(BranchAccessMiddleware::class);
+        $this->middleware('permission:view-warehouse|create-warehouse|edit-warehouse|delete-warehouse')->only('index');
+        $this->middleware('permission:create-warehouse|edit-warehouse', ['only' => ['create','store']]);
+        $this->middleware('permission:edit-warehouse|delete-warehouse', ['only' => ['edit','update']]);
+        $this->middleware('permission:delete-warehouse', ['only' => ['destroy']]);
         $this->branch = explode("/",$request->route()->uri)[0]=='branchs' && isset($request->route()->parameters['id'])?$request->route()->parameters['id']:false;
 
       
@@ -57,12 +64,15 @@ class WarehouseController extends Controller
      */
     public function store(Request $request)
     {
+     
         
         $data =   $request->validate([
         'name'=>'required|unique:warehouses',
         'address'=>'required',
         'created_date'=>'required',
+
       ]);
+      $data['office_id'] = $this->branch?$this->branch:null;
          $response = $this->warehouseRepo->store($data);
          if($response)
          {
@@ -86,15 +96,18 @@ class WarehouseController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update( Request $request)
+
     {
+    
+      $warehouse = $request->route('warehouse');
         $data =  $request->validate([
-            'name'=>'required|unique:warehouses,name,' . $id ,
+            'name'=>'required|unique:warehouses,name,' . $warehouse ,
             'address'=>'required',
            
           ]);
     
-        $response = $this->warehouseRepo->update($data ,$id);
+        $response = $this->warehouseRepo->update($data ,$warehouse);
         if($response){
             return back()->withSuccess('Warehouse Updated Successfully!');
         }
@@ -104,10 +117,11 @@ class WarehouseController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(  Request $request)
     {
-        //
-        $response = $this->warehouseRepo->delete($id);
+        //id means branch id
+        $warehouse= $request->route('warehouse');
+        $response = $this->warehouseRepo->delete($warehouse);
         if($response){
             return back()->withSuccess('Warehouse deleted');
         }

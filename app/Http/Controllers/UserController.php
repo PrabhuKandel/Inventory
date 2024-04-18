@@ -8,7 +8,8 @@ use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 use App\Repositories\BranchRepository;
 use App\Repositories\UserRepository;
-
+use App\Http\Middleware\BranchAccessMiddleware; 
+use Validator;
 
 class UserController extends Controller
 {
@@ -18,6 +19,11 @@ class UserController extends Controller
     private UserRepository $userRepo;
     public function __construct(UserRepository $userRepo, BranchRepository  $branchRepository)
     {
+        $this->middleware(BranchAccessMiddleware::class);
+        $this->middleware('permission:view-user|create-user|edit-user|delete-user')->only('index');
+        $this->middleware('permission:create-user|edit-user', ['only' => ['create','store']]);
+        $this->middleware('permission:edit-user|delete-user', ['only' => ['edit','update']]);
+        $this->middleware('permission:deleteuserh', ['only' => ['destroy']]);
         $this->branchRepository = $branchRepository;
        $this->userRepo  = $userRepo;
 
@@ -48,14 +54,21 @@ class UserController extends Controller
             'password'=>'required',
             'address'=>'required',
             'created_date'=>'required',
+            'office_id'=>'nullable',
             'role_id'=>'required',
-            'office_id'=>'required'
+        
           ]);
+     
           $data['password'] = Hash::make($data['password']);
-
+          $role_id = $data ['role_id'];
+          unset($data['role_id']);
           $response = $this->userRepo->store($data);
       if($response)
       {
+        //assigning roles to user
+        $user = User::where( 'email',$data['email'])->first(); 
+        $role = Role::where('id',(int) $role_id)->first();
+        $user->syncRoles($role);
 
         return back()->withSuccess("User has been added");
       }
