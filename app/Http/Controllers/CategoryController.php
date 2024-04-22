@@ -109,7 +109,7 @@ class CategoryController extends Controller
             return back()->withSuccess('Category Deleted Successfully!');
         }
         else{
-            return back()->withError(' Sorry can\'t delete, category is being used!');
+            return back()->withError(" Sorry can\'t delete, category is being used!");
 
         }
     }

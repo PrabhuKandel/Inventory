@@ -9,9 +9,9 @@
 @endif
 
 
-
+@can('create-contact')
 <a href="{{route('contacts.create')}}"><button class="btn btn-dark  mb-3" type="submit">Add Contact</button></a>
-
+@endcan
 {{-- <div class=" container d-flex flex-row justify-content-between"> --}}
   
 
@@ -55,12 +55,16 @@
  
         <td >
           <div class="d-flex">
+            @can('edit-contact')
             <a href="{{route('contacts.edit',$contact->id) }}" class="  rounded btn  btn-success px-2 pb-1 pt-1 mb-4 mr-2 " >Edit</a>
+            @endcan
+            @can('delete-contact')
             <form action="{{ route('contacts.destroy', $contact->id) }}" method="POST">
               @csrf
               @method('DELETE')
               <button type="submit" class="rounded btn-danger px-2 pb-1 pt-1">Delete</button>
           </form>
+          @endcan
           </div>
         </td>
       </tr>

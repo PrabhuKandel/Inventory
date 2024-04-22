@@ -31,14 +31,18 @@ rel="stylesheet"
 </head>
 <body >
     <!--Main Navigation-->
-<header>
+<header >
   @include('layouts.sidebar')
-    <!-- Sidebar -->
   
-    <!-- Navbar -->
+  
   @include('layouts.navbar')
+  <!-- Sidebar -->
+</header>
+
+
     <!-- Navbar -->
-  </header>
+ 
+    <!-- Navbar -->
   <!--Main Navigation-->
   
   <!--Main layout-->

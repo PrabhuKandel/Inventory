@@ -16,6 +16,10 @@ class RoleController extends Controller
 
      {
         $this->middleware(BranchAccessMiddleware::class);
+        $this->middleware('permission:view-role|create-role|edit-role|delete-role')->only('index');
+        $this->middleware('permission:create-role|edit-role', ['only' => ['create','store']]);
+        $this->middleware('permission:edit-role|delete-role', ['only' => ['edit','update']]);
+        $this->middleware('permission:delete-role', ['only'=> ['destroy']]);
       
 
         $this->roleRepo  = $roleRepo;

@@ -40,10 +40,6 @@ class TranscationRepository extends CommonRepository{
        // Calculate the available quantity
   $total_quantity = $total_in_quantity - $total_out_quantity;
   return $total_quantity;
-  
-
-    
-         
 
       }
 

@@ -151,8 +151,7 @@ url  =  '/api/branchs/'+branchId +'/products/'+productId+'/warehouses/'+warehous
         .then(response => {
             return  response.json(); // returns promise
         }).then(data=>{
-          console.log(data.quantity);
-         console.log(document.querySelectorAll('.inputAvailability'));
+
           document.querySelectorAll('.inputAvailability')[index].value = data.quantity;
         })
         .catch(error => {

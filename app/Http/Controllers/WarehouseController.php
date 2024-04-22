@@ -43,6 +43,13 @@ class WarehouseController extends Controller
 
     }
 
+    public function show(string $id)
+
+    {
+        $warehouse = $this->warehouseRepo->find($id);
+        //finding products in that warehouse
+        return view('administrator.warehouse.view_warehouse',compact('warehouse'));
+    }
     /**
      * Show the form for creating a warehouses.
      */
@@ -70,7 +77,6 @@ class WarehouseController extends Controller
         'name'=>'required|unique:warehouses',
         'address'=>'required',
         'created_date'=>'required',
-
       ]);
       $data['office_id'] = $this->branch?$this->branch:null;
          $response = $this->warehouseRepo->store($data);

@@ -8,9 +8,9 @@
 @endif
 
 
-
+@can('create-purchase')
 <a href="{{ (isset($branch) && $branch) ? '/branchs/'.$branch.'/purchaseproducts': '/purchaseproducts' }}"><button class="btn btn-dark  mb-3" type="submit">Purchase Product</button></a>
-
+@endcan
 {{-- <div class="border text-primary  pt-2 text-center ">
   <p class="font-weight-bold display-5">No  Branches Yet!</p>
   </div> --}}
@@ -58,12 +58,16 @@
         </td>
       <td>
         <div class="d-flex">
+          @can('edit-purchase')
           <a href="{{route('purchases.edit',$detail->id) }}" class="  rounded btn  btn-success px-2 pb-1 pt-1 mr-2 " >Edit</a>
+          @endcan
+          @can('delete-purchase')
           <form action="{{ $branch?'/branchs/'.$branch. '/purchases/'.$detail->id.'/destroy' :route('purchases.destroy', $detail->id) }}" method="POST">
             @csrf
             @method('DELETE')
             <button type="submit" class="rounded btn-danger px-2 pb-1 pt-1">Delete</button>
         </form>
+        @endcan
         </div>
       </td>
      

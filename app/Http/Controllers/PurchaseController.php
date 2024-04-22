@@ -20,7 +20,7 @@ class PurchaseController extends Controller
     {
         $this->middleware(BranchAccessMiddleware::class);
         $this->middleware('permission:view-purchase|create-purchase|edit-purchase|delete-purchase')->only('index');
-        $this->middleware('permission:create-purchase|edit-purchase', ['only' => ['create','store']]);
+        $this->middleware('permission:create-purchase|edit-purchase', ['only' => ['purchase','store']]);
         $this->middleware('permission:edit-purchase|delete-purchase', ['only' => ['edit','update']]);
         $this->middleware('permission:delete-purchase', ['only' => ['destroy']]);
        $this->warehouseRepo = $warehouseRepo;

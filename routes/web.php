@@ -15,6 +15,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\LogoutController;
 use App\Http\Controllers\RoleController;
+use App\Http\Controllers\PurchaseandSaleController;
 
 
 /*
@@ -58,6 +59,9 @@ Route::get('branchs/{id}/warehouses/create',[WarehouseController::class,'create'
 Route::get('warehouses/create',[WarehouseController::class,'create'])->name('warehouses.create');
 Route::get('branchs/{id}/warehouses/{warehouse}/edit',[WarehouseController::class,'edit'])->name('branchWarehouses.edit');
 Route::get('warehouses/{warehouse}/edit',[WarehouseController::class,'edit'])->name('headquarterWarehouses.edit');
+Route::get('branchs/{id}/warehouses/{warehouse}/show',[WarehouseController::class,'show'])->name('branchWarehouses.show');
+Route::get('warehouses/{warehouse}/show',[WarehouseController::class,'show'])->name('headquarterWarehouses.show');
+
 Route::put('warehouses/{warehouse}/update',[WarehouseController::class,'update'])->name('warehouses.update');
 Route::put('branchs/{id}/warehouses/{warehouse}/update',[WarehouseController::class,'update'])->name('branchwarehouses.update');
 //contact controller
@@ -89,7 +93,7 @@ Route::resource('viewproducts', ViewProductController::class);
 
 //Product in
 
-Route::resource('purchases', PurchaseController::class);
+// Route::resource('purchases', PurchaseController::class);
 Route::get('branchs/{id}/purchaseproducts',[PurchaseController::class,'purchase'])->name( 'products.purchase');
 Route::get('purchaseproducts',[PurchaseController::class,'purchase'])->name( 'products.Headpurchase');
 Route::post('purchaseproducts',[PurchaseController::class,'store'])->name( 'products.headpurchaseStore');//store purchase goods for headqaurter
@@ -98,10 +102,9 @@ Route::get('branchs/{id}/purchasesdetails',[PurchaseController::class,'index'])-
 Route::get('purchasesdetails',[PurchaseController::class,'index'])->name( 'products.HeadpurchaseDetails');
 Route::delete('purchases/{purchase}/destroy',[PurchaseController::class,'destroy'])->name('purchases.destroy');
 Route::delete('branchs/{id}/purchases/{purchase}/destroy',[PurchaseController::class,'destroy'])->name('branchpurchases.destroy');
+
 //Sales
-
-
-Route::resource('sales', SaleController::class);
+// Route::resource('sales', SaleController::class);
 Route::get('branchs/{id}/sellproducts',[SaleController::class,'sale'])->name( 'products.sale');
 Route::get('sellproducts',[SaleController::class,'sale'])->name( 'products.Headsale');
 
@@ -121,3 +124,6 @@ Route::get('dashboards',[DashboardController::class,'index'])->middleware('auth'
 Route::get('branchs/{id}/dashboards',[DashboardController::class,'index'])->middleware('auth')->name( 'dashboards.branch');
 
 Route::resource('roles', RoleController::class);
+
+Route::get('{type}',[PurchaseandSaleController::class,'index'])->where('type','purchases|sales');
+

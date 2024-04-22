@@ -45,7 +45,7 @@
         <div class="dropdown">
           <button class="btn btn-secondary dropdown-toggle"  type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
              @if (isset($branch) && $branch)
-            
+             @dd($branch);
               @php($branch_name=(\App\Models\Office::find($branch))->name)
               {{$branch_name}}
               @else

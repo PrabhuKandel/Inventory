@@ -6,9 +6,12 @@ use Illuminate\Http\Request;
 use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
+use App\Models\Office;
 use App\Repositories\BranchRepository;
 use App\Repositories\UserRepository;
 use App\Http\Middleware\BranchAccessMiddleware; 
+
+use Spatie\Permission\Models\Permission;
 use Validator;
 
 class UserController extends Controller
@@ -28,11 +31,12 @@ class UserController extends Controller
        $this->userRepo  = $userRepo;
 
     }
-     public function index()
+     public function index(Request $request)
     {
-        $offices = $this->branchRepository->getAll();
-        $roles = Role::all();
-        return view('administrator.user.create_user',['offices'=>$offices,'roles'=>$roles]);
+        $branch = explode("/",$request->route()->uri)[0]=='branchs'?$request->route()->parameters['id']:false;
+        $users = $this->userRepo->getAll();
+        return view('administrator.user.user_details',compact('users','branch'));
+
     }
 
     /**
@@ -40,7 +44,9 @@ class UserController extends Controller
      */
     public function create()
     {
-        //
+        $offices = $this->branchRepository->getAll();
+        $roles = Role::all();
+        return view('administrator.user.create_user',['offices'=>$offices,'roles'=>$roles]);
     }
     
  /**
@@ -84,25 +90,50 @@ class UserController extends Controller
      */
     public function show(string $id)
     {
-        //        //here id is not of warehouse it is of branch like users/1 means users of branch 1
-        dd('fd');
-        return view('administrator.user.user_details');
+      
+   
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(string $id , Request $request)
     {
-        return view('administrator.user.edit_user');
+       $user = $this->userRepo->find($id);
+      $branchs = $this->branchRepository->getAll();
+     $roles = Role::all();
+        return view('administrator.user.edit_user',compact('user','branchs','roles'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, $id)
     {
-        dd($request->all());
+        $data = $request->validate([
+            'name'=>'required',
+            'email'=>'required|unique:users,email,' . $id ,
+            'address'=>'required',
+            'office_id'=>'nullable',
+            'role_id'=>'required',
+        
+          ]);
+          $role_id = $data ['role_id'];
+          unset($data['role_id']);
+          $response = $this->userRepo->update($data,$id);
+      if($response)
+      {
+        //assigning roles to user
+        $user = User::where( 'email',$data['email'])->first(); 
+        $role = Role::where('id',(int) $role_id)->first();
+        $user->syncRoles($role);
+
+        return back()->withSuccess("User info has been updated");
+      }
+      else
+      {
+        return back()->withSuccess("Updation failed...");
+      }
     }
 
     /**

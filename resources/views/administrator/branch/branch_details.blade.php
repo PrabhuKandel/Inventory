@@ -9,9 +9,9 @@
 @endif
 
 
-
+@can('create-branch')
 <a href="{{route('branchs.create')}}"><button class="btn btn-dark  mb-3" type="submit">Add Branch</button></a>
-
+@endcan
 
     <h4>Branch Details</h4>
   <table class="table align-middle mb-0 bg-white">
@@ -54,12 +54,16 @@
           </div>
    
         <div class="d-flex">
+          @can('edit-branch')
           <a href="{{route('branchs.edit',$branch_1->id)}}" class="  rounded btn  btn-dark px-2 pb-1 pt-1 mr-2 " >Edit</a>
+          @endcan
+          @can('delete-branch')
           <form action="{{ route('branchs.destroy', $branch_1->id) }}" method="POST">
             @csrf
             @method('DELETE')
             <button type="submit" class="rounded btn-danger px-2 pb-1 pt-1">Delete</button>
         </form>
+        @endcan
         
          
       </div>

@@ -1,4 +1,4 @@
-@extends('layouts.app')
+-@extends('layouts.app')
 @section('content')
 
 
@@ -8,7 +8,7 @@
   <strong> {{ $message}}</strong>
 </div>
 @endif
-
+<a href="{{route('users.create')}}"><button class="btn btn-dark  mb-3" type="submit">Add New User</button></a>
     <h4>User Details</h4>
   <table class="table align-middle mb-0 bg-white">
     <thead class="bg-light">
@@ -44,7 +44,9 @@
           <p class="fw-normal mb-1">{{$user->address}}</p>
         </td>
         <td >
-          <p class="fw-normal ms-2">Roles</p>
+          @if($user->roles()->first()->name!='Super Admin')
+          <p class="fw-normal ms-2">{{$user->roles()->first()->name}}</p>
+          @endif
         </td>
        
         <td >
@@ -52,15 +54,17 @@
         </td>
         <td >
         <div class="d-flex">
-          <a href="{{route('users.edit',2) }}" class="  rounded btn  btn-success px-2 pb-1 pt-1 mr-2 " >Edit</a>
-          <form action="{{ route('users.destroy', 2) }}" method="POST">
+          @can('edit-user')
+          <a href="{{route('users.edit',$user->id) }}" class="  rounded btn  btn-success px-2 pb-1 pt-1 mr-2 " >Edit</a>
+          @endcan
+          @can('delete-user')
+          <form action="{{ route('users.destroy', $user->id) }}" method="POST">
             @csrf
             @method('DELETE')
             <button type="submit" class="rounded btn-danger px-2 pb-1 pt-1">Delete</button>
         </form>
+        @endcan
         </div>
-         
-        
         </td>
       </tr>
       @endforeach

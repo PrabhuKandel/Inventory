@@ -6,17 +6,17 @@
   <strong> {{ $message}}</strong>
 </div>
 @endif
-@can('create-sale')
-<a href="{{ (isset($branch) && $branch) ? '/branchs/'.$branch.'/sellproducts': '/sellproducts' }}"><button class="btn btn-dark  mb-3" type="submit">Sell Product</button></a>
-@endcan
 
-  <table class="table align-middle mb-0 bg-white">
-  <thead class="bg-light">
+
+@can('create-purchase')
+<a href="{{ (isset($branch) && $branch) ? '/branchs/'.$branch.'/purchaseproducts': '/purchaseproducts' }}"><button class="btn btn-dark  mb-3" type="submit">Purchase Product</button></a>
+@endcan
+ <table class="table align-middle mb-0 bg-white">
+    <thead class="bg-light">
       <tr>
         <th>SN</th>
         <th>Product </th>
         <th>Quantity</th>
-        <th>Amount</th>
         <th>Warehouse</th>
         <th>Customer</th>
         <th>Date</th>
@@ -28,11 +28,9 @@
   @endphp
 
     <tbody>
-     
-      @foreach ($salesDetails as $detail )
-      
-      @if($detail->contact->type=='customer')
-      <tr>
+      @foreach ($purchasesDetails as $detail )
+     <tr>
+
       <td > <p class="fw-normal ms-2">{{$i++}}</p></td>
       <td>
         <p class="fw-bold mb-1">{{$detail->product->name}}</p>
@@ -40,29 +38,24 @@
   <td>
     <p class="fw-bold mb-1">{{$detail->quantiy}}</p>
 </td>
-<td>
-  <p class="fw-bold mb-1">{{$detail->product->rate * $detail->quantiy}}</p>
-</td>
         
         <td>
               <p class="fw-normal mb-1">{{$detail->warehouse->name}}</p>
         </td>
-        
         <td>
           <p class="fw-normal mb-1">{{$detail->contact->name}}</p>
          
         </td>
-      
         <td >
           <p class="fw-normal ms-2">{{$detail->created_at}}</p>
         </td>
       <td>
         <div class="d-flex">
-          @can('edit-sale')
-          <a href="{{route('sales.edit',$detail->id) }}" class="  rounded btn  btn-success px-2 pb-1 pt-1 mr-2 " >Edit</a>
+          @can('edit-purchase')
+          <a href="" class="  rounded btn  btn-success px-2 pb-1 pt-1 mr-2 " >Edit</a>
           @endcan
-          @can('delete-sale')
-          <form action="{{ $branch?'/branchs/'.$branch. '/sales/'.$detail->id.'/destroy' :route('sales.destroy', $detail->id) }}"method="POST">
+          @can('delete-purchase')
+          <form action="" method="POST">
             @csrf
             @method('DELETE')
             <button type="submit" class="rounded btn-danger px-2 pb-1 pt-1">Delete</button>
@@ -71,8 +64,7 @@
         </div>
       </td>
      
-    </tr>
-      @endif
+      </tr>
       @endforeach
     </tbody>
   </table>

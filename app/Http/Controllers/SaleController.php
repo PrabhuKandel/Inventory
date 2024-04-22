@@ -23,8 +23,9 @@ class SaleController extends Controller
     {
 
       $this->middleware(BranchAccessMiddleware::class);
+      //can go to index only if user has any of these mentioned permissions
       $this->middleware('permission:view-sale|create-sale|edit-sale|delete-sale')->only('index');
-      $this->middleware('permission:create-sale|edit-sale', ['only' => ['create','store']]);
+      $this->middleware('permission:create-sale|edit-sale', ['only' => ['sale','store']]);
       $this->middleware('permission:edit-sale|delete-sale', ['only' => ['edit','update']]);
       $this->middleware('permission:delete-sale', ['only' => ['destroy']]);
        $this->warehouseRepo = $warehouseRepo;
@@ -118,7 +119,7 @@ class SaleController extends Controller
           $quantity = $this->transcationRepo->checkQuantity($branch?$branch:0,$data['product_id'],$data['warehouse_id']);
 
           if($quantity)
-          {
+          { 
 
             if($data['quantity']>$quantity)
             {
