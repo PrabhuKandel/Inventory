@@ -13,7 +13,7 @@
 
 
 
-<a href=""><button class="btn btn-dark  mb-3" type="submit">Create Roles</button></a>    
+<a href="{{route('roles.create')}}"><button class="btn btn-dark  mb-3" type="submit">Create Roles</button></a>    
   <table class="table align-middle mb-0 bg-white">
     <thead class="bg-light">
       <tr>
@@ -22,22 +22,20 @@
         <th>Actions</th>
       </tr>
     </thead>
-    @php
-    $i=1;
-  @endphp
+
 
     <tbody>
       
-     
-      <td > <p class="fw-normal ms-2">{{$i++}}</p></td>
+     @foreach($roles as $role)
+      <td > <p class="fw-normal ms-2">{{$loop->iteration}}</p></td>
         
         <td>
-              <p class="fw-bold mb-1">Role name</p>
+              <p class="fw-bold mb-1">{{$role->name}}</p>
         </td>
       <td>
         <div class="d-flex">
-          <a href="" class="  rounded btn  btn-success px-2 pb-1 pt-1 mr-2 " >Edit</a>
-          <form action="" method="POST">
+          <a href="{{route('roles.edit',$role->id)}}" class="  rounded btn  btn-success px-2 pb-1 pt-1 mr-2 " >Edit</a>
+          <form action="{{route('roles.destroy',$role->id)}}" method="POST">
             @csrf
             @method('DELETE')
             <button type="submit" class="rounded btn-danger px-2 pb-1 pt-1">Delete</button>
@@ -46,7 +44,7 @@
       </td>
      
       </tr>
-
+@endforeach
     </tbody>
   </table>
 

@@ -37,9 +37,9 @@ $this->model = $model;
   }
 
   public function update( array $data,$id){
-    $category = $this->model::findorFail($id);
-       $category->fill($data);
-       $category->save();
+    $model = $this->model::findorFail($id);
+       $model->fill($data);
+       $model->save();
        return true;
 
   }

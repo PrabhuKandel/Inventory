@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-
+use App\Repositories\TranscationRepository;
 use App\Repositories\WarehouseRepository;
 use App\Models\Contact;
 use App\Models\Product;
@@ -12,10 +12,14 @@ use App\Models\Transcation;
 use App\Models\PurchaseSale;
 use App\Http\Middleware\BranchAccessMiddleware; 
 use Illuminate\Support\Facades\Auth;
+
+use Illuminate\Support\Facades\DB;
+
 class SaleController extends Controller
 {
     private  $warehouseRepo;
-    public function __construct(  WarehouseRepository $warehouseRepo)
+    private $transcationRepo;
+    public function __construct(  WarehouseRepository $warehouseRepo, TranscationRepository $transcationRepo)
     {
 
       $this->middleware(BranchAccessMiddleware::class);
@@ -24,6 +28,7 @@ class SaleController extends Controller
       $this->middleware('permission:edit-sale|delete-sale', ['only' => ['edit','update']]);
       $this->middleware('permission:delete-sale', ['only' => ['destroy']]);
        $this->warehouseRepo = $warehouseRepo;
+       $this->transcationRepo = $transcationRepo;
 
     }
     public function index(Request $request)
@@ -43,7 +48,7 @@ class SaleController extends Controller
         $customers = Contact::where('type','customer')->select('id','name')->get();
         $products = Product::all();
         
-        return view('administrator.sale.sale',compact('branch'),['warehouses'=>$warehouses,'customers'=>$customers,'products'=>$products]);
+        return view('administrator.sale.demo',compact('branch'),['warehouses'=>$warehouses,'customers'=>$customers,'products'=>$products]);
     }
     /**
      * Show the form for creating a new resource.
@@ -58,79 +63,187 @@ class SaleController extends Controller
      */
     public function store(Request $request)
     { 
-        $branch = explode("/",$request->route()->uri)[0]=='branchs'?$request->route()->parameters['id']:false;
-        $request->validate([
-            'contact'=>'required',
-            'product'=>'required',
-            'warehouse'=>'required',
-            'date'=>'required',
-            'quantity'=>'required',
-            'total'=>'required'
-          ]);
-          try{
+      $branch = explode("/",$request->route()->uri)[0]=='branchs'?$request->route()->parameters['id']:false;
+      $datas = $request->validate([
+        
+        'contact_id.*'=>'required',
+        'product_id.*'=>'required',
+        'warehouse_id.*'=>'required',
+        'quantity.*'=>'required',
+        'total.*'=>'required',
+        'created_date'=>'required'
+        
+      ]);
+      
+      dd($datas);
+    
+//checking availability of product
 
-            if($request->available_quantity)
-            {
-      
-              if($request->quantity<=$request->available_quantity)
-              {
-      
-                $purchaseSale = new PurchaseSale([
-      
-                  'warehouse_id'=>$request->warehouse,
-                    'product_id'=>$request->product,
-                    'quantiy'=>$request->quantity,
-                    'type'=>'sale',
-                    'contact_id'=>$request->contact,
-                    'office_id'=>$branch?$branch:null,
-                
-                
-                ]);
-                $purchaseSale->save();
-          
-                $transcation = new  Transcation([
-                  'type'=>"out",
-                  'quantity'=>$request->quantity,
-                  'amount'=>$request->total,
-                  'warehouse_id'=>$request->warehouse,
-                  'contact_id'=>$request->contact,//not necessary 
-                  'product_id'=>$request->product,
-                  'user_id'=>Auth::user()->id,
-                  'created_date'=>$request->date,
-                  'office_id'=>$branch?$branch:null,
-                  'purchaseSale_id' => $purchaseSale->id,
-                ]);
-            
-                // dd($transcation);
-                $transcation->save();
-          
-          
-                return back()->withSuccess("Product has been sold..");
-      
-              }
-              else
-              {
-                
-                return back()->withSuccess("Quantity exceed...");
-              }
+
+
+          //managing data 
+          $rowCount = count($datas['contact_id']);
+          $sellData = [];
+
+       for($i=0;$i<$rowCount;$i++)
+       {
+        $row=[];
+        foreach($datas as $key=>$value)
+        {
+            if($key=='created_date'){
+                $row[$key] = $value;
             }
             else
             {
-            
-                return back()->withSuccess("The quantity is not present in warehouse..");
+                $row[$key] = $value[$i];
             }
+          
+            
+        
+        }
+        $sellData[] = $row;
+        
+        
+      }  
+    
+
+      // dd($sellData);
+      DB::beginTransaction();
+      try{
+
+      foreach($sellData as $data)
+        {
+          
+       
+          $quantity = $this->transcationRepo->checkQuantity($branch?$branch:0,$data['product_id'],$data['warehouse_id']);
+
+          if($quantity)
+          {
+
+            if($data['quantity']>$quantity)
+            {
+              return back()->withSuccess("Quantity exceed...");
+
+            }
+            else
+            {
+
+
+              $purchaseSale = new PurchaseSale([
+      
+                'warehouse_id'=>$data['warehouse_id'],
+                  'product_id'=>$data['product_id'],
+                  'quantiy'=>$data['quantity'],
+                  'type'=>'sale',
+                  'contact_id'=>$data['contact_id'],
+                  'office_id'=>$branch?$branch:null,
+              
+              
+              ]);
+              $purchaseSale->save();
+        
+              $transcation = new  Transcation([
+                'type'=>"out",
+                'quantity'=>$data['quantity'],
+                'amount'=>$data['total'],
+                'warehouse_id'=>$data['warehouse_id'],
+                'contact_id'=>$data['contact_id'],//not necessary 
+                'product_id'=>$data['product_id'],
+                'user_id'=>Auth::user()->id,
+                'created_date'=>$data['created_date'],
+                'office_id'=>$branch?$branch:null,
+                'purchaseSale_id' => $purchaseSale->id,
+              ]);
+          
+              // dd($transcation);
+              $transcation->save();
+        
+            }
+          }
+        else
+        {
+          DB::rollback();
+          return back()->withSuccess("The quantity is not present in warehouse..");
+        }
+        
+      }
+      DB::commit();
+      return back()->withSuccess("Product has been sold..");
+
+    }
+    catch(\Exception $e)
+    {
+      DB::rollback();
+      dd($e);
+      return  back()->withSuccess("Fail to sell");
+      }
+
+    }
+
+      // $response = $this->transcationRepo->checkQuantity($branch?$branch:0,5,10);
+      //     try{
+
+      //       if($request->available_quantity)
+      //       {
+      
+      //         if($request->quantity<=$request->available_quantity)
+      //         {
+      
+      //           $purchaseSale = new PurchaseSale([
+      
+      //             'warehouse_id'=>$request->warehouse,
+      //               'product_id'=>$request->product,
+      //               'quantiy'=>$request->quantity,
+      //               'type'=>'sale',
+      //               'contact_id'=>$request->contact,
+      //               'office_id'=>$branch?$branch:null,
+                
+                
+      //           ]);
+      //           $purchaseSale->save();
+          
+      //           $transcation = new  Transcation([
+      //             'type'=>"out",
+      //             'quantity'=>$request->quantity,
+      //             'amount'=>$request->total,
+      //             'warehouse_id'=>$request->warehouse,
+      //             'contact_id'=>$request->contact,//not necessary 
+      //             'product_id'=>$request->product,
+      //             'user_id'=>Auth::user()->id,
+      //             'created_date'=>$request->date,
+      //             'office_id'=>$branch?$branch:null,
+      //             'purchaseSale_id' => $purchaseSale->id,
+      //           ]);
+            
+      //           // dd($transcation);
+      //           $transcation->save();
+          
+          
+      //           return back()->withSuccess("Product has been sold..");
+      
+      //         }
+      //         else
+      //         {
+                
+      //           return back()->withSuccess("Quantity exceed...");
+      //         }
+      //       }
+      //       else
+      //       {
+            
+      //           return back()->withSuccess("The quantity is not present in warehouse..");
+      //       }
          
           
-          }
-      catch(\Exception $e){
+      //     }
+      // catch(\Exception $e){
       
        
-        return back()->withSuccess("Transcation failed..");
-        }
+      //   return back()->withSuccess("Transcation failed..");
+      //   }
       
       
-        }
-
+      
 //show sales details for specified branch    
     public function show(string $id, Request $request)
     {

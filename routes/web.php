@@ -27,11 +27,15 @@ use App\Http\Controllers\RoleController;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
+Route::get('/demo',function(){
+
+    return view('administrator.purchase.demo');
+});
 
 Route::get('/', function () {
     return view('layouts.app');
 });
-Route::get('/login', [loginController::class,'index'])->name('login.index');
+Route::get('/login', [loginController::class,'index'])->name('login');
 Route::post('/signin', [loginController::class,'submit'])->name('login.submit');
 Route::post('/logout', [logoutController::class,'submit'])->name('logout');
 

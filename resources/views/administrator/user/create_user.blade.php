@@ -63,7 +63,9 @@
       <div class="col-md-4 mb-3 mx-2">
         <select id="inputState" class="form-control" name="role_id" >
           @foreach ($roles as $role)
+          @if($role->name!="Super Admin")
           <option value="{{$role->id}}"> {{$role->name}}</option>
+          @endif
           @endforeach
         </select>
       </div>
