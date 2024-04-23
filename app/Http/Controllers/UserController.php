@@ -7,10 +7,8 @@ use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 use App\Models\Office;
-use App\Repositories\BranchRepository;
-use App\Repositories\UserRepository;
+use App\Repositories\CommonRepository;
 use App\Http\Middleware\BranchAccessMiddleware; 
-
 use Spatie\Permission\Models\Permission;
 use Validator;
 
@@ -18,17 +16,16 @@ class UserController extends Controller
 {
     
     private $branchRepository;
-
-    private UserRepository $userRepo;
-    public function __construct(UserRepository $userRepo, BranchRepository  $branchRepository)
+    private  $userRepo;
+    public function __construct()
     {
         $this->middleware(BranchAccessMiddleware::class);
         $this->middleware('permission:view-user|create-user|edit-user|delete-user')->only('index');
         $this->middleware('permission:create-user|edit-user', ['only' => ['create','store']]);
         $this->middleware('permission:edit-user|delete-user', ['only' => ['edit','update']]);
         $this->middleware('permission:deleteuserh', ['only' => ['destroy']]);
-        $this->branchRepository = $branchRepository;
-       $this->userRepo  = $userRepo;
+        $this->branchRepository = new CommonRepository(new Office());
+       $this->userRepo  = new CommonRepository(new  User());
 
     }
      public function index(Request $request)
@@ -100,9 +97,10 @@ class UserController extends Controller
     public function edit(string $id , Request $request)
     {
        $user = $this->userRepo->find($id);
-      $branchs = $this->branchRepository->getAll();
+       
+      $offices = $this->branchRepository->getAll();
      $roles = Role::all();
-        return view('administrator.user.edit_user',compact('user','branchs','roles'));
+        return view('administrator.user.create_user',compact('user','offices','roles'));
     }
 
     /**

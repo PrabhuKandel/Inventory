@@ -3,24 +3,27 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Repositories\ContactRepository;
+use App\Repositories\CommonRepository;
 use App\Http\Middleware\BranchAccessMiddleware; 
+use App\Models\Contact;
 class ContactController extends Controller
 {
-    private  $contactRepository;
-
-    public function __construct(ContactRepository $contactRepository)
+    private  $commonRepo;
+    private $contactId;
+    public function __construct(Request $request)
     {
+        $this->contactId = $request->route('contact');
+
         $this->middleware(BranchAccessMiddleware::class);
         $this->middleware('permission:view-contact|create-contact|edit-contact|delete-contact')->only('index');
         $this->middleware('permission:create-contact|edit-contact', ['only' => ['create','store']]);
         $this->middleware('permission:edit-contact|delete-contact', ['only' => ['edit','update']]);
         $this->middleware('permission:delete-contact', ['only' => ['destroy']]);
-        $this->contactRepository = $contactRepository;
+        $this->commonRepo = new CommonRepository(new Contact());
     }
     public function index()
     {
-        $contacts =  $this->contactRepository->getAll();
+        $contacts =  $this->commonRepo->getAll();
         return view('administrator.contact.contact_details',compact('contacts'));
     }
 
@@ -30,7 +33,8 @@ class ContactController extends Controller
     public function create()
     {
         //
-        return view('administrator.contact.create_contact');
+        $contactId = $this->contactId;
+        return view('administrator.contact.create_contact',compact('contactId'));
     }
 
     /**
@@ -48,7 +52,7 @@ class ContactController extends Controller
             'created_date'=>'required',
         ]);
         
-         $response = $this->contactRepository->store($data); 
+         $response = $this->commonRepo->store($data); 
                  
          if($response)
          {
@@ -68,7 +72,7 @@ class ContactController extends Controller
     {
         
         $branch = explode("/",$request->route()->uri)[0]=='branchs'?$request->route()->parameters['id']:false;
-        $contacts =  $this->contactRepository->getAll();
+        $contacts =  $this->commonRepo->getAll();
         return view('administrator.contact.contact_details',compact('contacts','branch'));
     }
 
@@ -78,8 +82,9 @@ class ContactController extends Controller
     public function edit(string $id)
     {
         //
-        $contact = $this->contactRepository->find($id);
-        return view('administrator.contact.edit_contact',['contact'=>$contact]);
+        $contactId = $this->contactId;
+        $contact = $this->commonRepo->find($id);
+        return view('administrator.contact.create_contact',['contact'=>$contact],compact('contactId'));
     }
 
     /**
@@ -92,7 +97,7 @@ class ContactController extends Controller
             'name' => 'required|string|unique:contacts,name,'.$id,
             'address' => 'required|string',
         ]);
-        $response = $this->contactRepository->update($data,$id);
+        $response = $this->commonRepo->update($data,$id);
         if($response)
         {
             return back()->withSuccess('Contact updated succesfully !!!!');
@@ -107,7 +112,7 @@ class ContactController extends Controller
     public function destroy(string $id)
     {
         
-       $response=$this->contactRepository->delete($id);
+       $response=$this->commonRepo->delete($id);
        if($response)
        {
         return back()->withSuccess('Deleted Successfully');

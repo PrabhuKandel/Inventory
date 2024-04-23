@@ -9,16 +9,23 @@ class TranscationRepository extends CommonRepository{
     parent::__construct($transcation);
   }
 
-  public function checkQuantity(  $branch_id , $product_id,  $warehouse_id)
+  public function calculateAvailability(  $branch_id , $product_id,  $warehouse_id)
   {       
-      $product_id = (int) $product_id;
-      $warehouse_id = $warehouse_id !== 0 ? (int) $warehouse_id : 0;
-      $branch_id = $branch_id !== 0 ? (int) $branch_id : 0;
+    
+      $total_quantity = Transcation::where('product_id',$product_id)->
+      when($warehouse_id!=0,function($transcation_query) use ($warehouse_id){
+        return $transcation_query->where('warehouse_id',$warehouse_id);
+      })->when($branch_id!=0,function($transcation_query) use ($branch_id){
 
+        return $transcation_query->where('office_id',$branch_id);
+      })->selectRaw('SUM(CASE WHEN type = "in" THEN quantity ELSE -quantity END) AS total_quantity')
+      ->value('total_quantity');
+    return $total_quantity;
 
-      // dd($branch_id);
-      //get total in quantity
-      $query1 = Transcation::where('product_id',$product_id)->where('type','in');
+      //total out 
+  
+
+    /*
       if ($warehouse_id !== 0) {
           $query1->where('warehouse_id', $warehouse_id);
       }
@@ -39,7 +46,7 @@ class TranscationRepository extends CommonRepository{
 
        // Calculate the available quantity
   $total_quantity = $total_in_quantity - $total_out_quantity;
-  return $total_quantity;
+  return $total_quantity;*/
 
       }
 

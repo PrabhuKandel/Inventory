@@ -1,5 +1,9 @@
 @extends('layouts.app')
 @section('content')
+
+@php
+  $edit = isset($unit) && $unit?true:false;
+@endphp
 <a href="{{route('units.index')}}"> <i class="fa-solid fa-arrow-left fa-lg"></i> Go back</a>
 @if($message = Session::get('success'))
 <div id ="success-message" class="alert alert-success alert-block">
@@ -11,8 +15,11 @@
 <div class="form-container  " style="padding-left:100px; margin-top:40px">
 
   {{-- category form --}}
-<form class="ml-5 form-group" id="categoryForm"  action="{{route('units.store')}}" method="POST" >
+<form class="ml-5 form-group" id="categoryForm"  action="{{$edit?route('units.update',$unit->id):route('units.store')}}" method="POST" >
   @csrf
+  @if($edit)
+ @method("PUT")
+  @endif
   <h3  class=" mb-3">Enter  Unit details</h3>
   @if ($errors->any())
     <div class="  alert alert-danger">
@@ -26,20 +33,20 @@
   <div class="form-col ">
     <div class="col-md-4 mb-3">
       <label for="validationDefault01">Unit name</label>
-      <input type="text" class="form-control" id="validationDefault01" placeholder="kilogram/per bottle/litre/per packet" name="name" >
+      <input type="text" class="form-control" id="validationDefault01" placeholder="kilogram/per bottle/litre/per packet" value="{{$edit?$unit->name:""}}"  name="name" >
     </div>
     <div class="col-md-4 mb-3">
       <label for="validationDefault02">Description</label>
-      <textarea type="text" class="form-control" id="validationDefault02" placeholder="" name="description"  style="height: 150px; width: 100%; "></textarea>
+      <textarea type="text" class="form-control" id="validationDefault02" placeholder="" name="description"    style="height: 150px; width: 100%; ">{{$edit?$unit->description:""}}</textarea>
     </div>
  
     <div class="col-md-4 mb-3">
       <label for="validationDefault02">Date</label>
-      <input type="date" id="unitdate" class="form-control" name="created_date" pattern="" >
+      <input type="date" id="unitdate" class="form-control" name="created_date"   value="{{$edit?$unit->created_date:""}}" pattern=""    {{$edit?'readonly':""}}>
       
     </div>
     <div class="col-md-4 mb-3 d-flex justify-content-center">
-    <button class="btn btn-success " type="submit">Add Unit</button>
+    <button class="btn btn-success " type="submit">{{ $edit? "Update Unit":"Add Unit"}}</button>
     </div>
   </div>
 </form>

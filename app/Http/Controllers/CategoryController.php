@@ -3,28 +3,29 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Repositories\CategoryRepository;
+use App\Repositories\CommonRepository;
 use App\Models\Category;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Middleware\BranchAccessMiddleware; 
 class CategoryController extends Controller
 {
-    private  $categoryRepo;
-     public function __construct(CategoryRepository $categoryRepo)
+    private  $commonRepo;
+    private $categoryId;
+     public function __construct(Request $request)
 
      {
+        $this->categoryId = $request->route('category');
         $this->middleware(BranchAccessMiddleware::class);
         $this->middleware('permission:view-category|create-category|edit-category|delete-category')->only('index');
         $this->middleware('permission:create-category|edit-category', ['only' => ['create','store']]);
         $this->middleware('permission:edit-category|delete-category', ['only' => ['edit','update']]);
         $this->middleware('permission:delete-category', ['only' => ['destroy']]);
-
-        $this->categoryRepo  = $categoryRepo;
+        $this->commonRepo  = new CommonRepository(new Category());
 
      }
     public function index()
     {
-        $categories = $this->categoryRepo->getAll();
+        $categories = $this->commonRepo->getAll();
         
         return view('administrator.category.category_details',compact('categories'));
     }
@@ -34,8 +35,9 @@ class CategoryController extends Controller
      */
     public function create()
     {
+        $categoryId = $this->categoryId;
 
-        return view('administrator.category.create_category');
+        return view('administrator.category.create_category',compact('categoryId'));
     }
 
     /**
@@ -50,7 +52,7 @@ class CategoryController extends Controller
             'created_date'=>'date|required',
         ]);
        
-       $response =  $this->categoryRepo->store( $data);
+       $response =  $this->commonRepo->store( $data);
 
        if($response)
        {
@@ -73,9 +75,11 @@ class CategoryController extends Controller
      */
     public function edit(string $id)
     {
-        $category = $this->categoryRepo->find($id);
-      
-        return view('administrator.category.edit_category',['category'=>$category]);
+
+        $category = $this->commonRepo->find($id);
+        
+        $categoryId = $this->categoryId;
+        return view('administrator.category.create_category',['category'=>$category],compact('categoryId'));
     }
 
     /**
@@ -89,7 +93,7 @@ class CategoryController extends Controller
             'description' => 'required|string',
             'created_date'=>'date|required',
         ]);
-        $response = $this->categoryRepo->update($data , $id);
+        $response = $this->commonRepo->update($data , $id);
 
         if($response)
         {
@@ -103,7 +107,7 @@ class CategoryController extends Controller
      */
     public function destroy(string $id)
     {
-        $response = $this->categoryRepo->delete($id);
+        $response = $this->commonRepo->delete($id);
         if($response)
         {
             return back()->withSuccess('Category Deleted Successfully!');

@@ -9,7 +9,7 @@
 
 
 @can('create-purchase')
-<a href="{{ (isset($branch) && $branch) ? '/branchs/'.$branch.'/purchaseproducts': '/purchaseproducts' }}"><button class="btn btn-dark  mb-3" type="submit">Purchase Product</button></a>
+<a href="{{ (isset($branch) && $branch) ? '/branchs/'.$branch.'/'. $_type.'/create': '/'.$_type.'/create' }}"><button class="btn btn-dark  mb-3" type="submit">{{$transcation_type=='purchase'?$transcation_type:"Sell"}} Product</button></a>
 @endcan
  <table class="table align-middle mb-0 bg-white">
     <thead class="bg-light">
@@ -55,7 +55,7 @@
           <a href="" class="  rounded btn  btn-success px-2 pb-1 pt-1 mr-2 " >Edit</a>
           @endcan
           @can('delete-purchase')
-          <form action="" method="POST">
+          <form action="{{ $branch?'/branchs/'.$branch. '/'.$_type.'/'.$detail->id.'/destroy' :'/'.$_type.'/'.$detail->id.'/destroy'}}" method="POST">
             @csrf
             @method('DELETE')
             <button type="submit" class="rounded btn-danger px-2 pb-1 pt-1">Delete</button>

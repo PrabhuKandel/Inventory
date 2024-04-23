@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Repositories\UnitRepository;
+use App\Repositories\CommonRepository;
 use App\Models\Unit;
 use App\Http\Middleware\BranchAccessMiddleware; 
 
@@ -12,8 +12,8 @@ class UnitController extends Controller
     /**
      * Display a listing of the resource.
      */
-    private  $unitRepo;
-    public function __construct(UnitRepository $unitRepo)
+    private  $commonRepo;
+    public function __construct()
 
     {
 
@@ -22,13 +22,13 @@ class UnitController extends Controller
         $this->middleware('permission:create-unit|edit-unit', ['only' => ['create','store']]);
         $this->middleware('permission:edit-unit|delete-unit', ['only' => ['edit','update']]);
         $this->middleware('permission:delete-unit', ['only' => ['destroy']]);
-       $this->unitRepo  = $unitRepo;
+       $this->commonRepo  = new CommonRepository(new Unit());
 
     }
 
     public function index()
     {
-        $units = $this->unitRepo->getAll();
+        $units = $this->commonRepo->getAll();
         return view('administrator.unit.unit_details',compact('units'));
     }
 
@@ -52,7 +52,7 @@ class UnitController extends Controller
             'description' => 'required|string',
             'created_date'=>'date|required',
         ]);
-        $response =  $this->unitRepo->store($data);
+        $response =  $this->commonRepo->store($data);
 
         if($response)
         {
@@ -75,8 +75,8 @@ class UnitController extends Controller
      */
     public function edit(string $id)
     {
-        $unit = $this->unitRepo->find($id);
-        return view('administrator.unit.edit_unit',['unit'=>$unit]);
+        $unit = $this->commonRepo->find($id);
+        return view('administrator.unit.create_unit',['unit'=>$unit]);
     }
 
     /**
@@ -90,7 +90,7 @@ class UnitController extends Controller
             'description' => 'required|string',
         ]);
         
-        $response = $this->unitRepo->update( $data , $id);
+        $response = $this->commonRepo->update( $data , $id);
 
         if($response)
         {
@@ -104,7 +104,7 @@ class UnitController extends Controller
      */
     public function destroy(string $id)
     {
-        $response = $this->unitRepo->delete($id);
+        $response = $this->commonRepo->delete($id);
      
 
         if($response)

@@ -45,7 +45,7 @@
         <div class="dropdown">
           <button class="btn btn-secondary dropdown-toggle"  type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
              @if (isset($branch) && $branch)
-             @dd($branch);
+          
               @php($branch_name=(\App\Models\Office::find($branch))->name)
               {{$branch_name}}
               @else
@@ -113,10 +113,10 @@
           <a href="{{(isset($branch) && $branch?'/branchs/'.$branch.'/products':'/products')}}" class="list-group-item list-group-item-action py-2 ripple"
           ><i class="fas fa-chart-line fa-fw me-3"></i><span> Products</span></a
         >
-        <a href="{{ (isset($branch) && $branch) ? '/branchs/'.$branch.'/purchasesdetails': '/purchasesdetails' }}" class="list-group-item list-group-item-action py-2 ripple"
+        <a href="{{ (isset($branch) && $branch) ? '/branchs/'.$branch.'/purchases': '/purchases' }}" class="list-group-item list-group-item-action py-2 ripple"
         ><i class="fa-solid fa-cart-shopping fa-fw me-3"></i><span>Purchase</span></a
       >
-        <a href="{{ (isset($branch) && $branch) ? '/branchs/'.$branch.'/salesdetails': '/salesdetails' }}" class="list-group-item list-group-item-action py-2 ripple"
+        <a href="{{ (isset($branch) && $branch) ? '/branchs/'.$branch.'/sales': '/sales' }}" class="list-group-item list-group-item-action py-2 ripple"
         ><i class="fas fa-chart-line fa-fw me-3"></i><span>Sell</span></a
       >
 

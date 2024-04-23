@@ -21,34 +21,36 @@
         </ul>
     </div>
 @endif
-<form class="ml-5 form-group"  action="{{route('contacts.store')}}" method="POST" >
+<form class="ml-5 form-group"  action="{{$contactId?route('contacts.update',$contact->id):route('contacts.store')}}" method="POST" >
   @csrf
-
+@if($contactId)
+@method("PUT")
+@endif
   <div class="form-col ">
     <div class="col-md-4 mb-3">
       <label for="validationDefault01">Contact name</label>
-      <input type="text" class="form-control" id="validationDefault01" placeholder="Enter contact name" name="name" >
+      <input type="text" class="form-control" id="validationDefault01" value="{{$contactId?$contact->name:""}}"  placeholder="Enter contact name" name="name" >
     </div>
     <div class="col-md-4 mb-3">
       <label for="validationDefault02">Contact address</label>
-      <input type="text" class="form-control" id="validationDefault02" placeholder="Enter contact address" name="address" >
+      <input type="text" class="form-control" id="validationDefault02" placeholder="Enter contact address" value="{{$contactId?$contact->address:""}}"  name="address" >
     </div>
     <div class="col-md-4 mb-3">
       <label for="validationDefault02">  ContactType</label>
       <select id="inputState" class="form-control" name="type">
         <option selected disabled>Select Type</option>
-		    <option value="Supplier"> Supplier</option>
-        <option value="Customer">Customer</option>
+		    <option value="Supplier" {{$contactId&&$contact->type=="supplier"? 'selected':""}}  > Supplier</option>
+        <option value="Customer" {{$contactId&&$contact->type=="customer"? 'selected':""}}  >Customer</option>
      
 		  </select>
     </div>
     <div class="col-md-4 mb-3">
       <label for="validationDefault02">Date</label>
-      <input type="date" id="date" class="form-control" name="created_date" pattern="" required>
+      <input type="date" id="date" class="form-control"  value="{{$contactId?$contact->created_date:""}}" name="created_date" pattern="" {{$contactId ?  'readonly' : ""}}>
       
     </div>
     <div class="col-md-4 mb-3 d-flex justify-content-center">
-    <button class="btn btn-success " type="submit">Create Contact</button>
+    <button class="btn btn-success " type="submit">{{$contactId?"Update Contact":"Create Contact"}}</button>
     </div>
   </div>
 </form>

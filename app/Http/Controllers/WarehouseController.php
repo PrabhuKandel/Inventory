@@ -4,8 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Warehouse;
-use App\Repositories\WarehouseRepository;
-use App\Repositories\BranchRepository;
+use App\Models\Office;
+use App\Repositories\CommonRepository;
 use App\Http\Middleware\BranchAccessMiddleware; 
 use Illuminate\Support\Facades\Auth;
 
@@ -18,13 +18,13 @@ class WarehouseController extends Controller
     public  $branch_id;
     private  $warehouseRepo;
     private $branchRepo;
-     public function __construct(WarehouseRepository $warehouseRepo, BranchRepository $branchRepo,Request $request)
+     public function __construct(Request $request)
 
      {
         
         
-        $this->warehouseRepo  = $warehouseRepo;
-        $this->branchRepo = $branchRepo;
+        $this->warehouseRepo  = new  CommonRepository( new Warehouse());
+        $this->branchRepo = new CommonRepository(new Office());
         $this->middleware(BranchAccessMiddleware::class);
         $this->middleware('permission:view-warehouse|create-warehouse|edit-warehouse|delete-warehouse')->only('index');
         $this->middleware('permission:create-warehouse|edit-warehouse', ['only' => ['create','store']]);
@@ -95,7 +95,7 @@ class WarehouseController extends Controller
         $branch = $this->branch;
       $warehouse_id  =  isset($request->route()->parameters['warehouse'])?$request->route()->parameters['warehouse']:false;
         $warehouse = $this->warehouseRepo->find($warehouse_id);
-        return view('administrator.warehouse.edit_warehouse',['warehouse'=>$warehouse],compact('branch'));
+        return view('administrator.warehouse.create_warehouse',['warehouse'=>$warehouse],compact('branch'));
     }
    
 

@@ -1,5 +1,9 @@
 @extends('layouts.app')
 @section('content')
+@php
+  $edit = isset($role)&&$role?true:false;
+@endphp
+
 @if($message = Session::get('success'))
 <div id ="success-message" class="alert alert-success alert-block">
   <strong> {{ $message}}</strong>
@@ -22,7 +26,7 @@
   <div class="form-col ">
     <div class="col-md-4 mb-3">
       <label for="validationDefault01">Role name</label>
-      <input type="text" class="form-control" id="validationDefault01" placeholder="Branch User/Branch Admin"  value="" name="name" >
+      <input type="text" class="form-control" id="validationDefault01" placeholder="Branch User/Branch Admin"  value="{{$edit?$role->name:''}}" name="name" >
     </div>
    
 
@@ -30,7 +34,7 @@
       <label for="validationDefault03">Permissions</label>
       <select id="inputState" class="form-control " name="permissions[]" size="8" multiple>
         @foreach ($permissions as $permission )
-        <option   value="{{$permission->id}}"  >{{$permission->name}}</option>  
+        <option   value="{{$permission->id}}" {{($edit&&in_array($permission->id,$assignedPermissions))?'selected':''}}  >{{$permission->name}}</option>  
       @endforeach
       
 		  </select>

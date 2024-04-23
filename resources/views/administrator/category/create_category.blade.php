@@ -11,8 +11,11 @@
 <div class="form-container  " style="padding-left:100px; margin-top:40px">
 
   {{-- category form --}}
-<form class="ml-5 form-group" id="categoryForm"  action="{{route('categories.store')}}" method="POST" >
+<form class="ml-5 form-group" id="categoryForm"  action="{{$categoryId?route('categories.update',$category->id): route('categories.store')}}" method="POST" >
   @csrf
+  @if($categoryId)
+  @method("PUT")
+  @endif
   <h3  class=" mb-3">Enter  Category details</h3>
   @if ($errors->any())
     <div class="  alert alert-danger">
@@ -26,20 +29,20 @@
   <div class="form-col ">
     <div class="col-md-4 mb-3">
       <label for="validationDefault01">Category name</label>
-      <input type="text" class="form-control" id="validationDefault01" placeholder="Food/Beverages/Electronic" name="name" >
+      <input type="text" class="form-control" id="validationDefault01" value="{{$categoryId?$category->name:""}}" placeholder="Food/Beverages/Electronic" name="name" >
     </div>
     <div class="col-md-4 mb-3">
       <label for="validationDefault02">Description</label>
-      <textarea type="text" class="form-control" id="validationDefault02" placeholder="" name="description"  style="height: 150px; width: 100%; "></textarea>
+      <textarea type="text" class="form-control" id="validationDefault02" placeholder="" name="description"  style="height: 150px; width: 100%; ">{{$categoryId?$category->description:""}}</textarea>
     </div>
  
     <div class="col-md-4 mb-3">
       <label for="validationDefault02">Date</label>
-      <input type="date" id="categorydate" class="form-control" name="created_date" pattern="" >
+      <input type="date" id="categorydate" class="form-control" value="{{$categoryId?$category->created_date:""}}" name="created_date" pattern="" @if($categoryId) readonly @endif >
       
     </div>
     <div class="col-md-4 mb-3 d-flex justify-content-center">
-    <button class="btn btn-success " type="submit">Add Category</button>
+    <button class="btn btn-success " type="submit">{{$categoryId?"Update Category":'Add Category'}}</button>
     </div>
   </div>
 </form>

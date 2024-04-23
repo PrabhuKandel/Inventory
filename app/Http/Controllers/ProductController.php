@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Product;
-use App\Repositories\ProductRepository;
+use App\Models\Unit;
+use App\Models\Category;
+use App\Repositories\CommonRepository;
 use App\Repositories\CategoryRepository;
 use App\Repositories\UnitRepository;
 use App\Http\Middleware\BranchAccessMiddleware; 
@@ -15,17 +17,16 @@ class ProductController extends Controller
     private  $productRepo;
     private  $categoryRepo;
     private  $unitRepo;
-    public function __construct(ProductRepository $productRepo,CategoryRepository $categoryRepo,
-    UnitRepository $unitRepo)
+    public function __construct()
     {
         $this->middleware(BranchAccessMiddleware::class);
         $this->middleware('permission:view-product|create-product|edit-product|delete-product')->only('index');
         $this->middleware('permission:create-product|edit-product', ['only' => ['create','store']]);
         $this->middleware('permission:edit-product|delete-product', ['only' => ['edit','update']]);
         $this->middleware('permission:delete-product', ['only' => ['destroy']]);
-        $this->productRepo = $productRepo;
-        $this->categoryRepo = $categoryRepo;
-        $this->unitRepo = $unitRepo;
+        $this->productRepo = new CommonRepository(new Product());
+        $this->categoryRepo = new CommonRepository(new Category());
+        $this->unitRepo = new CommonRepository(new Unit());
     }
 
 
@@ -96,11 +97,12 @@ class ProductController extends Controller
     {
 
         $product = $this->productRepo->find($id);
+       
         $categories =$this->categoryRepo->getAll();
         $units =$this->unitRepo->getAll();
 
        
-        return view('administrator.product.edit_product',['product'=>$product],compact('categories','units'));
+        return view('administrator.product.create_product',['product'=>$product],compact('categories','units'));
     }
 
     /**

@@ -53,7 +53,7 @@
           <p class="fw-normal ms-2">{{$user->created_date}}</p>
         </td>
         <td >
-        <div class="d-flex">
+        <div class="d-flex align-items-start">
           @can('edit-user')
           <a href="{{route('users.edit',$user->id) }}" class="  rounded btn  btn-success px-2 pb-1 pt-1 mr-2 " >Edit</a>
           @endcan

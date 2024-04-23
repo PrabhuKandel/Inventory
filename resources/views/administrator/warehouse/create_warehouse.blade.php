@@ -1,8 +1,10 @@
 @extends('layouts.app')
 @section('content')
- {{-- sucess messaage to when new branch is created --}}
 
- {{-- not used currenly --}}
+@php
+  $edit = isset($warehouse)&&$warehouse?true:false;
+@endphp
+
  @if($message = Session::get('success'))
 <div id ="success-message" class="alert alert-success alert-block">
   <strong> {{ $message}}</strong>
@@ -23,17 +25,19 @@
         </ul>
     </div>
 @endif
-<form class="ml-5 form-group"  action="{{$branch?'/branchs/'.$branch.'/warehouses/store' : '/warehouses/store'}}" method="POST" >
+<form class="ml-5 form-group"  action="{{$edit? ($branch?'/branchs/'.$branch.'/warehouses/'.$warehouse->id.'/update':route('warehouses.update',$warehouse->id)):($branch?'/branchs/'.$branch.'/warehouses/store' : '/warehouses/store')}}" method="POST" >
   @csrf
-
+@if($edit)
+@method("PUT")
+@endif
   <div class="form-col ">
     <div class="col-md-4 mb-3">
       <label for="validationDefault01">Warehouse name</label>
-      <input type="text" class="form-control" id="validationDefault01" placeholder="Enter warehouses name" name="name" >
+      <input type="text" class="form-control" id="validationDefault01" placeholder="Enter warehouses name"  value="{{$edit?$warehouse->name:""}}"  name="name" >
     </div>
     <div class="col-md-4 mb-3">
       <label for="validationDefault02"> address</label>
-      <input type="text" class="form-control" id="validationDefault02" placeholder="Enter warehouses address" name="address" >
+      <input type="text" class="form-control" id="validationDefault02" placeholder="Enter warehouses address"  value="{{$edit?$warehouse->address:""}}" name="address" >
     </div>
     <div class="col-md-4 mb-3">
       {{-- <label for="validationDefault02"> Selected Branch</label> --}}
@@ -43,11 +47,11 @@
   
     <div class="col-md-4 mb-3">
       <label for="validationDefault02">Date</label>
-      <input type="date" id="date" class="form-control" name="created_date" pattern="" required>
+      <input type="date" id="date" class="form-control" name="created_date" pattern="" value="{{$edit?$warehouse->created_date:""}}"   {{$edit?"readonly":""}}>
       
     </div>
     <div class="col-md-4 mb-3 d-flex justify-content-center">
-    <button class="btn btn-success " type="submit">Create Warehouse</button>
+    <button class="btn btn-success " type="submit">{{$edit?"Update Warehouse":"Create Warehouse"}}</button>
     </div>
   </div>
 </form>

@@ -5,14 +5,14 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
-use App\Repositories\RoleRepository;
+use App\Repositories\CommonRepository;
 use App\Http\Middleware\BranchAccessMiddleware; 
 use Illuminate\Support\Facades\DB;
 
 class RoleController extends Controller
 {
     private  $roleRepo;
-     public function __construct(RoleRepository $roleRepo)
+     public function __construct()
 
      {
         $this->middleware(BranchAccessMiddleware::class);
@@ -22,7 +22,7 @@ class RoleController extends Controller
         $this->middleware('permission:delete-role', ['only'=> ['destroy']]);
       
 
-        $this->roleRepo  = $roleRepo;
+        $this->roleRepo  = new CommonRepository(new Role());
      }
 
     public function index()
@@ -91,7 +91,7 @@ class RoleController extends Controller
         $role = $this->roleRepo->find($id);
         $assignedPermissions = $role->permissions()->pluck('id')->toArray();
         $permissions = Permission::all();
-        return view('administrator.role.edit-role',compact('role','permissions','assignedPermissions'));
+        return view('administrator.role.create_role',compact('role','permissions','assignedPermissions'));
     }
 
     /**

@@ -43,11 +43,10 @@ Route::post('/logout', [logoutController::class,'submit'])->name('logout');
 
 //branch controller
 Route::resource('branchs', BranchController::class);
-Route::get('branchs/{id}',[BranchController::class,'show'])->name('branchs.show');
+
 
 
 //warehouse controller
-
 
 Route::resource('warehouses', WarehouseController::class);
 Route::get('branchs/{id}/warehouses',[WarehouseController::class,'index'])->name('warehouses.index');
@@ -55,7 +54,7 @@ Route::post('/warehouses/store',[WarehouseController::class,'store'])->name('war
 Route::post('/branchs/{id}/warehouses/store',[WarehouseController::class,'store'])->name('branchwarehouses.store');
 Route::delete('warehouses/{warehouse}/destroy',[WarehouseController::class,'destroy'])->name('warehouses.destroy');
 Route::delete('branchs/{id}/warehouses/{warehouse}/destroy',[WarehouseController::class,'destroy'])->name('branchwarehouses.destroy');
-Route::get('branchs/{id}/warehouses/create',[WarehouseController::class,'create'])->name('warehouses.create');
+Route::get('branchs/{id}/warehouses/create',[WarehouseController::class,'create'])->name('branchwarehouses.create');
 Route::get('warehouses/create',[WarehouseController::class,'create'])->name('warehouses.create');
 Route::get('branchs/{id}/warehouses/{warehouse}/edit',[WarehouseController::class,'edit'])->name('branchWarehouses.edit');
 Route::get('warehouses/{warehouse}/edit',[WarehouseController::class,'edit'])->name('headquarterWarehouses.edit');
@@ -79,21 +78,30 @@ Route::resource('categories', CategoryController::class);
 //units
 Route::resource('units', UnitController::class);
 
-
 //products
 Route::resource('products', ProductController::class);
 Route::get('products',[ProductController::class,'index'])->name('products.index');
 Route::get('branchs/{id}/products',[ProductController::class,'show']);
 
-// Route::get('create/products',[ProductController::class,'create'])
+
+Route::get('dashboards',[DashboardController::class,'index'])->middleware('auth')->name('dashboards.main');
+Route::get('branchs/{id}/dashboards',[DashboardController::class,'index'])->middleware('auth')->name( 'dashboards.branch');
+
+Route::resource('roles', RoleController::class);
+
+Route::get('{type}',[PurchaseandSaleController::class,'index']);
+Route::get('{type}/create',[PurchaseandSaleController::class,'create']);
+Route::get('branchs/{id}/{type}/create',[PurchaseandSaleController::class,'create']);
+Route::post('{type}/store',[PurchaseandSaleController::class,'store']);
+Route::post('branchs/{id}/{type}/store',[PurchaseandSaleController::class,'store']);
+Route::delete('{type}/{typeId}/destroy',[PurchaseandSaleController::class,'destroy']);
+Route::delete('branchs/{id}/{type}/{typeId}/destroy',[PurchaseandSaleController::class,'destroy']);
 
 
-// viewproducts
-Route::resource('viewproducts', ViewProductController::class);
+/*
 
-//Product in
 
-// Route::resource('purchases', PurchaseController::class);
+Route::resource('purchases', PurchaseController::class);
 Route::get('branchs/{id}/purchaseproducts',[PurchaseController::class,'purchase'])->name( 'products.purchase');
 Route::get('purchaseproducts',[PurchaseController::class,'purchase'])->name( 'products.Headpurchase');
 Route::post('purchaseproducts',[PurchaseController::class,'store'])->name( 'products.headpurchaseStore');//store purchase goods for headqaurter
@@ -116,14 +124,4 @@ Route::delete('sales/{sale}/destroy',[SaleController::class,'destroy'])->name('s
 Route::delete('branchs/{id}/sales/{sale}/destroy',[SaleController::class,'destroy'])->name('branchsales.destroy');
 
 
-
-//dashboards
-// Route::resource('dashboards', DashboardController::class);
-
-Route::get('dashboards',[DashboardController::class,'index'])->middleware('auth')->name('dashboards.main');
-Route::get('branchs/{id}/dashboards',[DashboardController::class,'index'])->middleware('auth')->name( 'dashboards.branch');
-
-Route::resource('roles', RoleController::class);
-
-Route::get('{type}',[PurchaseandSaleController::class,'index'])->where('type','purchases|sales');
-
+*/

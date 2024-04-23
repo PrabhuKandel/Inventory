@@ -16,7 +16,7 @@ use App\Http\Controllers\TranscationController;
 |
 */
 // Route::get('products/{product_id}/warehouses/{warehouse_id}/availability',[TranscationController::class,'checkQuantity']);
-Route::get('branchs/{branch_id}/products/{product_id}/warehouses/{warehouse_id}/availability',[TranscationController::class,'checkQuantity']);
+Route::get('branchs/{branch_id}/products/{product_id}/warehouses/{warehouse_id}/availability',[TranscationController::class,'calculateAvailability']);
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();

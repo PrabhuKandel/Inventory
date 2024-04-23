@@ -21,25 +21,26 @@
         </ul>
     </div>
 @endif
-<form class="ml-5 form-group"  action="{{route('branchs.store')}}" method="POST" >
+<form class="ml-5 form-group"  action="{{ isset($branch)&&$branch?route('branchs.update',$branch1->id) :route('branchs.store')}}" method="POST" >
   @csrf
-
+@if($branch1->id)
+ @method("PUT") @endif
   <div class="form-col ">
     <div class="col-md-4 mb-3">
       <label for="validationDefault01">Branch name</label>
-      <input type="text" class="form-control" id="validationDefault01" placeholder="Enter branch name" name="name" >
+      <input type="text" class="form-control" id="validationDefault01" placeholder="Enter branch name"  value="{{$branch?$branch1->name:""}}" name="name" >
     </div>
     <div class="col-md-4 mb-3">
       <label for="validationDefault02">Branch address</label>
-      <input type="text" class="form-control" id="validationDefault02" placeholder="Enter branch address" name="address" >
+      <input type="text" class="form-control" id="validationDefault02" value="{{$branch?$branch1->address:""}}" placeholder="Enter branch address" name="address" >
     </div>
     <div class="col-md-4 mb-3">
       <label for="validationDefault02">Date</label>
-      <input type="date" id="date" class="form-control" name="created_date" pattern="" required>
+      <input type="date" id="date" class="form-control" name="created_date" value="{{$branch?$branch1->created_date:""}}"  pattern="" @if($branch) readonly @endif>
       
     </div>
     <div class="col-md-4 mb-3 d-flex justify-content-center">
-    <button class="btn btn-success " type="submit">Create Branch</button>
+    <button class="btn btn-success " type="submit">{{$branch? "Edit Branch":"Create Branch"}}</button>
     </div>
   </div>
 </form>
