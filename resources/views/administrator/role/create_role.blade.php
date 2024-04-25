@@ -12,8 +12,12 @@ $edit = isset($role)&&$role?true:false;
 <a href=""><button class="btn btn-dark  mb-3" type="submit">Go back</button></a>
 <div class="form-container  " style="padding-left:100px; margin-top:40px">
   <h3 class="ml-5 mb-3"> {{$edit?"Update Role Details":"Enter Role Details"}} </h3>
-  <form class="ml-5 form-group" action="{{route('roles.store')}}" method="POST">
+  <form class="ml-5 form-group" action=" {{ $edit? route('roles.update',$role->id) :route('roles.store')}}"
+    method="POST">
     @csrf
+    @if($edit)
+    @method('PUT')
+    @endif
     @if ($errors->any())
     <div class="  alert alert-danger">
       <ul>

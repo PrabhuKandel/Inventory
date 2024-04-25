@@ -42,7 +42,7 @@ $edit = isset($user)&&$user?true:false;
       </div>
       <div class="col-md-4 mb-3" {{$edit?'hidden':""}}>
         <label for="validationDefault02"> Password</label>
-        <input type="text" class="form-control" id="validationDefault02" placeholder="Enter user password"
+        <input type="password" class="form-control" id="validationDefault02" placeholder="Enter user password"
           name="password">
       </div>
 

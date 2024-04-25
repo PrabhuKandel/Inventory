@@ -169,21 +169,6 @@ console.log(xhr.responseText);
   }
 
 });
-  //using javascript fetch
-  //  url  =  '/api/branchs/'+branchId +'/products/'+productId+'/warehouses/'+warehouseId +'/availability';
-    // fetch(url)
-    //     .then(response => {
-    //         return  response.json(); // returns promise
-    //     }).then(data=>{
-
-    //       document.querySelectorAll('.inputAvailability')[index].value = data.quantity;
-    //     })
-    //     .catch(error => {
-    //         // Handle errors
-    //         console.log(error);
-            
-    //         console.log('There was a problem with the fetch operation:', error);
-    //     });
 
 
 

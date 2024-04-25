@@ -5,8 +5,10 @@ namespace App\Repositories;
 use Illuminate\Http\Request;
 use App\Models\Warehouse;
 use App\Models\PurchaseSale;
+use App\Models\Transcation;
 use App\Repositories\CommonRepository;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class PurchaseSaleRepository extends CommonRepository
 {
@@ -27,50 +29,46 @@ class PurchaseSaleRepository extends CommonRepository
 
   public function index()
   {
-    $this->setContext(request()); // Set context for each function call
-    $branch = $this->branch;
-    $type = $this->type;
-    $transcation_type = $type == "sales" ? 'sale' : 'purchase';
-
-    $perPage = 2;
-    $page = 1;
-    $offset = 2;
-
-    //total rows 
-    $total = DB::select(" SELECT COUNT(*) as total FROM purchase_sales")[0]->total;
-
-    $purchasesDetails = DB::select(
-      "  
-    SELECT * FROM purchase_sales
-    WHERE type = ?
-    AND (office_id = ? OR (office_id IS NULL AND ? = FALSE))
-    LIMIT ?
-    OFFSET ?
-    ",
-      [$transcation_type, $branch, $branch, $perPage, $offset]
-    );
-
-    $totalPages = ceil($total / $perPage);
-
-    return [$purchasesDetails, $totalPages, $page];
-    dd($purchasesDetails);
-
-    /* $purchasesDetails = PurchaseSale::where('type', $transcation_type)->when(
-      $branch,
-      function ($query) use ($branch) {
-
-        return $query->where('office_id', $branch);
-      },
-      function ($query) {
-
-        return $query->WhereNull('office_id');
-      }
-    )->paginate(5);
-
-    return $purchasesDetails;*/
   }
 
+  public function store(array $data)
 
+  {
+
+    try {
+      $this->setContext(request());
+      $branch = $this->branch;
+      $type = $this->type;
+
+      $purchaseSale = new PurchaseSale([
+          'warehouse_id' => $data['warehouse_id'],
+          'product_id' => $data['product_id'],
+          'quantiy' => $data['quantity'],
+          'type' => $type == 'sales' ? 'sale' : "purchase",
+          'contact_id' => $data['contact_id'],
+          'office_id' => $branch ? $branch : null,
+        ]);
+
+      $purchaseSale->save();
+
+      $transcation = new  Transcation([
+          'type' => $type == "sales" ? "out" : "in",
+          'quantity' => $data['quantity'],
+          'amount' => $data['total'],
+          'warehouse_id' => $data['warehouse_id'],
+          'contact_id' => $data['contact_id'],
+          'product_id' => $data['product_id'],
+          'user_id' => Auth::user()->id,
+          'created_date' => $data['created_date'],
+          'office_id' => $branch ? $branch : null,
+          'purchaseSale_id' => $purchaseSale->id,
+        ]);
+
+      $transcation->save();
+    } catch (\Exception $e) {
+      throw $e;
+    }
+  }
 
   public function getWarehouses()
 
@@ -85,17 +83,5 @@ class PurchaseSaleRepository extends CommonRepository
     })->get();
 
     return $warehouses;
-  }
-
-
-
-  public function delete($id)
-  {
-    try {
-      PurchaseSale::where('id', $id)->delete();
-      return true;
-    } catch (\Exception $e) {
-      return false;
-    }
   }
 }

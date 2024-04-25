@@ -2,7 +2,7 @@
 
 @php( $branches=(\App\Models\Office::all()));
 
-@php($headquater=isset($branch) && $branch ?true:false )
+@php($headquater=isset($branch) && $branch ?false:true )
 <nav id="sidebarMenu" class="collapse d-lg-block sidebar collapse bg-white">
   <div class="position-sticky">
     <div class="list-group list-group-flush mx-3 mt-4">
@@ -10,7 +10,7 @@
         class="list-group-item list-group-item-action py-2 ripple " aria-current="true">
         <i class="fas fa-tachometer-alt fa-fw me-3 "></i><span>Main dashboard</span>
       </a>
-      @if(!$headquater)
+      @if($headquater)
 
 
       <a href="{{route('branchs.index')}}" class="list-group-item list-group-item-action py-2 ripple "
@@ -68,24 +68,21 @@
         class="list-group-item list-group-item-action py-2 ripple"><i class="fas fa-calendar fa-fw me-3"></i><span>
           Contact</span></a>
 
-      @if (!$headquater)
+      @if ($headquater)
       <a href="{{route('users.index')}}" class="list-group-item list-group-item-action py-2 ripple"><i
           class="fa-solid fa-user fa-fw me-3"></i><span>Add Users</span></a>
       @endif
 
-      @if (!$headquater)
+      @if ($headquater)
       <a href="{{route('categories.index')}}" class="list-group-item list-group-item-action py-2 ripple"><i
           class="fa-solid fa-list fa-fw me-3"></i><span>Category</span></a>
 
       @endif
-      @if (!$headquater)
+      @if ($headquater)
       <a href="{{route('units.index')}}" class="list-group-item list-group-item-action py-2 ripple"><i
           class="fa-solid fa-list fa-fw me-3"></i><span>Unit</span></a>
       @endif
-      {{--
-      <a href="{{ (isset($branch) && $branch) ? '/branchs/'.$branch.'/products': '/products' }}"
-        class="list-group-item list-group-item-action py-2 ripple"><i
-          class="fas fa-building fa-fw me-3"></i><span>Products</span></a> --}}
+
       <a href="{{(isset($branch) && $branch?'/branchs/'.$branch.'/products':'/products')}}"
         class="list-group-item list-group-item-action py-2 ripple"><i class="fas fa-chart-line fa-fw me-3"></i><span>
           Products</span></a>
@@ -97,7 +94,7 @@
           class="fas fa-chart-line fa-fw me-3"></i><span>Sell</span></a>
 
 
-      @if (!$headquater)
+      @if ($headquater)
       <a href="{{route('roles.index')}}" class="list-group-item list-group-item-action py-2 ripple"><i
           class="fas fa-users fa-fw me-3"></i><span>Roles</span></a>
       @endif

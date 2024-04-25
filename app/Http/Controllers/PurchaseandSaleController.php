@@ -43,49 +43,51 @@ class PurchaseandSaleController extends Controller
     $this->transcationRepo = $transcationRepo;
     $this->purchaseSaleRepo = $purchaseSaleRepo;
   }
+
+
   public function index(Request $request)
   {
 
     $branch = $this->branch;
     $_type = $this->type;
     $transcation_type = $_type == "sales" ? 'sale' : 'purchase';
-    // $this->purchaseSaleRepo->setContext($request);
-    // $purchasesDetails = $this->purchaseSaleRepo->index();
 
     $perPage = 2;
-    $page = 1;
+    $page = request()->input('page', 1);
     $offset = ($page - 1) * $perPage;
 
     //total rows 
-    $total = DB::select(" SELECT COUNT(*) as total FROM purchase_sales")[0]->total;
+    $total = DB::select(" SELECT COUNT(*) as total FROM purchase_sales   WHERE type = ?
+    AND (office_id = ? OR (office_id IS NULL AND ? = FALSE))", [$transcation_type, $branch, $branch])[0]->total;
 
-    $purchasesDetails = DB::select(
-      "  
-    SELECT * FROM purchase_sales
-    WHERE type = ?
-    AND (office_id = ? OR (office_id IS NULL AND ? = FALSE))
+    $purchasesDetails = DB::select("
+    SELECT purchase_sales.*, 
+           products.name as product_name,
+           warehouses.name as warehouse_name,
+           contacts.name as contact_name
+    FROM purchase_sales
+    LEFT JOIN products ON purchase_sales.product_id = products.id
+    LEFT JOIN warehouses ON purchase_sales.warehouse_id = warehouses.id
+    LEFT JOIN contacts ON purchase_sales.contact_id = contacts.id
+    WHERE purchase_sales.type = ?
+      AND (purchase_sales.office_id = ? OR (purchase_sales.office_id IS NULL AND ? = FALSE))
     LIMIT ?
     OFFSET ?
-    ",
-      [$transcation_type, $branch, $branch, $perPage, $offset]
-    );
+", [$transcation_type, $branch, $branch, $perPage, $offset]);
 
     $totalPages = ceil($total / $perPage);
-    dd($purchasesDetails);
-    // return [$purchasesDetails,$totalPages,$page];
 
-    return view('administrator.sale_purchase.details', compact('branch', 'purchasesDetails', 'transcation_type', '_type', 'totalPages', 'page', 'perPage'));
+    return view('administrator.sale_purchase.details', compact('branch', 'purchasesDetails', 'transcation_type', '_type', 'totalPages', 'page', 'perPage', 'total'));
   }
 
-  /**
-   * Show the form for creating a new resource.
-   */
   public function create(Request $request)
   {
     $branch = $this->branch;
     $_type = $this->type;
     $this->purchaseSaleRepo->setContext($request);
+
     $warehouses = $this->purchaseSaleRepo->getWarehouses();
+
     $contact_type = $_type == 'sales' ? "customer" : "supplier";
     $contacts = Contact::where('type', $contact_type)->select('id', 'name')->get();
     $products = Product::all();
@@ -129,46 +131,11 @@ class PurchaseandSaleController extends Controller
       $transcationData[] = $row;
     }
 
-    //making common function for purchase and sale to store data in each loop
-    function storeTranscation($data, $_type, $branch)
-    {
-
-      $purchaseSale = new PurchaseSale([
-
-        'warehouse_id' => $data['warehouse_id'],
-        'product_id' => $data['product_id'],
-        'quantiy' => $data['quantity'],
-        'type' => $_type == 'sales' ? 'sale' : "purchase",
-        'contact_id' => $data['contact_id'],
-        'office_id' => $branch ? $branch : null,
-
-
-      ]);
-      $purchaseSale->save();
-
-      $transcation = new  Transcation([
-        'type' => $_type == "sales" ? "out" : "in",
-        'quantity' => $data['quantity'],
-        'amount' => $data['total'],
-        'warehouse_id' => $data['warehouse_id'],
-        'contact_id' => $data['contact_id'],
-        'product_id' => $data['product_id'],
-        'user_id' => Auth::user()->id,
-        'created_date' => $data['created_date'],
-        'office_id' => $branch ? $branch : null,
-        'purchaseSale_id' => $purchaseSale->id,
-      ]);
-      $transcation->save();
-    }
-
     // for storing sales information
     if ($_type == "sales") {
       DB::beginTransaction();
       try {
-
         foreach ($transcationData as $data) {
-
-
           $quantity = $this->transcationRepo->calculateAvailability($branch ? $branch : 0, $data['product_id'], $data['warehouse_id']);
 
           if ($quantity) {
@@ -177,7 +144,7 @@ class PurchaseandSaleController extends Controller
               return back()->withSuccess("Quantity exceed...");
             } else {
 
-              storeTranscation($data, $_type, $branch);
+              $this->purchaseSaleRepo->store($data);
             }
           } else {
             DB::rollback();
@@ -192,6 +159,8 @@ class PurchaseandSaleController extends Controller
         return  back()->withSuccess("Fail to sell");
       }
     }
+
+
     //for storing purchase information 
     if ($_type == "purchases") {
       DB::beginTransaction();
@@ -199,7 +168,7 @@ class PurchaseandSaleController extends Controller
 
         try {
 
-          storeTranscation($data, $_type, $branch);
+          $this->purchaseSaleRepo->store($data);
         } catch (\Exception $e) {
 
           DB::rollback();

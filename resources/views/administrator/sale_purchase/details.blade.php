@@ -8,11 +8,17 @@
 @endif
 
 
-@can('create-purchase|create-sale')
-<a href="{{ isset($branch) && $branch ? '/branchs/'.$branch.'/'. $_type.'/create': '/'.$_type.'/create' }}"><button
-    class="btn btn-dark  mb-3" type="submit">{{$transcation_type=='purchase'?$transcation_type:"Sell"}}
-    Product</button></a>
-@endcan
+@canany(['create-purchase','create-sale'])
+<a href="{{ isset($branch) && $branch ? '/branchs/'.$branch.'/'. $_type.'/create': '/'.$_type.'/create' }}">
+  @if ($_type == "purchases" && auth()->user()->can('create-purchase'))
+  <button class="btn btn-dark mb-3" type="submit">Purchase Product</button>
+  @endif
+  @if ($_type == "sales" && auth()->user()->can('create-sale'))
+  <button class="btn btn-dark mb-3" type="submit">Sell Product</button>
+  @endif
+
+</a>
+@endcanany
 <table class="table align-middle mb-3 bg-white">
   <thead class="bg-light">
     <tr>
@@ -27,7 +33,7 @@
   </thead>
 
   @php
-  // $count = ($purchasesDetails->currentPage()-1)*$purchasesDetails->perPage()+1;
+
   $count = ($page - 1) * $perPage + 1;
   @endphp
 
@@ -39,36 +45,45 @@
         <p class="fw-normal ms-2">{{$count++}}</p>
       </td>
       <td>
-        <p class="fw-bold mb-1">{{$detail->product->name}}</p>
+        <p class="fw-bold mb-1">{{$detail->product_name}}</p>
       </td>
       <td>
+
         <p class="fw-bold mb-1">{{$detail->quantiy}}</p>
       </td>
 
       <td>
-        <p class="fw-normal mb-1">{{$detail->warehouse->name}}</p>
+
+        <p class="fw-bold mb-1">{{$detail->warehouse_name}}</p>
       </td>
       <td>
-        <p class="fw-normal mb-1">{{$detail->contact->name}}</p>
+
+        <p class="fw-bold mb-1">{{$detail->contact_name}}</p>
 
       </td>
       <td>
-        <p class="fw-normal ms-2">{{$detail->created_at}}</p>
+        <p class="fw-bold mb-1">{{$detail->created_at}}</p>
       </td>
       <td>
         <div class="d-flex">
-          @can('edit-purchase|edit-sale')
+          @canany(['edit-purchase','edit-sale'])
           <a href="" class="  rounded btn  btn-success px-2 pb-1 pt-1 mr-2 ">Edit</a>
-          @endcan
-          @can('delete-purchase|delete-sale')
+          @endcanany
+
+          @canany(['delete-purchase','delete-sale'])
           <form
             action="{{ $branch?'/branchs/'.$branch. '/'.$_type.'/'.$detail->id.'/destroy' :'/'.$_type.'/'.$detail->id.'/destroy'}}"
             method="POST">
             @csrf
             @method('DELETE')
+            @if ($_type == "purchases" && auth()->user()->can('delete-purchase'))
             <button type="submit" class="rounded btn-danger px-2 pb-1 pt-1">Delete</button>
+            @endif
+            @if ($_type == "sales" && auth()->user()->can('delete-sale'))
+            <button type="submit" class="rounded btn-danger px-2 pb-1 pt-1">Delete</button>
+            @endif
           </form>
-          @endcan
+          @endcanany
         </div>
       </td>
 
@@ -78,13 +93,24 @@
 </table>
 
 {{-- {{$purchasesDetails->links()}} --}}
-
-<!-- Pagination links -->
-<div class="pagination">
-  @for ($i = 1; $i <= $totalPages; $i++) <a href="{{ request()->fullUrlWithQuery(['page' => $i]) }}"
-    class="{{ $i == $page ? 'active' : '' }}">{{ $i }}</a>
-    @endfor
+@if($total)
+<div class="pagination d-flex justify-content-between">
+  <div>
+    @php
+    $start = ($page - 1) * $perPage+1;
+    @endphp
+    Showing {{$start}} to {{$count-1}} of {{$total}} results
+  </div>
+  <div class=" d-flex  text-lg ">
+    @for ($i = 1; $i <= $totalPages; $i++) <a style="" href=" {{ request()->fullUrlWithQuery(['page' => $i]) }}"
+      class="{{ $i == $page ? 'bg-primary text-white' : '' }}">
+      <div class="border border-primary rounded" style="width:30px; text-align:center; ">
+        {{ $i }}
+      </div>
+      </a>
+      @endfor
+  </div>
 </div>
-
+@endif
 
 @endsection
