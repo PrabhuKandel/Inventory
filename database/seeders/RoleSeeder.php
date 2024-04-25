@@ -18,6 +18,48 @@ class RoleSeeder extends Seeder
         $headquarterUser = Role::create(['name' => 'Headquarter User']);
         $branchAdmin = Role::create(['name' => 'Branch Admin']);
         $branchUser = Role::create(['name' => 'Branch User']);
+
+        $headquarterAdmin->givePermissionTo([
+            'view-branch',
+            'create-branch',
+            'edit-branch',
+            'delete-branch',
+            'view-category',
+            'create-category',
+            'edit-category',
+            'delete-category',
+            'view-unit',
+            'create-unit',
+            'edit-unit',
+            'delete-unit',
+            'view-product',
+            'create-product',
+            'edit-product',
+            'delete-product',
+            'view-warehouse',
+            'create-warehouse',
+            'edit-warehouse',
+            'delete-warehouse',
+            'view-contact',
+            'create-contact',
+            'edit-contact',
+            'delete-contact',
+            'view-user',
+            'create-user',
+            'edit-user',
+            'delete-user',
+            'view-purchase',
+            'create-purchase',
+            'edit-purchase',
+            'delete-purchase',
+            'view-sale',
+            'create-sale',
+            'edit-sale',
+            'delete-sale',
+            'view-role',
+            
+
+        ]);
       
         $headquarterUser->givePermissionTo([
             'view-branch',

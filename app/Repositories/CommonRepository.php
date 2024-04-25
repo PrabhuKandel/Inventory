@@ -17,7 +17,7 @@ $this->model = $model;
   public function getAll(){
    
 
-    return $this->model::all();
+    return $this->model::paginate(5);
   }
 
   public function find($id){

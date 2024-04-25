@@ -6,28 +6,28 @@ use Illuminate\Http\Request;
 use App\Repositories\CommonRepository;
 use App\Models\Category;
 use Illuminate\Support\Facades\Auth;
-use App\Http\Middleware\BranchAccessMiddleware; 
+use App\Http\Middleware\BranchAccessMiddleware;
+
 class CategoryController extends Controller
 {
     private  $commonRepo;
     private $categoryId;
-     public function __construct(Request $request)
+    public function __construct(Request $request)
 
-     {
+    {
         $this->categoryId = $request->route('category');
         $this->middleware(BranchAccessMiddleware::class);
         $this->middleware('permission:view-category|create-category|edit-category|delete-category')->only('index');
-        $this->middleware('permission:create-category|edit-category', ['only' => ['create','store']]);
-        $this->middleware('permission:edit-category|delete-category', ['only' => ['edit','update']]);
+        $this->middleware('permission:create-category|edit-category', ['only' => ['create', 'store']]);
+        $this->middleware('permission:edit-category|delete-category', ['only' => ['edit', 'update']]);
         $this->middleware('permission:delete-category', ['only' => ['destroy']]);
         $this->commonRepo  = new CommonRepository(new Category());
-
-     }
+    }
     public function index()
     {
         $categories = $this->commonRepo->getAll();
-        
-        return view('administrator.category.category_details',compact('categories'));
+
+        return view('administrator.category.category_details', compact('categories'));
     }
 
     /**
@@ -37,7 +37,7 @@ class CategoryController extends Controller
     {
         $categoryId = $this->categoryId;
 
-        return view('administrator.category.create_category',compact('categoryId'));
+        return view('administrator.category.create_category', compact('categoryId'));
     }
 
     /**
@@ -45,20 +45,19 @@ class CategoryController extends Controller
      */
     public function store(Request $request)
     {
-       $data =  $request->validate([
+        $data =  $request->validate([
 
             'name' => 'required|string|unique:categories',
             'description' => 'required|string',
-            'created_date'=>'date|required',
+            'created_date' => 'date|required',
         ]);
-       
-       $response =  $this->commonRepo->store( $data);
 
-       if($response)
-       {
+        $response =  $this->commonRepo->store($data);
 
-        return back()->withSuccess('New Category created !!!!');
-       }
+        if ($response) {
+
+            return back()->withSuccess('New Category created !!!!');
+        }
     }
 
     /**
@@ -66,8 +65,6 @@ class CategoryController extends Controller
      */
     public function show(string $id)
     {
-        
-
     }
 
     /**
@@ -77,9 +74,9 @@ class CategoryController extends Controller
     {
 
         $category = $this->commonRepo->find($id);
-        
+
         $categoryId = $this->categoryId;
-        return view('administrator.category.create_category',['category'=>$category],compact('categoryId'));
+        return view('administrator.category.create_category', ['category' => $category], compact('categoryId'));
     }
 
     /**
@@ -89,14 +86,13 @@ class CategoryController extends Controller
     {
         $data =  $request->validate([
 
-            'name' => 'required|string|unique:categories,name,' . $id ,
+            'name' => 'required|string|unique:categories,name,' . $id,
             'description' => 'required|string',
-            'created_date'=>'date|required',
+            'created_date' => 'date|required',
         ]);
-        $response = $this->commonRepo->update($data , $id);
+        $response = $this->commonRepo->update($data, $id);
 
-        if($response)
-        {
+        if ($response) {
 
             return back()->withSuccess('Category Updated Successfully !!!');
         }
@@ -108,13 +104,10 @@ class CategoryController extends Controller
     public function destroy(string $id)
     {
         $response = $this->commonRepo->delete($id);
-        if($response)
-        {
+        if ($response) {
             return back()->withSuccess('Category Deleted Successfully!');
-        }
-        else{
+        } else {
             return back()->withError(" Sorry can\'t delete, category is being used!");
-
         }
     }
 }

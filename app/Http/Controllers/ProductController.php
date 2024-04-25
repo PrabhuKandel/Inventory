@@ -9,7 +9,7 @@ use App\Models\Category;
 use App\Repositories\CommonRepository;
 use App\Repositories\CategoryRepository;
 use App\Repositories\UnitRepository;
-use App\Http\Middleware\BranchAccessMiddleware; 
+use App\Http\Middleware\BranchAccessMiddleware;
 
 class ProductController extends Controller
 {
@@ -17,76 +17,73 @@ class ProductController extends Controller
     private  $productRepo;
     private  $categoryRepo;
     private  $unitRepo;
-    public function __construct()
+    private  $branch;
+    public function __construct(Request $request)
     {
         $this->middleware(BranchAccessMiddleware::class);
         $this->middleware('permission:view-product|create-product|edit-product|delete-product')->only('index');
-        $this->middleware('permission:create-product|edit-product', ['only' => ['create','store']]);
-        $this->middleware('permission:edit-product|delete-product', ['only' => ['edit','update']]);
+        $this->middleware('permission:create-product|edit-product', ['only' => ['create', 'store']]);
+        $this->middleware('permission:edit-product|delete-product', ['only' => ['edit', 'update']]);
         $this->middleware('permission:delete-product', ['only' => ['destroy']]);
+        $this->branch = explode("/", $request->route()->uri)[0] == 'branchs' ? $request->route()->parameters['id'] : false;
         $this->productRepo = new CommonRepository(new Product());
         $this->categoryRepo = new CommonRepository(new Category());
         $this->unitRepo = new CommonRepository(new Unit());
     }
 
 
-     
+
     public function index()
     {
-       
-        $products = $this->productRepo->getAll();
 
-        return view('administrator.product.product_details',compact('products'));
+        $products = $this->productRepo->getAll();
+        $branch = $this->branch;
+
+        return view('administrator.product.product_details', compact('products', 'branch'));
     }
-   
+
     /**
      * Show the form for creating a new resource.
      */
     public function create()
     {
-           $categories = $this->categoryRepo->getAll();
+        $categories = $this->categoryRepo->getAll();
         $units = $this->unitRepo->getAll();
-        return view('administrator.product.create_product',compact('categories','units'));
+        return view('administrator.product.create_product', compact('categories', 'units'));
     }
 
 
-   
+
     /**
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
     {
         $data =   $request->validate([
-            'name'=>'required|unique:products',
-            'rate'=>'required|numeric',
-            'category_id'=>'required',
-            'unit_id'=>'required',
-            'created_date'=>'required',
-          ]);
-          
-        $response = $this->productRepo->store($data); 
-                 
-        if($response)
-        {
-            return back()->withSuccess('Product created !!!!');
+            'name' => 'required|unique:products',
+            'rate' => 'required|numeric',
+            'category_id' => 'required',
+            'unit_id' => 'required',
+            'created_date' => 'required',
+        ]);
 
-        }
-        else
-        {
-            return back()->withSuccess('Failed to create product !!!!'); 
+        $response = $this->productRepo->store($data);
+
+        if ($response) {
+            return back()->withSuccess('Product created !!!!');
+        } else {
+            return back()->withSuccess('Failed to create product !!!!');
         }
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(string $id ,Request $request)
+    public function show(string $id, Request $request)
     {
         //show products for each branch
-        $branch = explode("/",$request->route()->uri)[0]=='branchs'?$request->route()->parameters['id']:false;
-        $products = $this->productRepo->getAll();
-    
-        return view('administrator.product.product_details',compact('products','branch'));
+
+
     }
 
     /**
@@ -97,12 +94,12 @@ class ProductController extends Controller
     {
 
         $product = $this->productRepo->find($id);
-       
-        $categories =$this->categoryRepo->getAll();
-        $units =$this->unitRepo->getAll();
 
-       
-        return view('administrator.product.create_product',['product'=>$product],compact('categories','units'));
+        $categories = $this->categoryRepo->getAll();
+        $units = $this->unitRepo->getAll();
+
+
+        return view('administrator.product.create_product', ['product' => $product], compact('categories', 'units'));
     }
 
     /**
@@ -111,17 +108,16 @@ class ProductController extends Controller
     public function update(Request $request, string $id)
     {
         $data =   $request->validate([
-            'name'=>'required|unique:products',
-            'rate'=>'required|numeric',
-            'category_id'=>'required',
-            'unit_id'=>'required',
-            'created_date'=>'required',
-          ]);
-        $response = $this->productRepo->update($data , $id);
+            'name' => 'required|unique:products',
+            'rate' => 'required|numeric',
+            'category_id' => 'required',
+            'unit_id' => 'required',
+            'created_date' => 'required',
+        ]);
+        $response = $this->productRepo->update($data, $id);
 
-        if($response)
-        {
-            return back()->withSuccess('Product  details  updated successfully!') ;
+        if ($response) {
+            return back()->withSuccess('Product  details  updated successfully!');
         }
     }
 
@@ -132,12 +128,9 @@ class ProductController extends Controller
     {
         $response = $this->productRepo->delete($id);
 
-        if($response)
-        {
+        if ($response) {
             return back()->withSuccess('Product deleted');
-        }
-        else
-        {
+        } else {
             return back()->withSuccess('Product deletion failed');
         }
     }
