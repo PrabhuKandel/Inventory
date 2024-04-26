@@ -35,12 +35,12 @@ $edit = isset($unit) && $unit?true:false;
       <div class="col-md-4 mb-3">
         <label for="validationDefault01">Unit name</label>
         <input type="text" class="form-control" id="validationDefault01"
-          placeholder="kilogram/per bottle/litre/per packet" value="{{$edit?$unit->name:""}}" name="name">
+          placeholder="kilogram/per bottle/litre/per packet" value="{{$edit?$unit->name:old('name')}}" name="name">
       </div>
       <div class="col-md-4 mb-3">
         <label for="validationDefault02">Description</label>
         <textarea type="text" class="form-control" id="validationDefault02" placeholder="" name="description"
-          style="height: 150px; width: 100%; ">{{$edit?$unit->description:""}}</textarea>
+          style="height: 150px; width: 100%; ">{{$edit?$unit->description:old('description')}}</textarea>
       </div>
 
       <div class="col-md-4 mb-3">

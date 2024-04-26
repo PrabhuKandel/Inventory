@@ -30,12 +30,13 @@ $edit = isset($product)&&$product?true:false;
     <div class="form-col ">
       <div class="col-md-4 mb-3">
         <label for="validationDefault01">Product name</label>
-        <input type="text" class="form-control" id="validationDefault01" value="{{$edit?" $product->name":""}}"
+        <input type="text" class="form-control" id="validationDefault01" value="{{$edit?" $product->name":old('name')}}"
         placeholder="Enter product name" name="name" >
       </div>
       <div class="col-md-4 mb-3">
         <label for="validationDefault02">Rate</label>
-        <input type="number" class="form-control" id="validationDefault02" value="{{$edit?" $product->rate":""}}"
+        <input type="number" class="form-control" id="validationDefault02" value="{{$edit?"
+          $product->rate":old('rate')}}"
         placeholder="Enter rate of product" name="rate" >
       </div>
       <div class="col-md-4 mb-3">

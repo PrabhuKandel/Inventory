@@ -1,6 +1,5 @@
 @extends('layouts.app')
 @section('content')
-
 @if($message = Session::get('success'))
 <div id="success-message" class="alert alert-success alert-block">
   <strong> {{ $message}}</strong>

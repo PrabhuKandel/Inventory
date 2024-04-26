@@ -31,13 +31,13 @@
     <div class="form-col ">
       <div class="col-md-4 mb-3">
         <label for="validationDefault01">Contact name</label>
-        <input type="text" class="form-control" id="validationDefault01" value="{{$contactId?$contact->name:""}}"
-          placeholder="Enter contact name" name="name">
+        <input type="text" class="form-control" id="validationDefault01"
+          value="{{$contactId?$contact->name:old('name')}}" placeholder="Enter contact name" name="name">
       </div>
       <div class="col-md-4 mb-3">
         <label for="validationDefault02">Contact address</label>
         <input type="text" class="form-control" id="validationDefault02" placeholder="Enter contact address"
-          value="{{$contactId?$contact->address:""}}" name="address">
+          value="{{$contactId?$contact->address:old('address')}}" name="address">
       </div>
       <div class="col-md-4 mb-3">
         <label for="validationDefault02"> ContactType</label>

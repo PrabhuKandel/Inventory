@@ -37,17 +37,15 @@ $edit = isset($warehouse)&&$warehouse?true:false;
       <div class="col-md-4 mb-3">
         <label for="validationDefault01">Warehouse name</label>
         <input type="text" class="form-control" id="validationDefault01" placeholder="Enter warehouses name"
-          value="{{$edit?$warehouse->name:""}}" name="name">
+          value="{{$edit?$warehouse->name:old('name')}}" name="name">
       </div>
       <div class="col-md-4 mb-3">
         <label for="validationDefault02"> address</label>
         <input type="text" class="form-control" id="validationDefault02" placeholder="Enter warehouses address"
-          value="{{$edit?$warehouse->address:""}}" name="address">
+          value="{{$edit?$warehouse->address:" old('address')"}}" name="address">
       </div>
       <div class="col-md-4 mb-3">
-        {{-- <label for="validationDefault02"> Selected Branch</label> --}}
-        {{-- <input type="text" class="form-control" id="validationDefault02" placeholder="" value="{{$branchIn->name}}"
-          readonly> --}}
+     
         <input type="hidden" name="branch" value="{{ $branch ? $branch:''}}">
       </div>
 

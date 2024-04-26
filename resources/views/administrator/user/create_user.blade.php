@@ -32,13 +32,13 @@ $edit = isset($user)&&$user?true:false;
       <div class="col-md-4 mb-3">
         <label for="validationDefault01">User name</label>
         <input type="text" class="form-control" id="validationDefault01" placeholder="Enter user name" name="name"
-          value="{{$edit?$user->name:""}}">
+          value="{{$edit?$user->name:old('name')}}">
       </div>
 
       <div class="col-md-4 mb-3">
         <label for="validationDefault02"> Email</label>
         <input type="text" class="form-control" id="validationDefault02" placeholder="Enter user email" name="email"
-          value="{{$edit?$user->email:""}}">
+          value="{{$edit?$user->email:old('email')}}">
       </div>
       <div class="col-md-4 mb-3" {{$edit?'hidden':""}}>
         <label for="validationDefault02"> Password</label>
@@ -49,7 +49,7 @@ $edit = isset($user)&&$user?true:false;
       <div class="col-md-4 mb-3">
         <label for="validationDefault02"> address</label>
         <input type="text" class="form-control" id="validationDefault02" placeholder="Enter user address" name="address"
-          value="{{$edit?$user->address:""}}">
+          value="{{$edit?$user->address:old('address')}}">
       </div>
       <div class="col-md-4 mb-3">
         <label for="validationDefault02">Date</label>

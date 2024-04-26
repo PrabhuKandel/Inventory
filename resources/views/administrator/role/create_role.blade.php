@@ -31,7 +31,7 @@ $edit = isset($role)&&$role?true:false;
       <div class="col-md-4 mb-3">
         <label for="validationDefault01">Role name</label>
         <input type="text" class="form-control" id="validationDefault01" placeholder="Branch User/Branch Admin"
-          value="{{$edit?$role->name:''}}" name="name">
+          value="{{$edit?$role->name:old('name')}}" name="name">
       </div>
 
 

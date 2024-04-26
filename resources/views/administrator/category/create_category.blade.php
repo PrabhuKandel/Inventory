@@ -30,13 +30,13 @@
     <div class="form-col ">
       <div class="col-md-4 mb-3">
         <label for="validationDefault01">Category name</label>
-        <input type="text" class="form-control" id="validationDefault01" value="{{$categoryId?$category->name:""}}"
-          placeholder="Food/Beverages/Electronic" name="name">
+        <input type="text" class="form-control" id="validationDefault01"
+          value="{{$categoryId?$category->name:old('name')}}" placeholder="Food/Beverages/Electronic" name="name">
       </div>
       <div class="col-md-4 mb-3">
         <label for="validationDefault02">Description</label>
         <textarea type="text" class="form-control" id="validationDefault02" placeholder="" name="description"
-          style="height: 150px; width: 100%; ">{{$categoryId?$category->description:""}}</textarea>
+          style="height: 150px; width: 100%; ">{{$categoryId?$category->description:old( 'description')}}</textarea>
       </div>
 
       <div class="col-md-4 mb-3">

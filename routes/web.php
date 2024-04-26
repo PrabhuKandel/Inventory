@@ -8,14 +8,12 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\UnitController;
 use App\Http\Controllers\ProductController;
-use App\Http\Controllers\ViewProductController;
-use App\Http\Controllers\PurchaseController;
-use App\Http\Controllers\SaleController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\LogoutController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\PurchaseandSaleController;
+use App\Http\Controllers\ReportController;
 
 
 /*
@@ -28,64 +26,59 @@ use App\Http\Controllers\PurchaseandSaleController;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
+
 Route::get('/', function () {
     return view('layouts.app');
 });
-Route::get('/login', [loginController::class,'index'])->name('login');
-Route::post('/signin', [loginController::class,'submit'])->name('login.submit');
+Route::get('/login', [loginController::class, 'index'])->name('login');
+Route::post('/signin', [loginController::class, 'submit'])->name('login.submit');
 
-Route::middleware(['auth'])->group(function(){
+Route::middleware(['auth'])->group(function () {
 
-    Route::post('/logout', [logoutController::class,'submit'])->name('logout');
-    Route::get('dashboards',[DashboardController::class,'index'])->name('dashboards.main');
-    Route::get('branchs/{id}/dashboards',[DashboardController::class,'index'])->name( 'dashboards.branch');
-    
+    Route::post('/logout', [logoutController::class, 'submit'])->name('logout');
+    Route::get('dashboards', [DashboardController::class, 'index'])->name('dashboards.main');
+    Route::get('branchs/{id}/dashboards', [DashboardController::class, 'index'])->name('dashboards.branch');
+
     Route::resource('branchs', BranchController::class);
-    
-    Route::controller(WarehouseController::class)->prefix('branchs/{id}/warehouses')->group(function(){
-    Route::get('/','index')->name('branchwarehouses.index');
-    Route::post('/store','store')->name('branchwarehouses.store');
-    Route::get('/create','create')->name('branchwarehouses.create');
-    Route::delete('/{warehouse}/destroy','destroy')->name('branchwarehouses.destroy');
-    Route::get('/{warehouse}/edit','edit')->name('branchWarehouses.edit');
-    Route::get('/{warehouse}/show','show')->name('branchWarehouses.show');
-    Route::put('/{warehouse}/update','update')->name('branchwarehouses.update');
+
+    Route::controller(WarehouseController::class)->prefix('branchs/{id}/warehouses')->group(function () {
+        Route::get('/', 'index')->name('branchwarehouses.index');
+        Route::post('/store', 'store')->name('branchwarehouses.store');
+        Route::get('/create', 'create')->name('branchwarehouses.create');
+        Route::delete('/{warehouse}/destroy', 'destroy')->name('branchwarehouses.destroy');
+        Route::get('/{warehouse}/edit', 'edit')->name('branchWarehouses.edit');
+        Route::get('/{warehouse}/show', 'show')->name('branchWarehouses.show');
+        Route::put('/{warehouse}/update', 'update')->name('branchwarehouses.update');
     });
     Route::resource('warehouses', WarehouseController::class);
-    
+
     Route::resource('contacts', ContactController::class);
-    Route::get('branchs/{id}/contacts',[ContactController::class,'index'])->name( 'branchContacts.index');
-    
+    Route::get('branchs/{id}/contacts', [ContactController::class, 'index'])->name('branchContacts.index');
+
     Route::resource('users', UserController::class);
-    
+
     Route::resource('categories', CategoryController::class);
-    
+
     Route::resource('units', UnitController::class);
-    
+
     Route::resource('products', ProductController::class);
-    Route::get('branchs/{id}/products',[ProductController::class,'index'])->name('branchProducts.index');
-    
+    Route::get('branchs/{id}/products', [ProductController::class, 'index'])->name('branchProducts.index');
+
+    Route::resource('reports', ReportController::class);
+    Route::controller(PurchaseandSaleController::class)->prefix('{type}')->group(function () {
+        Route::get('/', 'index')->name('purchaseSale.index');
+        Route::get('/create', 'create')->name('purchaseSale.create');
+        Route::post('/store', 'store')->name('purchaseSale.store');
+        Route::delete('/{typeId}/destroy', 'destroy')->name('purchaseSale.destroy');
+    });
+
+    Route::controller(PurchaseandSaleController::class)->prefix('branchs/{id}/{type}')->group(function () {
+        Route::get('/', 'index')->name('branch.purchaseSale.index');
+        Route::get('/create', 'create')->name('branch.purchaseSale.create');
+        Route::post('/store', 'store')->name('branch.purchaseSale.store');
+        Route::delete('/{typeId}/destroy', 'destroy')->name('branch.purchaseSale.destroy');
+    });
     Route::resource('roles', RoleController::class);
-    
-    Route::controller(PurchaseandSaleController::class)->prefix('{type}')->group(function()
-    {
-    Route::get('/','index')->name('purchaseSale.index');
-    Route::get('/create','create') ->name('purchaseSale.create');
-    Route::post('/store','store')->name( 'purchaseSale.store' );
-    Route::delete('/{typeId}/destroy','destroy')->name('purchaseSale.destroy');
-    });
-    
-    Route::controller(PurchaseandSaleController::class)->prefix('branchs/{id}/{type}')->group(function()
-    {
-    Route::get('/','index')->name('branch.purchaseSale.index');
-    Route::get('/create','create')->name('branch.purchaseSale.create');
-    Route::post('/store','store')->name('branch.purchaseSale.store');
-    Route::delete('/{typeId}/destroy','destroy')->name('branch.purchaseSale.destroy');
-        
-    });
-    
-
-
 });
 
 

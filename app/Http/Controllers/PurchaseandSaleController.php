@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Http\Requests\CreateUserRequest;
 use App\Models\Contact;
 use App\Models\Product;
 use App\Models\Warehouse;
@@ -10,6 +11,7 @@ use App\Models\PurchaseSale;
 use App\Models\Transcation;
 use App\Repositories\PurchaseSaleRepository;
 use App\Http\Middleware\BranchAccessMiddleware;
+use App\Http\Requests\PurchaseSaleRequest;
 use App\Repositories\TranscationRepository;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -52,7 +54,7 @@ class PurchaseandSaleController extends Controller
     $_type = $this->type;
     $transcation_type = $_type == "sales" ? 'sale' : 'purchase';
 
-    $perPage = 2;
+    $perPage = 5;
     $page = request()->input('page', 1);
     $offset = ($page - 1) * $perPage;
 
@@ -98,23 +100,13 @@ class PurchaseandSaleController extends Controller
   /**
    * Store a newly created resource in storage.
    */
-  public function store(Request $request)
+  public function store(PurchaseSaleRequest $request)
   {
 
     $branch = $this->branch;
     $_type = $this->type;
 
-    $datas = $request->validate([
-
-      'contact_id.*' => 'required',
-      'product_id.*' => 'required',
-      'warehouse_id.*' => 'required',
-      'quantity.*' => 'required',
-      'total.*' => 'required',
-      'created_date' => 'required'
-
-    ]);
-
+    $datas = $request->validated();
     //managing data 
     $rowCount = count($datas['contact_id']);
     $transcationData = [];
@@ -141,22 +133,23 @@ class PurchaseandSaleController extends Controller
           if ($quantity) {
 
             if ($data['quantity'] > $quantity) {
-              return back()->withSuccess("Quantity exceed...");
+
+              return response()->json(['success' => false, 'message' => "Quantity exceed"]);
             } else {
 
               $this->purchaseSaleRepo->store($data);
             }
           } else {
             DB::rollback();
-            return back()->withSuccess("The quantity is not present in warehouse..");
+            return response()->json(['success' => false, 'message' => "Requested quantity not present in warehouse"]);
           }
         }
         DB::commit();
-        return back()->withSuccess("Product has been sold..");
+        return response()->json(['success' => true, 'message' => "Product has been sold"]);
       } catch (\Exception $e) {
         DB::rollback();
         dd($e);
-        return  back()->withSuccess("Fail to sell");
+        return response()->json(['success' => false, 'message' => "Transcation failed"]);
       }
     }
 
@@ -172,11 +165,11 @@ class PurchaseandSaleController extends Controller
         } catch (\Exception $e) {
 
           DB::rollback();
-          return  back()->withSuccess("Fail to purchase");
+          return response()->json(['success' => false, 'message' => "Failed to purchase"]);
         }
       }
       DB::commit();
-      return  back()->withSuccess("Product has been purchased....");
+      return response()->json(['success' => true, 'message' => "Product has been purchased"]);
     }
   }
 

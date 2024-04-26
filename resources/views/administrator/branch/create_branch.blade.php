@@ -34,12 +34,12 @@ $edit = isset($branch1)&&$branch1?true:false;
       <div class="col-md-4 mb-3">
         <label for="validationDefault01">Branch name</label>
         <input type="text" class="form-control" id="validationDefault01" placeholder="Enter branch name"
-          value="{{$edit?$branch1->name:""}}" name="name">
+          value="{{$edit?$branch1->name:old('name')}}" name="name">
       </div>
       <div class="col-md-4 mb-3">
         <label for="validationDefault02">Branch address</label>
-        <input type="text" class="form-control" id="validationDefault02" value="{{$edit?$branch1->address:""}}"
-          placeholder="Enter branch address" name="address">
+        <input type="text" class="form-control" id="validationDefault02"
+          value="{{$edit?$branch1->address:old('address')}}" placeholder="Enter branch address" name="address">
       </div>
       <div class="col-md-4 mb-3">
         <label for="validationDefault02">Date</label>

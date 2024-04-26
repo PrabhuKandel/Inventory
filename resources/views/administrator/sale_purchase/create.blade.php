@@ -1,30 +1,27 @@
 @extends('layouts.app')
 @section('content')
+{{-- @dd(old()); --}}
 {{-- <script src="{{ asset('js/app.js') }}"></script> --}}
-@if($message = Session::get('success'))
-<div id="success-message" class="alert alert-success alert-block">
-  <strong> {{ $message}}</strong>
+
+<div id="success-message">
+
 </div>
-@endif
-@if ($errors->any())
-<div class="  alert alert-danger">
-  <ul>
-    @foreach ($errors->all() as $error)
-    <li>{{ $error }}</li>
-    @endforeach
-  </ul>
+
+
+<div id="error-message" class="">
+
 </div>
-@endif
+
 
 <div class="form-container mb-5">
-  <form id="myForm" class="purchase-form"
-    action="{{ (isset($branch) && $branch) ? '/branchs/'.$branch.'/'.$_type.'/store':'/'.$_type.'/store'}}"
+  <form id="myForm" class="purchase-form" {{--
+    action="{{ (isset($branch) && $branch) ? '/branchs/'.$branch.'/'.$_type.'/store':'/'.$_type.'/store'}}" --}}
     method="POST">
     @csrf
     <div class="form-group-row d-flex justify-content-start">
       <div class=" form-group col-md-2 ml-0   ">
         <label for="validationDefault02">Date</label>
-        <input type="date" class="form-control   date" name="created_date" pattern="" required>
+        <input type="date" class="form-control   date" name="created_date" pattern="">
       </div>
     </div>
     <table class="table">
@@ -53,7 +50,7 @@
             </select>
           </td>
           <td>
-            <select id="inputProduct" class="form-control selectProduct" name="product_id[]">
+            <select id="inputProduct" class="form-control selectProduct" name='product_id[]'>
               <option selected disabled value="">Choose...</option>
               @foreach($products as $product)
 
@@ -65,8 +62,8 @@
             </select>
           </td>
           <td>
-            <select class="form-control inputWarehouse" name="warehouse_id[]">
-              <option selected value="" disabled>Select Warehouse...</option>
+            <select class="form-control inputWarehouse" name='warehouse_id[]'>
+              <option selected value="0">Select Warehouse...</option>
               @foreach ($warehouses as $warehouse )
 
               <option value="{{$warehouse->id}}">{{$warehouse->name}}</option>
@@ -108,12 +105,9 @@
 </div>
 
 <script>
-  document.addEventListener('DOMContentLoaded', function() {
-    
-    
-    
+  $(document).ready(function() {
+
     //fetching availability
-    
     
     let url;
     let branchId = {!! json_encode($branch) !!}?{!! json_encode($branch) !!}:0;
@@ -121,26 +115,27 @@
   function  getAvailability()
   {
 
-    const selectWarehouseAll = document.querySelectorAll('.inputWarehouse');
+    const selectWarehouseAll = $('.inputWarehouse');
+  
    
-    const selectProductAll = document.querySelectorAll('.selectProduct');
-    selectWarehouseAll.forEach(function(selectWarehouse,index)
+    const selectProductAll = $('.selectProduct');
+    selectWarehouseAll.each(function(index)
 
 {
-  selectWarehouse.addEventListener('change', function() {
-      const warehouseId = this.value;
-      const productId = selectProductAll[index].value;
+  $(this).on('change', function() {
+      const warehouseId = $(this).val();
+      const productId = selectProductAll.eq(index).val();
       fetchData(productId, warehouseId,index);
   });
 
 
 });
 
-selectProductAll.forEach(function(selectProduct,index)
+selectProductAll.each(function(index)
 {
-  selectProduct.addEventListener('change', function() {
-    const productId = this.value;
-    const warehouseId = selectWarehouseAll[index].value? selectWarehouseAll[index].value : 0; 
+  $(this).on('change', function() {
+    const productId = $(this).val();
+    const warehouseId = selectWarehouseAll.eq(index).val()? selectWarehouseAll.eq(index).val() : 0; 
     fetchData(productId, warehouseId,index);
 });
 
@@ -150,7 +145,7 @@ selectProductAll.forEach(function(selectProduct,index)
   }
 getAvailability();
 function fetchData(productId, warehouseId,index) {
-  console.log(warehouseId);
+
   // Fetch request to check quantity availability
   _url = '/api/branchs/'+branchId +'/products/'+productId+'/warehouses/'+warehouseId +'/availability'
 $.ajax({
@@ -160,25 +155,21 @@ $.ajax({
   contentType:'application/json',
   dataType:"json",
   success:function(response){
-console.log(response);
-document.querySelectorAll('.inputAvailability')[index].value = response.quantity;
+  
+
+$('.inputAvailability').eq(index).val(response.quantity) ;
   },
   error:function (xhr, status, error) {
-    document.querySelectorAll('.inputAvailability')[index].value="";
-console.log(xhr.responseText);
+  $('.inputAvailability').eq(index).val("");
+
   }
 
 });
 
-
-
 }
 
-
-
-//to create new purchase form on clicking plus icon
-
-const formContainer = document.querySelector('.more-form');
+//to create new purchase or sales form on clicking plus icon
+const formContainer = $('.more-form');
 const formHtml = ` <tr class="table-row">
         <td>
           <select id="inputState" class="form-control " name="contact_id[]">
@@ -201,7 +192,7 @@ const formHtml = ` <tr class="table-row">
         </td>
         <td>
           <select  class="form-control inputWarehouse" name="warehouse_id[]">
-            <option selected value="">Select Warehouse...</option>
+            <option selected value="0" >Select Warehouse...</option>
          @foreach ($warehouses as $warehouse )
            
          <option value="{{$warehouse->id}}">{{$warehouse->name}}</option>
@@ -239,18 +230,13 @@ const formHtml = ` <tr class="table-row">
       </tr>`;
 
 
-  document.querySelector('#sell-button').addEventListener('click',function()
+  $('#sell-button').on('click',function()
 {
-  
- 
- formContainer.insertAdjacentHTML('beforeend',formHtml);
+ $(formContainer).append(formHtml);
  attachEventListeners();
  getAvailability();
 
 });
-
-
-
 
 
   var today = new Date();
@@ -259,67 +245,66 @@ const formHtml = ` <tr class="table-row">
 var formattedDate = today.getFullYear() + '-' + ('0' + (today.getMonth() + 1)).slice(-2) + '-' + ('0' + today.getDate()).slice(-2);
 
 // Set the formatted date as the value of the date input
-
-
-let date = document.querySelector('.date');
-  date.value=formattedDate;
+let date = $('.date');
+  date.val(formattedDate);
 
 
   // Add event listener to the product select element
   function attachEventListeners()
   {
-   let productSelectAll = document.querySelectorAll('.selectProduct');
-  let rateInputAll = document.querySelectorAll('.productRate');
-  let quantityInputAll = document.querySelectorAll('.quantity');
-  let unitInputAll = document.querySelectorAll('.productunit');
-  let totalInputAll = document.querySelectorAll('.totalInput');
-  let purchaseMoreAll  = document.querySelectorAll('.purchase-more');
+   let productSelectAll = $('.selectProduct');
+  let rateInputAll = $('.productRate');
+  let quantityInputAll = $('.quantity');
+  let unitInputAll = $('.productunit');
+  let totalInputAll = $('.totalInput');
+  let purchaseMoreAll  = $('.purchase-more');
  
   
-    productSelectAll.forEach(function(productSelect,index)
+    productSelectAll. each(function(index)
 {
-  productSelect.addEventListener('change', function() {
+  $(this).on('change', function() {
     // Get the selected product's rate and set it as the value of the rate input
-    const selectedOption = productSelect.options[productSelect.selectedIndex];
+    const selectedOption = $(this).find('option:selected');
+
     //getting rate attribute
-    const rate = selectedOption.getAttribute('rate');
-    rateInputAll[index].value = rate;
+    const rate = selectedOption.attr('rate');
+    rateInputAll.eq(index).val(rate);
     //getting unit attribute
-    const unit = selectedOption.getAttribute('unit');
-    unitInputAll[index].value = unit;
+    const unit = selectedOption.attr('unit');
+    unitInputAll.eq(index).val(unit);
     // calculateTotal( index);
 
   });
 
   //obtaining quantity and calculating total
-  quantityInputAll.forEach(function(quantityInput,index)
+  quantityInputAll.each(function(index)
 {
-quantityInput.addEventListener('input',function(){
-calculateTotal(index,rateInputAll[index].value,quantityInputAll[index].value,totalInputAll)
+$(this).on('input',function(){
+calculateTotal(index,rateInputAll.eq(index).val(),quantityInputAll.eq(index).val(),totalInputAll)
 
 });
 
 });
 
 //obtaining total and calculating quantity based on that
-totalInputAll.forEach(function(totalInput,index)
+totalInputAll.each(function(index)
 {
-totalInput.addEventListener("input",function(){
-  calculateQuantity(index,rateInputAll[index].value,totalInputAll[index].value,quantityInputAll)
+$(this).on("input",function(){
+  calculateQuantity(index,rateInputAll.eq(index).val(),totalInputAll.eq(index).val(),quantityInputAll)
 });
 
 });
   });
 //to remove row  from table dynamically
-  const tableRowAll = document.querySelectorAll('.table-row');
+  const tableRowAll = $('.table-row');
 
 //remove  row from table
-const removeRowAll = document.querySelectorAll('.remove-row');
-removeRowAll.forEach(function(removeRow,index){
+const removeRowAll = $('.remove-row');
+removeRowAll.each(function(index){
 
-  console.log("clicked");
-removeRow.addEventListener('click',function(){
-  tableRowAll[index].remove();
+
+$(this).on('click',function(){
+  tableRowAll.eq(index).remove();
 
 })
 
@@ -339,10 +324,10 @@ function calculateTotal(index,rate,quantity,totalInputAll) {
         // Calculate the total
         const total = quantity * rate;
         // Update the total input field
-        totalInputAll[index].value = total.toFixed(2);
+        totalInputAll.eq(index).val( total.toFixed(2));
     } else {
         // If either quantity or rate is not a valid number, reset the total field
-        totalInputAll[index].value = '';
+        totalInputAll.eq(index).val('');
     }
 }
 
@@ -355,15 +340,59 @@ function calculateQuantity(index,rate,total,quantityInputAll) {
         // Calculate the quantity
         const quantity = total / rate;
         // Update the quantity input field
-        quantityInputAll[index].value = quantity.toFixed(2);
+        quantityInputAll.eq(index).val(quantity.toFixed(2));
     } else {
         // If either total or rate is not a valid number, reset the quantity field
-        quantityInputAll[index].value = '';
+        quantityInputAll.eq(index).val("");
     }
 }
 
 
-
+const type = @json($_type);
+$('#myForm').submit(function(e)
+{
+  e.preventDefault();
+  $('#error-message').fadeOut(function() {
+    $(this).empty().removeClass('alert alert-danger alert-block').fadeIn();
 });
+
+let url;
+  let form = $('#myForm');
+  url= branchId!=0? "/branchs/"+branchId+ '/'+type+'/store': "/"+ type+ "/store";
+  
+
+$.ajax({
+  url: url,
+  type:'POST',
+  headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+                        
+  data: form.serialize(), 
+  success:function(response){
+    response.success? $('#myForm')[0].reset():'';
+    
+    console.log(response);
+  
+  $('#success-message').html( `<strong> ${response.message}</strong> `).addClass('alert alert-info alert-block').fadeIn();
+  setTimeout(function() {
+    $('#success-message').fadeOut();
+ 
+}, 3000);
+
+},
+error:function (xhr, status, error) {
+  console.log();
+  $.each(xhr.responseJSON.errors, function(key, value) {
+    $.each(value, function(index, error) {
+        $('#error-message').append(`<p >${error}</p>`);
+    });
+});
+$('#error-message').addClass('alert alert-danger alert-block');
+  
+}
+  });
+});
+})
 </script>
 @endsection

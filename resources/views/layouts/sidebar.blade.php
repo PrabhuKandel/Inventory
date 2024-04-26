@@ -100,7 +100,7 @@
       @endif
 
 
-      <a href="#" class="list-group-item list-group-item-action py-2 ripple"><i
+      <a href="{{route('reports.index')}}" class="list-group-item list-group-item-action py-2 ripple"><i
           class="fas fa-money-bill fa-fw me-3"></i><span>Reports</span></a>
     </div>
   </div>
