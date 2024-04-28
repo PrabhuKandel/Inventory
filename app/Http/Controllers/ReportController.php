@@ -24,18 +24,11 @@ class ReportController extends Controller
 
         $response =  $this->reportRepo->index($request);
 
-        $datas = $response->getdata();
-        $reports = $datas->reports;
-        $total = $datas->total;
-        $totalPages = $datas->totalPages;
-        $page = $datas->page;
-        $perPage = $datas->perPage;
-
         if ($request->ajax()) {
             return response()->json(["datas" => $response->getdata(), "success" => true]);
         }
 
-        return view("administrator.report.index", compact('offices', 'reports', 'totalPages', 'page', 'perPage', 'total'));
+        return view("administrator.report.index", compact('offices'));
     }
 
 

@@ -54,22 +54,32 @@ Route::middleware(['auth'])->group(function () {
 
     Route::resource('contacts', ContactController::class);
     Route::get('branchs/{id}/contacts', [ContactController::class, 'index'])->name('branchContacts.index');
+    Route::get('branchs/{id}/contacts/{contact}/show', [ContactController::class, 'show'])->name('branchContacts.show');
 
     Route::resource('users', UserController::class);
+    Route::get('branchs/{id}/users', [UserController::class, 'index'])->name('branchUsers.index');
+    Route::get('branchs/{id}/users/{user}/show', [UserController::class, 'show'])->name('branchUsers.show');
 
     Route::resource('categories', CategoryController::class);
+    Route::get('branchs/{id}/categories', [CategoryController::class, 'index'])->name('branchCategories.index');
+    Route::get('branchs/{id}/categories/{category}/show', [CategoryController::class, 'show'])->name('branchCategories.show');
 
     Route::resource('units', UnitController::class);
+    Route::get('branchs/{id}/units', [UnitController::class, 'index'])->name('branchUnits.index');
+    Route::get('branchs/{id}/units/{unit}/show', [UnitController::class, 'show'])->name('branchUnits.show');
 
     Route::resource('products', ProductController::class);
     Route::get('branchs/{id}/products', [ProductController::class, 'index'])->name('branchProducts.index');
+    Route::get('branchs/{id}/products/{product}/show', [ProductController::class, 'show'])->name('branchProducts.show');
 
     Route::resource('reports', ReportController::class);
+    Route::resource('roles', RoleController::class);
     Route::controller(PurchaseandSaleController::class)->prefix('{type}')->group(function () {
         Route::get('/', 'index')->name('purchaseSale.index');
         Route::get('/create', 'create')->name('purchaseSale.create');
         Route::post('/store', 'store')->name('purchaseSale.store');
         Route::delete('/{typeId}/destroy', 'destroy')->name('purchaseSale.destroy');
+        Route::get('/{typeId}/edit', 'edit')->name('purchaseSale.edit');
     });
 
     Route::controller(PurchaseandSaleController::class)->prefix('branchs/{id}/{type}')->group(function () {
@@ -77,8 +87,8 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/create', 'create')->name('branch.purchaseSale.create');
         Route::post('/store', 'store')->name('branch.purchaseSale.store');
         Route::delete('/{typeId}/destroy', 'destroy')->name('branch.purchaseSale.destroy');
+        Route::get('/{typeId}/edit', 'edit')->name('branch.purchaseSale.edit');
     });
-    Route::resource('roles', RoleController::class);
 });
 
 

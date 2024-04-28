@@ -53,6 +53,10 @@
     </td>
     <td>
       <div class="d-flex">
+        @can('view-category')
+        <a href="{{ (isset($branch) && $branch) ? '/branchs/'.$branch.'/categories/'.$category->id.'/show': route('categories.show',$category->id) }}"
+          class="  rounded btn  btn-warning px-2 pb-1  pt-1 mr-2 ">View</a>
+        @endcan
         @can('edit-category')
         <a href="{{route('categories.edit',$category->id) }}"
           class="  rounded btn  btn-success px-2 pb-1 pt-1 mr-2 ">Edit</a>

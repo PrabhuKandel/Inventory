@@ -66,7 +66,8 @@
       <td>
         <div class="d-flex">
           @canany(['edit-purchase','edit-sale'])
-          <a href="" class="  rounded btn  btn-success px-2 pb-1 pt-1 mr-2 ">Edit</a>
+          <a href="{{ (isset($branch) && $branch) ? '/branchs/'.$branch.'/'.$_type.'/'.$detail->id.'/edit':'/'.$_type.'/'.$detail->id.'/edit' }}"
+            class="  rounded btn  btn-success px-2 pb-1 pt-1 mr-2 ">Edit</a>
           @endcanany
 
           @canany(['delete-purchase','delete-sale'])

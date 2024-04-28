@@ -184,9 +184,18 @@ class PurchaseandSaleController extends Controller
   /**
    * Show the form for editing the specified resource.
    */
-  public function edit(string $id)
+  public function edit(string $id, Request $request)
   {
-    //
+    $branch = $this->branch;
+    $_type = $this->type;
+    $this->purchaseSaleRepo->setContext($request);
+    $warehouses = $this->purchaseSaleRepo->getWarehouses();
+
+    $contact_type = $_type == 'sales' ? "customer" : "supplier";
+    $contacts = Contact::where('type', $contact_type)->select('id', 'name')->get();
+    $products = Product::all();
+
+    return view('administrator.sale_purchase.edit', compact('branch', '_type'), ['warehouses' => $warehouses, 'contacts' => $contacts, 'products' => $products]);
   }
 
   /**

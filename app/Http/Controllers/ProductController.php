@@ -81,9 +81,11 @@ class ProductController extends Controller
      */
     public function show(string $id, Request $request)
     {
-        //show products for each branch
+        $branch = $this->branch;
+        $productId = $request->route('product');
+        $product = $this->productRepo->find($productId);
 
-
+        return view('administrator.product.view_product', compact('product', 'branch'));
     }
 
     /**

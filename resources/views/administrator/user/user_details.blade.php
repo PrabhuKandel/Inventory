@@ -56,6 +56,10 @@
     </td>
     <td>
       <div class="d-flex align-items-start">
+        @can('view-user')
+        <a href="{{ (isset($branch) && $branch) ? '/branchs/'.$branch.'/users/'.$user->id.'/show': route('users.show',$user->id) }}"
+          class="  rounded btn  btn-warning px-2 pb-1  pt-1 mr-2 ">View</a>
+        @endcan
         @can('edit-user')
         <a href="{{route('users.edit',$user->id) }}" class="  rounded btn  btn-success px-2 pb-1 pt-1 mr-2 ">Edit</a>
         @endcan

@@ -10,6 +10,7 @@ use App\Http\Middleware\BranchAccessMiddleware;
 
 class CategoryController extends Controller
 {
+    private $branch;
     private  $commonRepo;
     private $categoryId;
     public function __construct(Request $request)
@@ -21,13 +22,14 @@ class CategoryController extends Controller
         $this->middleware('permission:create-category|edit-category', ['only' => ['create', 'store']]);
         $this->middleware('permission:edit-category|delete-category', ['only' => ['edit', 'update']]);
         $this->middleware('permission:delete-category', ['only' => ['destroy']]);
+        $this->branch = explode("/", $request->route()->uri)[0] == 'branchs' && $request->route()->hasParameter('id') ? $request->route()->parameters['id'] : false;
         $this->commonRepo  = new CommonRepository(new Category());
     }
-    public function index()
+    public function index(Request $request)
     {
         $categories = $this->commonRepo->getAll();
-
-        return view('administrator.category.category_details', compact('categories'));
+        $branch = $this->branch;
+        return view('administrator.category.category_details', compact('categories', 'branch'));
     }
 
     /**
@@ -63,8 +65,13 @@ class CategoryController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(string $id, Request $request)
     {
+        $branch = $request->route('id');
+        $categoryId = $request->route('category');
+        $category = $this->commonRepo->find($categoryId);
+
+        return view('administrator.category.view_category', compact('category', 'branch'));
     }
 
     /**

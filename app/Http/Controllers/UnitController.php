@@ -11,9 +11,9 @@ class UnitController extends Controller
 {
     /**
      * Display a listing of the resource.
-     */
+     */ private $branch;
     private  $commonRepo;
-    public function __construct()
+    public function __construct(Request $request)
 
     {
 
@@ -22,13 +22,15 @@ class UnitController extends Controller
         $this->middleware('permission:create-unit|edit-unit', ['only' => ['create', 'store']]);
         $this->middleware('permission:edit-unit|delete-unit', ['only' => ['edit', 'update']]);
         $this->middleware('permission:delete-unit', ['only' => ['destroy']]);
+        $this->branch = explode("/", $request->route()->uri)[0] == 'branchs' && $request->route()->hasParameter('id') ? $request->route()->parameters['id'] : false;
         $this->commonRepo  = new CommonRepository(new Unit());
     }
 
     public function index()
     {
+        $branch = $this->branch;
         $units = $this->commonRepo->getAll();
-        return view('administrator.unit.unit_details', compact('units'));
+        return view('administrator.unit.unit_details', compact('units', 'branch'));
     }
 
     /**
@@ -63,9 +65,13 @@ class UnitController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(string $id, Request $request)
     {
-        //
+        $branch = $this->branch;
+        $unitId = $request->route('unit');
+        $unit = $this->commonRepo->find($unitId);
+
+        return view('administrator.unit.view_unit', compact('unit', 'branch'));
     }
 
     /**

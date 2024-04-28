@@ -70,6 +70,11 @@ class ContactController extends Controller
      */
     public function show(string $id, Request $request)
     {
+        $branch = $this->branch;
+        $contactId = $request->route('contact');
+        $contact = $this->commonRepo->find($contactId);
+        //finding products in that warehouse
+        return view('administrator.contact.view_contact', compact('contact', 'branch'));
     }
 
     /**

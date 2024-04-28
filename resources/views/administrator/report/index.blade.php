@@ -26,119 +26,29 @@
 
       <option value="in" selected>Purchase </option>
       <option value="out">Sale </option>
-      <option value="both">Both</option>
+      <option value="all">Both</option>
 
     </select>
   </div>
   <button id="submit-btn" class="btn btn-success mb-3">Submit</button></a>
 </div>
 
-
-
-
-<table class="table align-middle mb-3 bg-white">
-  <thead class="bg-light">
-    <tr>
-      <th> Transcation ID</th>
-      <th>Product </th>
-      <th>Warehouse</th>
-      <th>Quantity</th>
-      <th>Amount</th>
-      <th>Contact</th>
-      <th>User</th>
-      <th>Date</th>
-    </tr>
-  </thead>
-  @php
-
-  $count = ($page - 1) * $perPage + 1;
-  @endphp
-
-  <tbody class="table-body">
-
-    @foreach ($reports as $report )
-
-    @php
-    $count++;
-    @endphp
-    <tr class="py-1">
-
-      <td class="py-1">
-        <p class="fw-bold ms-2 ">{{$report->id}}</p>
-      </td>
-      <td class="py-1">
-        <p class=" ">{{$report->product_name}}</p>
-      </td>
-      <td class="py-1">
-
-        <p class=" ">{{$report->warehouse_name}}</p>
-      </td>
-
-      <td class="py-1">
-
-        <p class="">{{$report->quantity}}</p>
-      </td>
-      <td class="py-1">
-
-        <p class=" ">{{$report->amount}}</p>
-
-      </td>
-      <td class="py-1">
-
-        <p class=" ">{{$report->contact_name}}</p>
-
-      </td>
-      <td class="py-1">
-        <p class=" ">{{$report->user_name}}</p>
-      </td>
-      <td class="py-1">
-        <p class="">{{$report->created_date}}</p>
-      </td>
-      @endforeach
-    </tr>
-
-  </tbody>
-</table>
 <div class="report-info">
 
+</div>
+<div class="pagination">
+
 
 </div>
-
-@if($total)
-
-<div class="pagination d-flex justify-content-between">
-  <div>
-    @php
-    $start = ($page - 1) * $perPage+1;
-    @endphp
-    Showing <span class="start">{{$start}}</span> to <span class="end">{{$count-1}}</span> of <span
-      class="total">{{$total}}</span> results
-  </div>
-  <div class=" d-flex  text-lg ">
-    @for ($i = 1; $i <= $totalPages; $i++) <a style="" href=" {{ request()->fullUrlWithQuery(['page' => $i]) }}"
-      class="{{ $i == $page ? 'bg-primary text-white' : '' }}">
-      <div class="border border-primary rounded" style="width:30px; text-align:center; ">
-        {{ $i }}
-      </div>
-      </a>
-      @endfor
-  </div>
-</div>
-@endif
-
-
 <script>
-  $('#submit-btn').on('click',function(){
+  //creatinf function for ajax 
+function fetch(page=1)
 
-    //remove previous row
-    $('.table-body').fadeOut(function() {
-    $(this).empty().fadeIn();
-});
-//remove previous pagination
-$('.pagination').remove();
+{
+ 
 
-    let branchId = $('#branchSelect').val();
-    let transcation = $('#transcationSelect').val();
+  let branchId = $('#branchSelect').val();
+  let transcation = $('#transcationSelect').val();
     
     $.ajax({
 
@@ -147,20 +57,36 @@ $('.pagination').remove();
       data:{
         "branch_id":branchId,
         "transaction_type":transcation,
+        "page":page,
       },
       success:function(response){
+      //create table header 
+      let datas =  response.datas.reports;
 
-      
+      if(response.datas.reports.length!=0){
+       $('.report-info').html(`<table class="table align-middle mb-3 bg-white">
+  <thead class="bg-light">
+    <tr>
+      <th> Transcation ID</th>
+      <th>Product </th>
+      <th>Warehouse</th>
+      <th>Quantity</th>
+      <th>Amount</th>
+      <th>Contact</th>
+      <th>Transcated By</th>
+      <th>Date</th>
+    </tr>
+  </thead>
+
+  <tbody class="table-body">
+
+  </tbody>
+</table>
+`);
         //apending newly fetched data
-        let datas =  response.datas.reports;
-        console.log(response.datas);
 
-
-        $.each(datas, function(index,obj) {
-          
-
-      
-        $('.table-body').append(` <tr class="py-1">
+ $.each(datas, function(index,obj) {
+ $('.table-body').append(` <tr class="py-1">
 
 <td class="py-1">
   <p class="fw-bold ms-2 ">${obj.id}</p>
@@ -197,22 +123,59 @@ $('.pagination').remove();
 </tr>`)
 });
 
-//pagination
-$('.start').val();
-$('.end').val();
-$('.total').val();
+//adding pagination
+$('.pagination').html(`
+  <div class="d-flex text-lg">
+    ${(() => {
+      let html = '';
+      for (let i = 1; i <= response.datas.totalPages; i++) {
+        html += `
+            <div class="  page-link  border border-primary rounded  cursor-pointer ${i == response.datas.page ? "bg-primary text-white" : 'text-primary '} " style="width:30px; text-align:center; " data-page="${i}">
+              ${i}
+            </div>
+        `;
+      }
+      return html;
+    })()}
+  </div>
+`);
+      }
+      else{
 
-
-
+        $('.report-info').html(`<p class="mt-4 ml-4">No Data Found!!!!</p>`)
+      }
       },
       error:function(xhr,status,error)
       {
-
+       alert("Error");
       }
 
     });
 
-  })
+
+
+}
+
+  $('#submit-btn').on('click',function(){
+
+    //remove previous row
+    if ($('.report-info table tbody tr').length > 0) {
+
+      $('.tbody').empty();
+
+    }
+  fetch();
+
+});
+  
+
+//handling pagination
+$('.pagination').on('click', '.page-link', function() {
+
+  let page = $(this).data('page');
+  fetch(page);
+});
+
 </script>
 
 @endsection

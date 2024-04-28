@@ -17,20 +17,37 @@ class ReportRepository extends  CommonRepository
   public function index(Request $request)
   {
 
-    $branchId = $request->input('branch_id', false);
-    $branchId = $branchId ? $branchId : false;
-    $transactionType = $request->input('transaction_type', 'in');
+    $branchId = $request->input('branch_id');
+    $branchId = $branchId ? $branchId : NULL;
+    $transactionType = $request->input('transaction_type');
 
 
 
-    $perPage = 10;
+
+    $perPage = 5;
     $page = request()->input('page', 1);
-    $offset = ($page - 1) * $perPage;
+    $offset = ((int)$page - 1) * $perPage;
 
     //total rows 
-    $total = DB::select(" SELECT COUNT(*) as total FROM transcations   WHERE type = ?
-    AND (office_id = ? OR (office_id IS NULL AND ? = FALSE))", [$transactionType, $branchId, $branchId])[0]->total;
-
+    $total = DB::select(" SELECT COUNT(*) as total FROM transcations 
+      WHERE
+    (
+    CASE
+    WHEN ? = 'all' THEN  TRUE
+    WHEN ? IS NULL THEN transcations.office_id IS NULL
+    ELSE transcations.office_id = ?
+    END
+     )
+    AND 
+    (
+    CASE 
+    WHEN ? = 'in' THEN transcations.type = 'in'
+    WHEN ? = 'out' THEN transcations.type = 'out'
+    WHEN ? = 'all' THEN TRUE
+    END
+    )
+    
+    ", [$branchId, $branchId, $branchId, $transactionType, $transactionType, $transactionType])[0]->total;
 
     $reports = DB::select("
     SELECT transcations.*,
@@ -43,13 +60,27 @@ class ReportRepository extends  CommonRepository
     LEFT JOIN warehouses ON transcations.warehouse_id = warehouses.id
     LEFT JOIN contacts ON transcations.contact_id = contacts.id
     LEFT JOIN users ON transcations.user_id = users.id
-    WHERE (transcations.type = ?)
-    AND (transcations.office_id = ? OR (transcations.office_id IS NULL AND ? = FALSE))
+    WHERE
+    (
+    CASE
+    WHEN ? = 'all' THEN  TRUE
+    WHEN ? IS NULL THEN transcations.office_id IS NULL
+    ELSE transcations.office_id = ?
+    END
+     )
+    AND 
+    (
+    CASE 
+    WHEN ? = 'in' THEN transcations.type = 'in'
+    WHEN ? = 'out' THEN transcations.type = 'out'
+    WHEN ? = 'all' THEN TRUE
+    END
+    )
     LIMIT ?
     OFFSET ?
-    ", [$transactionType, $branchId, $branchId, $perPage, $offset]);
+    ", [$branchId, $branchId, $branchId, $transactionType, $transactionType, $transactionType, $perPage, $offset]);
 
     $totalPages = ceil($total / $perPage);
-    return response()->json(['reports' => $reports, 'perPage' => $perPage, 'page' => $page, 'total' => $total, 'totalPages' => $totalPages]);
+    return response()->json(['reports' => $reports, 'perPage' => $perPage, 'page' => $page, 'total' => $total, 'totalPages' => $totalPages, 'branchId' => $branchId]);
   }
 }

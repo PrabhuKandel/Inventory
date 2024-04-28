@@ -57,6 +57,10 @@
       </div>
 
       <div class="d-flex">
+        @can('view-branch')
+        <a href="{{  route('branchs.show',$branch_1->id) }}"
+          class="  rounded btn  btn-warning px-2 pb-1 pt-1 mr-2 ">View</a>
+        @endcan
         @can('edit-branch')
         <a href="{{route('branchs.edit',$branch_1->id)}}" class="  rounded btn  btn-dark px-2 pb-1 pt-1 mr-2 ">Edit</a>
         @endcan

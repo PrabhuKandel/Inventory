@@ -6,9 +6,6 @@ use Illuminate\Http\Request;
 use App\Repositories\CommonRepository;
 use App\Models\Office;
 use Illuminate\Support\Facades\Auth;
-use Spatie\Permission\Models\Role;
-use Spatie\Permission\Models\Permission;
-use Illuminate\Support\Facades\Session;
 use App\Http\Middleware\BranchAccessMiddleware;
 
 
@@ -75,6 +72,11 @@ class BranchController extends Controller
     public function show(string $id, Request $request)
 
     {
+
+
+        $branchDetail = $this->commonRepo->find($id);
+        //finding products in that warehouse
+        return view('administrator.branch.view_branch', compact('branchDetail'));
     }
 
     /**

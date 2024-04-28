@@ -15,6 +15,7 @@ use Validator;
 class UserController extends Controller
 {
 
+  private $branch;
   private $branchRepository;
   private  $userRepo;
   public function __construct()
@@ -80,8 +81,14 @@ class UserController extends Controller
   /**
    * Display the specified resource.
    */
-  public function show(string $id)
+  public function show(string $id, Request $request)
   {
+    $branch = $request->route('id');
+
+    $userId = $request->route('user');
+    $user = $this->userRepo->find($userId);
+    //finding products in that warehouse
+    return view('administrator.user.view_user', compact('user', 'branch'));
   }
 
   /**

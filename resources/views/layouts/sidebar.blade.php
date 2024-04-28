@@ -68,20 +68,22 @@
         class="list-group-item list-group-item-action py-2 ripple"><i class="fas fa-calendar fa-fw me-3"></i><span>
           Contact</span></a>
 
-      @if ($headquater)
-      <a href="{{route('users.index')}}" class="list-group-item list-group-item-action py-2 ripple"><i
-          class="fa-solid fa-user fa-fw me-3"></i><span>Add Users</span></a>
-      @endif
+      {{-- @if ($headquater) --}}
+      <a href="{{(isset($branch) && $branch?'/branchs/'.$branch.'/users':'/users')}}"
+        class="list-group-item list-group-item-action py-2 ripple"><i class="fa-solid fa-user fa-fw me-3"></i><span>Add
+          Users</span></a>
+      {{-- @endif --}}
 
-      @if ($headquater)
-      <a href="{{route('categories.index')}}" class="list-group-item list-group-item-action py-2 ripple"><i
+      {{-- @if ($headquater) --}}
+      <a href="{{(isset($branch) && $branch?'/branchs/'.$branch.'/categories':'/categories')}}"
+        class="list-group-item list-group-item-action py-2 ripple"><i
           class="fa-solid fa-list fa-fw me-3"></i><span>Category</span></a>
 
-      @endif
-      @if ($headquater)
-      <a href="{{route('units.index')}}" class="list-group-item list-group-item-action py-2 ripple"><i
+      {{-- @endif --}}
+      {{-- @if ($headquater) --}}
+      <a href="{{(isset($branch) && $branch?'/branchs/'.$branch.'/units':'/units')}}" class="list-group-item list-group-item-action py-2 ripple"><i
           class="fa-solid fa-list fa-fw me-3"></i><span>Unit</span></a>
-      @endif
+      {{-- @endif --}}
 
       <a href="{{(isset($branch) && $branch?'/branchs/'.$branch.'/products':'/products')}}"
         class="list-group-item list-group-item-action py-2 ripple"><i class="fas fa-chart-line fa-fw me-3"></i><span>
