@@ -7,6 +7,7 @@ use App\Models\Product;
 use App\Http\Middleware\BranchAccessMiddleware;
 use App\Models\Contact;
 use App\Models\Transcation;
+use App\Models\Warehouse;
 use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
@@ -28,10 +29,7 @@ class DashboardController extends Controller
         $branch = $this->branch;
         //No of warehouses of branch
 
-        $warehousesNo = DB::table('warehouses')
-            ->where('office_id', $branch)
-            ->orWhereNull('office_id')
-            ->count();
+        $warehousesNo = $branch ? Warehouse::where('office_id', $branch)->count() : Warehouse::whereNull('office_id')->count();
 
         $productsNo = Product::count();
         $customersNo = Contact::where('type', 'customer')->count();

@@ -6,7 +6,7 @@
   <strong> {{ $message}}</strong>
 </div>
 @endif
-<div class="container d-flex">
+<div class="container d-flex align-items-start">
   <label for="validationDefault02">Select Branch </label>
   <div class="col-md-4 mb-3 mx-2">
     <select id="branchSelect" class="form-control" name="branch_id">
@@ -54,8 +54,9 @@ function fetch(page=1)
 {
  
 
-  let branchId = $('#branchSelect').val();
+  let branchId  = $('#branchSelect').val();
   let transcation = $('#transcationSelect').val();
+
     
     $.ajax({
 
@@ -67,6 +68,7 @@ function fetch(page=1)
         "page":page,
       },
       success:function(response){
+        console.log(response);
       //create table header 
       let datas =  response.datas.reports;
 
@@ -154,7 +156,7 @@ $('.pagination').html(`
       },
       error:function(xhr,status,error)
       {
-       alert("Error");
+       console.log(xhr);
       }
 
     });

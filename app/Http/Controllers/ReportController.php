@@ -22,6 +22,7 @@ class ReportController extends Controller
         $offices = Office::select('id', 'name')->get();
         $branch = $request->route('id');
 
+
         $response =  $this->reportRepo->index($request);
 
         if ($request->ajax()) {
