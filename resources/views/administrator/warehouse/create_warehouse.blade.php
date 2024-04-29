@@ -42,10 +42,10 @@ $edit = isset($warehouse)&&$warehouse?true:false;
       <div class="col-md-4 mb-3">
         <label for="validationDefault02"> address</label>
         <input type="text" class="form-control" id="validationDefault02" placeholder="Enter warehouses address"
-          value="{{$edit?$warehouse->address:" old('address')"}}" name="address">
+          value="{{$edit?$warehouse->address: old('address')}}" name="address">
       </div>
       <div class="col-md-4 mb-3">
-     
+
         <input type="hidden" name="branch" value="{{ $branch ? $branch:''}}">
       </div>
 

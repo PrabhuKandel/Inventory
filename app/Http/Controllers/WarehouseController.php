@@ -36,7 +36,7 @@ class WarehouseController extends Controller
     public function index(Request $request)
     {
         $branch = $this->branch;
-        $warehouses =   $branch ? Warehouse::where('office_id', $branch)->paginate(2) : Warehouse::whereNull('office_id')->paginate(2);
+        $warehouses =   $branch ? Warehouse::where('office_id', $branch)->paginate(5) : Warehouse::whereNull('office_id')->paginate(5);
 
         return  view('administrator.warehouse.warehouse_details', compact('warehouses', 'branch'));
     }

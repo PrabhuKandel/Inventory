@@ -3,18 +3,15 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Http\Requests\CreateUserRequest;
+
 use App\Models\Contact;
 use App\Models\Product;
-use App\Models\Warehouse;
-use App\Models\PurchaseSale;
-use App\Models\Transcation;
 use App\Repositories\PurchaseSaleRepository;
 use App\Http\Middleware\BranchAccessMiddleware;
 use App\Http\Requests\PurchaseSaleRequest;
 use App\Repositories\TranscationRepository;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Exception;
 
 //maintain code remaining ----
 
@@ -103,6 +100,7 @@ class PurchaseandSaleController extends Controller
   public function store(PurchaseSaleRequest $request)
   {
 
+
     $branch = $this->branch;
     $_type = $this->type;
 
@@ -123,6 +121,7 @@ class PurchaseandSaleController extends Controller
       $transcationData[] = $row;
     }
 
+
     // for storing sales information
     if ($_type == "sales") {
       DB::beginTransaction();
@@ -131,6 +130,7 @@ class PurchaseandSaleController extends Controller
           $quantity = $this->transcationRepo->calculateAvailability($branch ? $branch : 0, $data['product_id'], $data['warehouse_id']);
 
           if ($quantity) {
+
 
             if ($data['quantity'] > $quantity) {
 
@@ -148,7 +148,7 @@ class PurchaseandSaleController extends Controller
         return response()->json(['success' => true, 'message' => "Product has been sold"]);
       } catch (\Exception $e) {
         DB::rollback();
-        dd($e);
+        // dd($e);
         return response()->json(['success' => false, 'message' => "Transcation failed"]);
       }
     }
@@ -176,9 +176,14 @@ class PurchaseandSaleController extends Controller
   /**
    * Display the specified resource.
    */
-  public function show(string $id)
+  public function show(Request $request)
   {
-    //
+
+    $branch = $this->branch;
+    $purchaseSaleId  = $request->route('typeId');
+    $detail = $this->purchaseSaleRepo->find($purchaseSaleId);
+
+    return view('administrator.sale_purchase.view', compact('detail', 'branch'));
   }
 
   /**
@@ -186,8 +191,11 @@ class PurchaseandSaleController extends Controller
    */
   public function edit(string $id, Request $request)
   {
+
     $branch = $this->branch;
     $_type = $this->type;
+    $purchaseSaleId  = $request->route('typeId');
+
     $this->purchaseSaleRepo->setContext($request);
     $warehouses = $this->purchaseSaleRepo->getWarehouses();
 
@@ -195,17 +203,56 @@ class PurchaseandSaleController extends Controller
     $contacts = Contact::where('type', $contact_type)->select('id', 'name')->get();
     $products = Product::all();
 
-    return view('administrator.sale_purchase.edit', compact('branch', '_type'), ['warehouses' => $warehouses, 'contacts' => $contacts, 'products' => $products]);
+    $purchaseSaleDetail = $this->purchaseSaleRepo->find($purchaseSaleId);
+
+
+    return view('administrator.sale_purchase.create', compact('branch', '_type', 'purchaseSaleDetail'), ['warehouses' => $warehouses, 'contacts' => $contacts, 'products' => $products]);
   }
 
   /**
    * Update the specified resource in storage.
    */
-  public function update(Request $request, string $id)
+  public function update(PurchaseSaleRequest $request)
   {
     //
-  }
+    $branch = $this->branch;
+    $_type = $this->type;
+    $id = $request->route('typeId');
+    $datas = $request->validated();
+    $data['product_id'] = $datas['product_id'][0];
+    $data['contact_id'] = $datas['contact_id'][0];
+    $data['quantity'] = $datas['quantity'][0];
+    $data['total'] = $datas['total'][0];
+    $data['warehouse_id'] = $datas['warehouse_id'][0];
+    $data['created_date'] = $datas['created_date'];
 
+    if ($_type == "purchases") {
+      try {
+        $this->purchaseSaleRepo->update($data, $id);
+        return response()->json(['success' => true, 'message' => "Updated successfully"]);
+      } catch (\Exception $e) {
+
+        return response()->json(['success' => false, 'message' => $e]);
+      }
+    }
+
+
+    if ($_type == "sales") {
+      $quantity = $this->transcationRepo->calculateAvailability($branch ? $branch : 0, $data['product_id'], $data['warehouse_id']);
+
+
+      try {
+        if ($data['quantity'] <= $quantity) {
+          $this->purchaseSaleRepo->update($data, $id);
+          return response()->json(['success' => true, 'message' => "Updated successfully"]);
+        }
+        throw new Exception("Failed");
+      } catch (Exception $e) {
+
+        return response()->json(['success' => false, 'message' => "Failed to update"]);
+      }
+    }
+  }
   /**
    * Remove the specified resource from storage.
    */

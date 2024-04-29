@@ -20,7 +20,8 @@ class TranscationController extends Controller
 
     public function calculateAvailability($branch_id, $product_id,  $warehouse_id)
     {
-        $total_quantity = $this->transcationRepo->calculateAvailability($branch_id = 0, $product_id,  $warehouse_id);
+
+        $total_quantity = $this->transcationRepo->calculateAvailability($branch_id, $product_id,  $warehouse_id);
         if ($total_quantity) {
             return response()->json(['quantity' => $total_quantity]);
         } else {

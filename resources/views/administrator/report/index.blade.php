@@ -10,12 +10,19 @@
   <label for="validationDefault02">Select Branch </label>
   <div class="col-md-4 mb-3 mx-2">
     <select id="branchSelect" class="form-control" name="branch_id">
+      @if(!$branch)
       <option value="all">All</option>
       <option value="" selected>Headquarter</option>
+      @endif
       @foreach($offices as $office )
+      @if(!$branch)
       <option value="{{$office->id}}">{{$office->name}}</option>
+      @else
+      @if($office->id==$branch)
+      <option value="{{$office->id}}" selected>{{$office->name}}</option>
+      @endif
+      @endif
       @endforeach
-
     </select>
 
   </div>
@@ -130,7 +137,7 @@ $('.pagination').html(`
       let html = '';
       for (let i = 1; i <= response.datas.totalPages; i++) {
         html += `
-            <div class="  page-link  border border-primary rounded  cursor-pointer ${i == response.datas.page ? "bg-primary text-white" : 'text-primary '} " style="width:30px; text-align:center; " data-page="${i}">
+            <div class="  page-link  border border-primary rounded  ${i == response.datas.page ? "bg-primary text-white" : 'text-primary '} " style="width:30px; text-align:center;  cursor: pointer; " data-page="${i}">
               ${i}
             </div>
         `;

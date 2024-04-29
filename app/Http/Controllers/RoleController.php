@@ -73,7 +73,11 @@ class RoleController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $role = $this->roleRepo->find($id);
+
+        $permissions = $role->permissions()->pluck('name');
+
+        return view('administrator.role.view', compact('role', 'permissions'));
     }
 
     /**

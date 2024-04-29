@@ -10,6 +10,7 @@ use App\Repositories\CommonRepository;
 use App\Repositories\CategoryRepository;
 use App\Repositories\UnitRepository;
 use App\Http\Middleware\BranchAccessMiddleware;
+use App\Http\Requests\ProductRequest;
 
 class ProductController extends Controller
 {
@@ -57,16 +58,9 @@ class ProductController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(ProductRequest $request)
     {
-        $data =   $request->validate([
-            'name' => 'required|unique:products',
-            'rate' => 'required|numeric',
-            'category_id' => 'required',
-            'unit_id' => 'required',
-            'created_date' => 'required',
-        ]);
-
+        $data =   $request->validated();
         $response = $this->productRepo->store($data);
 
         if ($response) {
@@ -107,15 +101,9 @@ class ProductController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(ProductRequest $request, string $id)
     {
-        $data =   $request->validate([
-            'name' => 'required|unique:products',
-            'rate' => 'required|numeric',
-            'category_id' => 'required',
-            'unit_id' => 'required',
-            'created_date' => 'required',
-        ]);
+        $data =   $request->validated();
         $response = $this->productRepo->update($data, $id);
 
         if ($response) {

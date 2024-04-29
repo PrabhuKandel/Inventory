@@ -20,7 +20,7 @@ class ReportController extends Controller
 
 
         $offices = Office::select('id', 'name')->get();
-
+        $branch = $request->route('id');
 
         $response =  $this->reportRepo->index($request);
 
@@ -28,7 +28,7 @@ class ReportController extends Controller
             return response()->json(["datas" => $response->getdata(), "success" => true]);
         }
 
-        return view("administrator.report.index", compact('offices'));
+        return view("administrator.report.index", compact('offices', 'branch'));
     }
 
 

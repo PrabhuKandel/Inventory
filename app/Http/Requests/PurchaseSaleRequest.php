@@ -26,7 +26,7 @@ class PurchaseSaleRequest extends FormRequest
             'contact_id.*' => 'required',
             'product_id.*' => 'required',
             'warehouse_id.*' => 'required',
-            'quantity.*' => 'required',
+            'quantity.*' => 'required|numeric|min:1',
             'total.*' => 'required',
             'created_date' => 'required'
         ];
@@ -42,6 +42,7 @@ class PurchaseSaleRequest extends FormRequest
             'quantity.*.required' => "Quantity missing at row :index",
             'total.*.required' => "Total missing at row :index",
             'created_date.required' => "Please select date ",
+            'quantity.*.min' => "Invalid quantity value at row:index ",
         ];
     }
 }

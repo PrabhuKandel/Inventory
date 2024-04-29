@@ -30,6 +30,7 @@
   <tbody>
 
     @foreach($roles as $role)
+    @if($role->name!="Super Admin")
     <td>
       <p class="fw-normal ms-2">{{$count++}}</p>
     </td>
@@ -39,6 +40,9 @@
     </td>
     <td>
       <div class="d-flex">
+        @can('view-role')
+        <a href="{{  route('roles.show',$role->id) }}" class="  rounded btn  btn-warning px-2 pb-1 pt-1 mr-2 ">View</a>
+        @endcan
         @can('edit-role')
         <a href="{{route('roles.edit',$role->id)}}" class="  rounded btn  btn-success px-2 pb-1 pt-1 mr-2 ">Edit</a>
         @endcan
@@ -53,6 +57,7 @@
     </td>
 
     </tr>
+    @endif
     @endforeach
   </tbody>
 </table>

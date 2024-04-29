@@ -65,25 +65,30 @@
       </td>
       <td>
         <div class="d-flex">
-          @canany(['edit-purchase','edit-sale'])
+          @if ($_type == "purchases" && auth()->user()->can('view-purchase') ||$_type == "sales" &&
+          auth()->user()->can('view-sale'))
+          <a href="{{ (isset($branch) && $branch) ? '/branchs/'.$branch.'/'.$_type.'/'.$detail->id.'/show':'/'.$_type.'/'.$detail->id.'/show' }}"
+            class="  rounded btn  btn-warning px-2 pb-1  pt-1 mr-2 ">View</a>
+          @endif
+
+          @if ($_type == "purchases" && auth()->user()->can('edit-purchase') ||$_type == "sales" &&
+          auth()->user()->can('edit-sale'))
           <a href="{{ (isset($branch) && $branch) ? '/branchs/'.$branch.'/'.$_type.'/'.$detail->id.'/edit':'/'.$_type.'/'.$detail->id.'/edit' }}"
             class="  rounded btn  btn-success px-2 pb-1 pt-1 mr-2 ">Edit</a>
-          @endcanany
+          @endif
 
-          @canany(['delete-purchase','delete-sale'])
+
           <form
             action="{{ $branch?'/branchs/'.$branch. '/'.$_type.'/'.$detail->id.'/destroy' :'/'.$_type.'/'.$detail->id.'/destroy'}}"
             method="POST">
             @csrf
             @method('DELETE')
-            @if ($_type == "purchases" && auth()->user()->can('delete-purchase'))
-            <button type="submit" class="rounded btn-danger px-2 pb-1 pt-1">Delete</button>
-            @endif
-            @if ($_type == "sales" && auth()->user()->can('delete-sale'))
+            @if ($_type == "purchases" && auth()->user()->can('delete-purchase') ||$_type == "sales" &&
+            auth()->user()->can('delete-sale'))
             <button type="submit" class="rounded btn-danger px-2 pb-1 pt-1">Delete</button>
             @endif
           </form>
-          @endcanany
+
         </div>
       </td>
 

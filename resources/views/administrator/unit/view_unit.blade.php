@@ -9,7 +9,7 @@
       <p class="mb-0 font-weight-bold">Unit Name</p>
     </div>
     <div class="col-sm-9">
-      <p class="text-muted mb-0">{{$unit->name}}</p>
+      <p class="text-muted mb-0">{{ $unit->name }}</p>
     </div>
   </div>
   <hr class="">
@@ -18,7 +18,7 @@
       <p class="mb-0 font-weight-bold">Description</p>
     </div>
     <div class="col-sm-9">
-      <p class="text-muted mb-0">{{$unit->description}}</p>
+      <p class="text-muted mb-0">{{ $unit->description }}</p>
     </div>
   </div>
   <hr>
@@ -27,7 +27,7 @@
       <p class="mb-0 font-weight-bold">Created date</p>
     </div>
     <div class="col-sm-9">
-      <p class="text-muted mb-0">{{$unit->created_date}}</p>
+      <p class="text-muted mb-0">{{ $unit->created_date }}</p>
     </div>
   </div>
   <hr>

@@ -7,8 +7,7 @@ use App\Repositories\CommonRepository;
 use App\Models\Office;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Middleware\BranchAccessMiddleware;
-
-
+use App\Http\Requests\BranchRequest;
 
 class BranchController extends Controller
 {
@@ -43,16 +42,10 @@ class BranchController extends Controller
     }
 
 
-    public function store(Request $request)
+    public function store(BranchRequest $request)
     {
         //branch details will be stored
-        $data =  $request->validate([
-
-            'name' => 'required|string|unique:offices',
-            'address' => 'required|string',
-            'created_date' => 'required',
-
-        ]);
+        $data = $request->validated();
 
 
 
@@ -94,13 +87,9 @@ class BranchController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(int $id, Request $request)
+    public function update(int $id, BranchRequest $request)
     {
-        $data = $request->validate([
-
-            'name' => 'required|string',
-            'address' => 'required|string',
-        ]);
+        $data = $request->validated();
 
 
         $response = $this->commonRepo->update($data, $id);

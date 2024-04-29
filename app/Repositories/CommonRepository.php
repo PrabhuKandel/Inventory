@@ -20,7 +20,7 @@ class CommonRepository implements RepositoryInterface
   {
 
 
-    return $this->model::paginate(2);
+    return $this->model::paginate(5);
   }
 
   public function find($id)

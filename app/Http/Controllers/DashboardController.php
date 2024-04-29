@@ -3,8 +3,11 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use App\Models\Product;
 use App\Http\Middleware\BranchAccessMiddleware;
+use App\Models\Contact;
+use App\Models\Transcation;
+use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
@@ -23,7 +26,30 @@ class DashboardController extends Controller
     {
 
         $branch = $this->branch;
-        return view('administrator.dashboard.index', compact('branch'));
+        //No of warehouses of branch
+
+        $warehousesNo = DB::table('warehouses')
+            ->where('office_id', $branch)
+            ->orWhereNull('office_id')
+            ->count();
+
+        $productsNo = Product::count();
+        $customersNo = Contact::where('type', 'customer')->count();
+        $suppliersNo = Contact::where('type', 'supplier')->count();
+
+        // total purchases and sales till date
+        $transactions = Transcation::whereIn('type', ['in', 'out'])
+            ->when($branch, function ($query, $branch) {
+                return $query->where('office_id', $branch);
+            })->when(!$branch, function ($query) {
+                return $query->whereNull('office_id');
+            })
+            ->get();
+
+        $inCount = $transactions->where('type', 'in')->count();
+        $outCount = $transactions->where('type', 'out')->count();
+
+        return view('administrator.dashboard.index', compact('branch', 'warehousesNo', 'productsNo', 'customersNo', 'suppliersNo', 'inCount', 'outCount'));
     }
 
     /**

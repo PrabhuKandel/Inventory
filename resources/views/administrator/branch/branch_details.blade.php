@@ -1,16 +1,14 @@
 @extends('layouts.app')
 @section('content')
-
-
-@if($message = Session::get('success'))
+@if ($message = Session::get('success'))
 <div id="success-message" class="alert alert-success alert-block">
-  <strong> {{ $message}}</strong>
+  <strong> {{ $message }}</strong>
 </div>
 @endif
 
 
 @can('create-branch')
-<a href="{{route('branchs.create')}}"><button class="btn btn-dark  mb-3" type="submit">Add Branch</button></a>
+<a href="{{ route('branchs.create') }}"><button class="btn btn-dark  mb-3" type="submit">Add Branch</button></a>
 @endcan
 
 <h4>Branch Details</h4>
@@ -28,29 +26,25 @@
 
   <tbody>
     @php
-    $count = ($branches->currentPage()-1)*$branches->perPage()+1;
+    $count = ($branches->currentPage() - 1) * $branches->perPage() + 1;
     @endphp
 
-    @foreach ($branches as $branch_1 )
-    @if($branch_1->type!=='headquarter')
+    @foreach ($branches as $branch_1)
+    @if ($branch_1->type !== 'headquarter')
     <td>
-      <p class="fw-normal ms-2">{{$count++}}</p>
+      <p class="fw-normal ms-2">{{ $count++ }}</p>
     </td>
 
     <td>
-
-      {{-- <a href="{{route('branchs.show',$branch_1->id)}}">
-        <p class="fw-bold mb-1">{{$branch_1->name}}</p>
-      </a> --}}
-      <a href="{{route('branchs.show',$branch_1->id)}}">
-        <p class="fw-bold mb-1">{{$branch_1->name}}</p>
+      <a href="{{ route('branchs.show', $branch_1->id) }}">
+        <p class="fw-bold mb-1">{{ $branch_1->name }}</p>
       </a>
     </td>
     <td>
-      <p class="fw-normal mb-1">{{$branch_1->address}}</p>
+      <p class="fw-normal mb-1">{{ $branch_1->address }}</p>
     </td>
     <td>
-      <p class="fw-normal mb-1">{{$branch_1->created_date}}</p>
+      <p class="fw-normal mb-1">{{ $branch_1->created_date }}</p>
     </td>
     <td>
       <div class="d-felx">
@@ -58,11 +52,12 @@
 
       <div class="d-flex">
         @can('view-branch')
-        <a href="{{  route('branchs.show',$branch_1->id) }}"
+        <a href="{{ route('branchs.show', $branch_1->id) }}"
           class="  rounded btn  btn-warning px-2 pb-1 pt-1 mr-2 ">View</a>
         @endcan
         @can('edit-branch')
-        <a href="{{route('branchs.edit',$branch_1->id)}}" class="  rounded btn  btn-dark px-2 pb-1 pt-1 mr-2 ">Edit</a>
+        <a href="{{ route('branchs.edit', $branch_1->id) }}"
+          class="  rounded btn  btn-success px-2 pb-1 pt-1 mr-2 ">Edit</a>
         @endcan
         @can('delete-branch')
         <form action="{{ route('branchs.destroy', $branch_1->id) }}" method="POST">
@@ -81,5 +76,5 @@
   </tbody>
 
 </table>
-{{$branches->links()}}
+{{ $branches->links() }}
 @endsection

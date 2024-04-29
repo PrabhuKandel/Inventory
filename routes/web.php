@@ -73,6 +73,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('branchs/{id}/products/{product}/show', [ProductController::class, 'show'])->name('branchProducts.show');
 
     Route::resource('reports', ReportController::class);
+    Route::get('branchs/{id}/reports', [ReportController::class, 'index'])->name('branchsReports.index');
+
     Route::resource('roles', RoleController::class);
     Route::controller(PurchaseandSaleController::class)->prefix('{type}')->group(function () {
         Route::get('/', 'index')->name('purchaseSale.index');
@@ -80,6 +82,8 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/store', 'store')->name('purchaseSale.store');
         Route::delete('/{typeId}/destroy', 'destroy')->name('purchaseSale.destroy');
         Route::get('/{typeId}/edit', 'edit')->name('purchaseSale.edit');
+        Route::put('/{typeId}/update', 'update')->name('purchaseSale.update');
+        Route::get('/{typeId}/show', 'show')->name('purchaseSale.show');
     });
 
     Route::controller(PurchaseandSaleController::class)->prefix('branchs/{id}/{type}')->group(function () {
@@ -88,6 +92,8 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/store', 'store')->name('branch.purchaseSale.store');
         Route::delete('/{typeId}/destroy', 'destroy')->name('branch.purchaseSale.destroy');
         Route::get('/{typeId}/edit', 'edit')->name('branch.purchaseSale.edit');
+        Route::put('/{typeId}/update', 'update')->name('branchs.purchaseSale.update');
+        Route::get('/{typeId}/show', 'show')->name('branchs.purchaseSale.show');
     });
 });
 
