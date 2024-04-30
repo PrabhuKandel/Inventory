@@ -36,8 +36,9 @@ class ContactController extends Controller
     public function create()
     {
         //
+        $branch = $this->branch;
         $contactId = $this->contactId;
-        return view('administrator.contact.create_contact', compact('contactId'));
+        return view('administrator.contact.create_contact', compact('contactId', 'branch'));
     }
 
     /**
@@ -83,9 +84,10 @@ class ContactController extends Controller
     public function edit(string $id)
     {
         //
+        $branch = $this->branch;
         $contactId = $this->contactId;
         $contact = $this->commonRepo->find($id);
-        return view('administrator.contact.create_contact', ['contact' => $contact], compact('contactId'));
+        return view('administrator.contact.create_contact', ['contact' => $contact], compact('contactId', 'branch'));
     }
 
     /**

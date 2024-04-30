@@ -18,9 +18,10 @@ class UserController extends Controller
   private $branch;
   private $branchRepository;
   private  $userRepo;
-  public function __construct()
+  public function __construct(Request $request)
   {
     $this->middleware(BranchAccessMiddleware::class);
+    $this->branch = explode("/", $request->route()->uri)[0] == 'branchs' ? $request->route()->parameters['id'] : false;
     $this->middleware('permission:view-user|create-user|edit-user|delete-user')->only('index');
     $this->middleware('permission:create-user|edit-user', ['only' => ['create', 'store']]);
     $this->middleware('permission:edit-user|delete-user', ['only' => ['edit', 'update']]);
@@ -30,7 +31,7 @@ class UserController extends Controller
   }
   public function index(Request $request)
   {
-    $branch = explode("/", $request->route()->uri)[0] == 'branchs' ? $request->route()->parameters['id'] : false;
+    $branch = $this->branch;
     $users = $this->userRepo->getAll();
 
     return view('administrator.user.user_details', compact('users', 'branch'));
@@ -41,9 +42,10 @@ class UserController extends Controller
    */
   public function create()
   {
+    $branch = $this->branch;
     $offices = $this->branchRepository->getAll();
     $roles = Role::all();
-    return view('administrator.user.create_user', ['offices' => $offices, 'roles' => $roles]);
+    return view('administrator.user.create_user', ['offices' => $offices, 'roles' => $roles], compact('branch'));
   }
 
   /**
@@ -83,8 +85,7 @@ class UserController extends Controller
    */
   public function show(string $id, Request $request)
   {
-    $branch = $request->route('id');
-
+    $branch = $this->branch;
     $userId = $request->route('user');
     $user = $this->userRepo->find($userId);
     //finding products in that warehouse
@@ -97,10 +98,10 @@ class UserController extends Controller
   public function edit(string $id, Request $request)
   {
     $user = $this->userRepo->find($id);
-
+    $branch = $this->branch;
     $offices = $this->branchRepository->getAll();
     $roles = Role::all();
-    return view('administrator.user.create_user', compact('user', 'offices', 'roles'));
+    return view('administrator.user.create_user', compact('user', 'offices', 'roles', 'branch'));
   }
 
   /**

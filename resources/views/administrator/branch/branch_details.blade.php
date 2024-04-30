@@ -7,11 +7,14 @@
 @endif
 
 
-@can('create-branch')
-<a href="{{ route('branchs.create') }}"><button class="btn btn-dark  mb-3" type="submit">Add Branch</button></a>
-@endcan
 
-<h4>Branch Details</h4>
+<div class="d-flex justify-content-between">
+  <h4>Branch Details</h4>
+  @can('create-branch')
+  <a href="{{ route('branchs.create') }}"><button class="btn btn-primary mb-3  " type="submit">Add
+      Branch</button></a>
+  @endcan
+</div>
 <table class="table align-middle mb-0 bg-white">
   <thead class="bg-light">
     <tr>

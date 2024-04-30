@@ -38,7 +38,8 @@ class UnitController extends Controller
      */
     public function create()
     {
-        return view('administrator.unit.create_unit');
+        $branch = $this->branch;
+        return view('administrator.unit.create_unit', compact('branch'));
     }
 
     /**
@@ -79,8 +80,9 @@ class UnitController extends Controller
      */
     public function edit(string $id)
     {
+        $branch = $this->branch;
         $unit = $this->commonRepo->find($id);
-        return view('administrator.unit.create_unit', ['unit' => $unit]);
+        return view('administrator.unit.create_unit', ['unit' => $unit], compact('branch'));
     }
 
     /**

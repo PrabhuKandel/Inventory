@@ -38,8 +38,8 @@ class CategoryController extends Controller
     public function create()
     {
         $categoryId = $this->categoryId;
-
-        return view('administrator.category.create_category', compact('categoryId'));
+        $branch = $this->branch;
+        return view('administrator.category.create_category', compact('categoryId', 'branch'));
     }
 
     /**
@@ -67,7 +67,7 @@ class CategoryController extends Controller
      */
     public function show(string $id, Request $request)
     {
-        $branch = $request->route('id');
+        $branch = $this->branch;
         $categoryId = $request->route('category');
         $category = $this->commonRepo->find($categoryId);
 
@@ -81,9 +81,9 @@ class CategoryController extends Controller
     {
 
         $category = $this->commonRepo->find($id);
-
+        $branch = $this->branch;
         $categoryId = $this->categoryId;
-        return view('administrator.category.create_category', ['category' => $category], compact('categoryId'));
+        return view('administrator.category.create_category', ['category' => $category], compact('categoryId', 'branch'));
     }
 
     /**

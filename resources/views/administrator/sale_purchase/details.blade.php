@@ -6,25 +6,24 @@
 </div>
 @endif
 
+<div class="d-flex justify-content-between">
+  <h4>{{ucfirst($_type)}} Details</h4>
+  @canany(['create-purchase','create-sale'])
+  <a href="{{ isset($branch) && $branch ? '/branchs/'.$branch.'/'. $_type.'/create': '/'.$_type.'/create' }}">
+    @if ($_type == "purchases" && auth()->user()->can('create-purchase') ||$_type == "sales" &&
+    auth()->user()->can('create-sale'))
+    <button class="btn btn-primary mb-3" type="submit">{{$_type=="purchases"?"Purchase Product":"Sell
+      Product"}}</button>
+    @endif
+  </a>
+  @endcanany
 
-@canany(['create-purchase','create-sale'])
-<a href="{{ isset($branch) && $branch ? '/branchs/'.$branch.'/'. $_type.'/create': '/'.$_type.'/create' }}">
-  @if ($_type == "purchases" && auth()->user()->can('create-purchase'))
-  <button class="btn btn-dark mb-3" type="submit">Purchase Product</button>
-  @endif
-  @if ($_type == "sales" && auth()->user()->can('create-sale'))
-  <button class="btn btn-dark mb-3" type="submit">Sell Product</button>
-  @endif
+</div>
 
-</a>
-@endcanany
 <table class="table align-middle mb-3 bg-white">
   <thead class="bg-light">
     <tr>
       <th>SN</th>
-      <th>Product </th>
-      <th>Quantity</th>
-      <th>Warehouse</th>
       <th>Contacts</th>
       <th>Date</th>
       <th>Actions</th>
@@ -44,21 +43,7 @@
         <p class="fw-normal ms-2">{{$count++}}</p>
       </td>
       <td>
-        <p class="fw-bold mb-1">{{$detail->product_name}}</p>
-      </td>
-      <td>
-
-        <p class="fw-bold mb-1">{{$detail->quantiy}}</p>
-      </td>
-
-      <td>
-
-        <p class="fw-bold mb-1">{{$detail->warehouse_name}}</p>
-      </td>
-      <td>
-
         <p class="fw-bold mb-1">{{$detail->contact_name}}</p>
-
       </td>
       <td>
         <p class="fw-bold mb-1">{{$detail->created_at}}</p>

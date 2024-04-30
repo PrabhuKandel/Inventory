@@ -30,7 +30,6 @@ $purSaleId = $edit ? $purchaseSaleDetail->id : '';
         </div>
         <table class="table">
             <thead>
-                <th>Contact</th>
                 <th>Product</th>
                 <th>Warehouse</th>
                 <th style="width:10%">Unit</th>

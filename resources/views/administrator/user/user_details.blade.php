@@ -8,8 +8,11 @@
   <strong> {{ $message}}</strong>
 </div>
 @endif
-<a href="{{route('users.create')}}"><button class="btn btn-dark  mb-3" type="submit">Add New User</button></a>
-<h4>User Details</h4>
+<div class="d-flex justify-content-between">
+  <h4>User Details</h4>
+  <a href="{{route('users.create')}}"><button class="btn btn-primary  mb-3" type="submit">Add New User</button></a>
+</div>
+
 <table class="table align-middle mb-0 bg-white">
   <thead class="bg-light">
     <tr>

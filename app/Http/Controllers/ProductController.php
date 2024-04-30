@@ -48,9 +48,10 @@ class ProductController extends Controller
      */
     public function create()
     {
+        $branch = $this->branch;
         $categories = $this->categoryRepo->getAll();
         $units = $this->unitRepo->getAll();
-        return view('administrator.product.create_product', compact('categories', 'units'));
+        return view('administrator.product.create_product', compact('categories', 'units', 'branch'));
     }
 
 
@@ -90,12 +91,12 @@ class ProductController extends Controller
     {
 
         $product = $this->productRepo->find($id);
-
+        $branch = $this->branch;
         $categories = $this->categoryRepo->getAll();
         $units = $this->unitRepo->getAll();
 
 
-        return view('administrator.product.create_product', ['product' => $product], compact('categories', 'units'));
+        return view('administrator.product.create_product', ['product' => $product], compact('categories', 'units', 'branch'));
     }
 
     /**

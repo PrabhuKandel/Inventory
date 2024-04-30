@@ -21,7 +21,6 @@ class TranscationRepository extends CommonRepository
       return $transcation_query->where('warehouse_id', $warehouse_id);
     })
       ->when($branch_id, function ($transcation_query) use ($branch_id) {
-
         return $transcation_query->where('office_id', $branch_id);
       })
       ->selectRaw('SUM(CASE WHEN type = "in" THEN quantity ELSE -quantity END) AS total_quantity')

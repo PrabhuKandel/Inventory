@@ -9,9 +9,8 @@
 <div class="container d-flex align-items-start">
   <label for="validationDefault02">Select Branch </label>
   <div class="col-md-4 mb-3 mx-2">
-    <select id="branchSelect" class="form-control" name="branch_id">
+    <select id="branchSelect" class="form-control" name="branch_id" multiple>
       @if(!$branch)
-      <option value="all">All</option>
       <option value="" selected>Headquarter</option>
       @endif
       @foreach($offices as $office )
@@ -37,7 +36,7 @@
 
     </select>
   </div>
-  <button id="submit-btn" class="btn btn-success mb-3">Submit</button></a>
+  <button id="submit-btn" class="btn btn-success mb-3">Generate</button></a>
 </div>
 
 <div class="report-info">
@@ -76,14 +75,14 @@ function fetch(page=1)
        $('.report-info').html(`<table class="table align-middle mb-3 bg-white">
   <thead class="bg-light">
     <tr>
-      <th> Transcation ID</th>
-      <th>Product </th>
-      <th>Warehouse</th>
-      <th>Quantity</th>
-      <th>Amount</th>
-      <th>Contact</th>
-      <th>Transcated By</th>
-      <th>Date</th>
+      <th class ="fw-bold"> Transcation ID</th>
+      <th class ="fw-bold">Product </th>
+      <th class ="fw-bold">Warehouse</th>
+      <th class ="fw-bold">Quantity</th>
+      <th class ="fw-bold">Amount</th>
+      <th class ="fw-bold">Contact</th>
+      <th class ="fw-bold">Transcated By</th>
+      <th class ="fw-bold">Date</th>
     </tr>
   </thead>
 
@@ -152,6 +151,7 @@ $('.pagination').html(`
       else{
 
         $('.report-info').html(`<p class="mt-4 ml-4">No Data Found!!!!</p>`)
+        $('.pagination').empty();
       }
       },
       error:function(xhr,status,error)

@@ -11,11 +11,13 @@ use Illuminate\Support\Facades\DB;
 
 class RoleController extends Controller
 {
+    private $branch;
     private  $roleRepo;
-    public function __construct()
+    public function __construct(Request $request)
 
     {
         $this->middleware(BranchAccessMiddleware::class);
+        $this->branch = explode("/", $request->route()->uri)[0] == 'branchs' ? $request->route()->parameters['id'] : false;
         $this->middleware('permission:view-role|create-role|edit-role|delete-role')->only('index');
         $this->middleware('permission:create-role|edit-role', ['only' => ['create', 'store']]);
         $this->middleware('permission:edit-role|delete-role', ['only' => ['edit', 'update']]);
@@ -27,9 +29,9 @@ class RoleController extends Controller
 
     public function index()
     {
-
+        $branch = $this->branch;
         $roles =  $this->roleRepo->getAll();
-        return view('administrator.role.role_details', compact('roles'));
+        return view('administrator.role.role_details', compact('roles', 'branch'));
     }
 
     /**
@@ -38,8 +40,9 @@ class RoleController extends Controller
     public function create()
     {
         //
+        $branch  = $this->branch;
         $permissions = Permission::all();
-        return view('administrator.role.create_role', compact('permissions'));
+        return view('administrator.role.create_role', compact('permissions', 'branch'));
     }
 
     /**
@@ -74,10 +77,10 @@ class RoleController extends Controller
     public function show(string $id)
     {
         $role = $this->roleRepo->find($id);
-
+        $branch = $this->branch;
         $permissions = $role->permissions()->pluck('name');
 
-        return view('administrator.role.view', compact('role', 'permissions'));
+        return view('administrator.role.view', compact('role', 'permissions', 'branch'));
     }
 
     /**
@@ -85,11 +88,11 @@ class RoleController extends Controller
      */
     public function edit($id)
     {
-
+        $branch = $this->branch;
         $role = $this->roleRepo->find($id);
         $assignedPermissions = $role->permissions()->pluck('id')->toArray();
         $permissions = Permission::all();
-        return view('administrator.role.create_role', compact('role', 'permissions', 'assignedPermissions'));
+        return view('administrator.role.create_role', compact('role', 'permissions', 'assignedPermissions', 'branch'));
     }
 
     /**

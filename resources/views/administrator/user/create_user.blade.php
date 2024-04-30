@@ -64,7 +64,9 @@ $edit = isset($user)&&$user?true:false;
         <select id="inputState" class="form-control" name="office_id">
           <option value="">Headquarter</option>
           @foreach($offices as $office)
-          <option value="{{$office->id}}" {{$edit&&($user->office->id==$office->id)?'selected':''}} > {{$office->name}}
+          <option value="{{$office->id}}" {{$edit?( !$user->
+            office?"selected":(($user->office->id==$office->id)?'selected':'')):'' }}
+            > {{$office->name}}
           </option>
           @endforeach
         </select>

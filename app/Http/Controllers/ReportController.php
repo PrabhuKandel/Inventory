@@ -20,7 +20,7 @@ class ReportController extends Controller
 
 
         $offices = Office::select('id', 'name')->get();
-        $branch = $request->route('id');
+        $branch = $request->route('id') ? $request->route('id') : false;
 
 
         $response =  $this->reportRepo->index($request);

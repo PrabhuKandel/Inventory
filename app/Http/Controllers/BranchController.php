@@ -65,7 +65,7 @@ class BranchController extends Controller
     public function show(string $id, Request $request)
 
     {
-
+        $branch = $this->branch;
 
         $branchDetail = $this->commonRepo->find($id);
         //finding products in that warehouse
@@ -78,7 +78,7 @@ class BranchController extends Controller
     public function edit(string $id, Request $request)
     {
 
-
+        $branch = $this->branch;
         $branch1 = $this->commonRepo->find($id);
 
         return view('administrator.branch.create_branch', ['branch1' => $branch1]);

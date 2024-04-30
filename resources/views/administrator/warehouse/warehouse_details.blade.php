@@ -12,7 +12,7 @@
       back</a> </button>
   @can('create-warehouse')
   <a href="{{ $branch ? '/branchs/' . $branch . '/warehouses/create' : route('warehouses.create', $branch) }}"><button
-      class="btn btn-dark  mb-3" type="submit">Add Warehouse</button></a>
+      class="btn btn-primary  mb-3" type="submit">Add Warehouse</button></a>
   @endcan
 </div>
 <h4>Warehouse Details</h4>

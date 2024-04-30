@@ -21,7 +21,7 @@ $edit = isset($unit) && $unit?true:false;
     @if($edit)
     @method("PUT")
     @endif
-    <h3 class=" mb-3"> {{$edit?"Update Unit Details":"Enter Unit Details"}} Unit details</h3>
+    <h3 class=" mb-3"> {{$edit?"Update Unit Details":"Enter Unit Details"}} </h3>
     @if ($errors->any())
     <div class="  alert alert-danger">
       <ul>

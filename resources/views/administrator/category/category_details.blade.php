@@ -11,14 +11,13 @@
 </div>
 @endif
 
-
-@can('create-category')
-<a href="{{route('categories.create')}}"><button class="btn btn-dark  mb-3" type="submit">Create category</button></a>
-@endcan
-{{-- <div class="border text-primary  pt-2 text-center ">
-  <p class="font-weight-bold display-5">No Branches Yet!</p>
-</div> --}}
-
+<div class="d-flex justify-content-between">
+  <h4>Categories Details</h4>
+  @can('create-category')
+  <a href="{{route('categories.create')}}"><button class="btn btn-primary  mb-3" type="submit">Create
+      category</button></a>
+  @endcan
+</div>
 
 <table class="table align-middle mb-0 bg-white">
   <thead class="bg-light">

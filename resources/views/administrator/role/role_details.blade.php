@@ -11,10 +11,13 @@
 </div>
 @endif
 
+<div class="d-flex justify-content-between">
+  <h4>Roles Details </h4>
+  @can('create-role')
+  <a href="{{route('roles.create')}}"><button class="btn btn-primary  mb-3" type="submit">Create Roles</button></a>
+  @endcan
+</div>
 
-@can('create-role')
-<a href="{{route('roles.create')}}"><button class="btn btn-dark  mb-3" type="submit">Create Roles</button></a>
-@endcan
 <table class="table align-middle mb-0 bg-white">
   <thead class="bg-light">
     <tr>

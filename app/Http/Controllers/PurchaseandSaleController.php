@@ -36,7 +36,6 @@ class PurchaseandSaleController extends Controller
     $this->middleware('permission:create-purchase|create-sale|edit-purchase|edit-sale', ['only' => ['purchase', 'store']]);
     $this->middleware('permission:edit-purchase|edit-sale|delete-purchase|delete-sale', ['only' => ['edit', 'update']]);
     $this->middleware('permission:delete-purchase|delete-sale', ['only' => ['destroy']]);
-
     $this->branch = explode("/", $request->route()->uri)[0] == 'branchs' ? $request->route()->parameters['id'] : false;
     $this->type = $request->route('type');
     $this->transcationRepo = $transcationRepo;
@@ -79,8 +78,11 @@ class PurchaseandSaleController extends Controller
     return view('administrator.sale_purchase.details', compact('branch', 'purchasesDetails', 'transcation_type', '_type', 'totalPages', 'page', 'perPage', 'total'));
   }
 
+
   public function create(Request $request)
   {
+
+
     $branch = $this->branch;
     $_type = $this->type;
     $this->purchaseSaleRepo->setContext($request);
@@ -105,6 +107,7 @@ class PurchaseandSaleController extends Controller
     $_type = $this->type;
 
     $datas = $request->validated();
+    // dd($datas);
     //managing data 
     $rowCount = count($datas['contact_id']);
     $transcationData = [];
