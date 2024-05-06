@@ -3,37 +3,64 @@
 <div class="error-message ">
 
 </div>
-<div class="container d-flex align-items-start">
-  <label for="validationDefault02">Select Warehouse</label>
-  <div class="col-md-4 mb-3 mx-2">
-    <select id="warehouseSelect" class="form-control" name="warehouse_id" multiple>
-      @foreach($warehouses as $warehouse )
-      <option value="{{$warehouse->id}}">{{$warehouse->name}}</option>
+<div>
+  <h5 class=" mb-3 font-weight-bold">Product Availability By Warehouse Report</h5>
+  <div class="  mb-3 d-flex  ">
+    <label for=""> Select Branch:</label>
+    <div class="d-flex">
+      @if(!$branch)
+      <div class="mr-3 ml-2">
+        <input type="checkbox" value="" class="branchSelect">Headquarter
+      </div>
+      @endif
+      @foreach($offices as $office )
+      @if(!$branch)
+      <div class="mr-3  ml-2 ">
+        <input type="checkbox" value="{{$office->id}}" class="branchSelect">{{$office->name}}
+      </div>
+      @else
+      @if($office->id==$branch)
+      <div class="mr-2 ml-2 ">
+        <input type="checkbox" value="{{$office->id}} " class="branchSelect">{{$office->name}}
+      </div>
+      @endif
+      @endif
       @endforeach
-    </select>
+    </div>
   </div>
-  <label for="validationDefault02">Select Product</label>
-  <div class="col-md-4 mb-3 mx-2">
-    <select id="productSelect" class="form-control" name="product_id" multiple>
-      @foreach($products as $product )
-      <option value="{{$product->id}}">{{$product->name}}</option>
-      @endforeach
-    </select>
+
+  <div class="container d-flex align-items-start">
+
+    <label for="validationDefault02">Select Warehouse</label>
+    <div class="col-md-3 mb-3 ">
+      <select id="warehouseSelect" class="form-control" name="warehouse_id">
+
+      </select>
+    </div>
+    <label for="validationDefault02">Select Product</label>
+    <div class="col-md-3 mb-3 ">
+      <select id="productSelect" class="form-control" name="product_id">
+        @foreach($products as $product )
+        <option value="{{$product->id}}">{{$product->name}}</option>
+        @endforeach
+      </select>
+    </div>
+    <button id="submit-btn" class="btn btn-success mb-3">Generate</button></a>
   </div>
-  <button id="submit-btn" class="btn btn-success mb-3">Generate</button></a>
-</div>
 
-<div class="report-info">
+  <div class="report-info">
 
-</div>
-<div class="pagination">
+  </div>
+  <div class="pagination">
 
 
-</div>
-<script>
-  //creatinf function for ajax 
-//Initally showing all products
-  fetch();
+  </div>
+  <script>
+    //initally checking all
+   $(".branchSelect").each(function(){
+            $(this).prop("checked", true);
+        });
+
 function fetch()
 
 {
@@ -41,6 +68,9 @@ function fetch()
 
   let warehouseId  = $('#warehouseSelect').val();
   let productId  = $('#productSelect').val();
+  //getting all checked values
+
+  
 
     $.ajax({
 
@@ -49,7 +79,8 @@ function fetch()
       data:{
         "warehouse_id":warehouseId,
         "product_id":productId,
-        "branch_id":@json($branch),
+        "branch":@json($branch),
+       
       },
       success:function(response){
         console.log(response);
@@ -94,7 +125,7 @@ function fetch()
       }
       else{
 
-        $('.report-info').html(`<p class="mt-4 ml-4">No Data Found!!!!</p>`)
+        $('.report-info').html(`<p class="mt-4 ml-4">Product not present in this warehouse!!!!</p>`)
         // $('.pagination').empty();
       }
       },
@@ -108,6 +139,61 @@ function fetch()
 
 
 }
+
+//warehouse option according to selected branch
+
+function getWarehouses()
+{
+
+  let branchId=[];
+        $(".branchSelect:checked").each(function(){
+            
+            branchId.push($(this).val());
+        });
+        // Display the selected values
+        console.log(branchId);
+      
+
+$.ajax({
+
+url:'/branchs/getwarehouses',
+method:'GET',
+data:{
+ 
+  "branch_id":branchId,
+ 
+},
+
+success:function(response){
+  console.log(response);
+  $("#warehouseSelect").empty();
+  $.each(response.warehouses, function(index, warehouse) {
+     $("#warehouseSelect").append(`<option value="${warehouse.id}">${warehouse.name} </option>`);
+       });
+
+  
+},
+error:function(xhr,status,error)
+{
+ console.log(xhr);
+}
+
+});
+}
+getWarehouses();
+
+//Initally showing all products
+// fetch();
+
+//call function when checkbox selection is changed
+$(".branchSelect").change(function() {
+    
+    //at least one should be checked
+    if ($(".branchSelect:checked").length === 0) {
+        $(this).prop("checked", true);
+    }
+    getWarehouses();
+});
 
 
 
@@ -132,6 +218,6 @@ function fetch()
 //   fetch(page);
 // });
 
-</script>
+  </script>
 
-@endsection
+  @endsection

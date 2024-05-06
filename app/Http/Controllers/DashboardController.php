@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Product;
 use App\Http\Middleware\BranchAccessMiddleware;
 use App\Models\Contact;
+use App\Models\PurchaseSale;
 use App\Models\Transcation;
 use App\Models\Warehouse;
 use Illuminate\Support\Facades\DB;
@@ -36,7 +37,7 @@ class DashboardController extends Controller
         $suppliersNo = Contact::where('type', 'supplier')->count();
 
         // total purchases and sales till date
-        $transactions = Transcation::whereIn('type', ['in', 'out'])
+        $transactions = PurchaseSale::whereIn('type', ['purchase', 'sale'])
             ->when($branch, function ($query, $branch) {
                 return $query->where('office_id', $branch);
             })->when(!$branch, function ($query) {
@@ -44,8 +45,8 @@ class DashboardController extends Controller
             })
             ->get();
 
-        $inCount = $transactions->where('type', 'in')->count();
-        $outCount = $transactions->where('type', 'out')->count();
+        $inCount = $transactions->where('type', 'purchase')->count();
+        $outCount = $transactions->where('type', 'sale')->count();
 
         return view('administrator.dashboard.index', compact('branch', 'warehousesNo', 'productsNo', 'customersNo', 'suppliersNo', 'inCount', 'outCount'));
     }

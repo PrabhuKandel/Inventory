@@ -47,6 +47,7 @@ class ReportController extends Controller
     {
 
         $branch = $request->route('id') ? $request->route('id') : false;
+        $offices = Office::select('id', 'name')->get();
         //if headquarter get all warehouses else warehouses of respective branch
         $warehouses = $branch ? Warehouse::where('office_id', $branch)->get() : Warehouse::all();
         $products = Product::all();
@@ -57,8 +58,12 @@ class ReportController extends Controller
         }
 
 
-        return view("administrator.report.product_availability_warehouse", compact('warehouses', 'branch', 'products'));
+        return view("administrator.report.product_availability_warehouse", compact('warehouses', 'branch', 'products', 'offices'));
     }
+
+
+
+
     /**
      * Show the form for creating a new resource.
      */

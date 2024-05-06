@@ -84,6 +84,7 @@ class ReportRepository extends  CommonRepository
 
     $branchId =  $request->input('branch_id');
     $branchId = is_array($branchId) ? $branchId : [$branchId];
+    $productId = $request->input('product_id');
 
     $Ids = [];
     $ids_str = "";
@@ -109,7 +110,8 @@ class ReportRepository extends  CommonRepository
     FROM transcations
     LEFT JOIN  products ON transcations.product_id= products.id"
       . $filterOffice .
-      "GROUP BY
+      "AND transcations.product_id = ($productId)
+      GROUP BY
        transcations.product_id, products.name");
 
     // dd($reports);
@@ -120,7 +122,7 @@ class ReportRepository extends  CommonRepository
   {
 
 
-    $branchId = (int)  $request->input('branch_id');
+    $branch = (int)  $request->input('branch');
 
     $warehouseId =  $request->input('warehouse_id');
     $productId =  $request->input('product_id');
@@ -131,12 +133,12 @@ class ReportRepository extends  CommonRepository
     $productIdsStr = implode(',', $productId);
     $warehouseIdsStr = implode(',', $warehouseId);
 
-    // dd($branchId);
+
 
     // dd($productIdsStr, $warehouseIdsStr);
     $filterProduct = $productIdsStr ? " AND transcations.product_id IN ($productIdsStr)" : "";
     $filterWarehouse = $warehouseIdsStr ? " AND transcations.warehouse_id IN ($warehouseIdsStr) " : "";
-    $filterOffice = $branchId ? "AND transcations.office_id = ($branchId)" : "";
+    // $filterOffice = $branch ? "AND transcations.office_id = ($branch)" : "";
     // dd($filterOffice);
 
 
@@ -149,7 +151,7 @@ class ReportRepository extends  CommonRepository
      LEFT JOIN  products ON transcations.product_id= products.id
      LEFT JOIN  warehouses ON transcations.warehouse_id= warehouses.id
      WHERE transcations.product_id IS NOT NULL
-     " . $filterOffice
+     "
       . $filterWarehouse .
       $filterProduct .
 

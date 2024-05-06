@@ -1,23 +1,32 @@
 @extends('layouts.app')
 @section('content')
+<div class="error-message">
 
+
+</div>
 <h5 class=" mb-3 font-weight-bold">Product Availability Report</h5>
 <div class="container d-flex align-items-start">
   <label for="validationDefault02">Select Branch </label>
   <div class="col-md-4 mb-3 mx-2">
-    <select id="branchSelect" class="form-control" name="branch_id" multiple>
-      @if(!$branch)
-      <option value="">Headquarter</option>
-      @endif
-      @foreach($offices as $office )
-      @if(!$branch)
-      <option value="{{$office->id}}">{{$office->name}}</option>
-      @else
-      @if($office->id==$branch)
-      <option value="{{$office->id}} " selected>{{$office->name}}</option>
-      @endif
-      @endif
-      @endforeach
+
+    @if(!$branch)
+    <div class="mr-2">
+      <input type="checkbox" value="" class="branchSelect">Headquarter
+    </div>
+    @endif
+    @foreach($offices as $office )
+    @if(!$branch)
+    <div class="mr-2">
+      <input type="checkbox" value="{{$office->id}}" class="branchSelect">{{$office->name}}
+    </div>
+    @else
+    @if($office->id==$branch)
+    <div class="mr-2">
+      <input type="checkbox" value="{{$office->id}} " class="branchSelect" selected>{{$office->name}}
+    </div>
+    @endif
+    @endif
+    @endforeach
     </select>
   </div>
   <label for="validationDefault02">Select Product</label>
@@ -38,26 +47,50 @@
 
 
 </div>
+
+
 <script>
   //creatinf function for ajax 
   let branch = @json($branch);
+//if headquarter then selecting all branch initially
+ 
+    $(".branchSelect").each(function(){
+            $(this).prop("checked", true);
+        });
+  
   
 function fetch(page=1)
 
 {
  
-  //sending all office id in backend if  no branch is selected else sending only the selected one
-  let office = [""];
-  if(!branch)
-  {
-  let offices = @json($offices);
-  $.each(offices, function(index, obj) {
+//validating checkbox
+if ($(".branchSelect:checked").length === 0) {
+  
+          $('.error-message').addClass('alert alert-danger  alert-block').fadeIn();
+          $('.error-message').html(`<p>Please Select Branch</p>`);
+          setTimeout(() => {
+            $('.error-message').fadeOut();
+            
+          },2000);
+            return false; 
+        }
 
-    office.push(obj.id);
-   
-  });
-}
-  let branchId  = $('#branchSelect').val().length>0? $('#branchSelect').val():(branch?branch:office) ;
+//getting all checked values
+  let branchId=[];
+        $(".branchSelect:checked").each(function(){
+            
+            branchId.push($(this).val());
+        });
+        // Display the selected values
+        console.log(branchId);
+  
+  let productId = $('#productSelect').val();
+
+
+
+
+//   let branchId  = $('.branchSelect').val().length>0? $('.branchSelect').val():(branch?branch:office) ;
+//   console.log($('.branchSelect:checked').val());
 
 
 // console.log(office);
@@ -69,6 +102,7 @@ function fetch(page=1)
       method:'GET',
       data:{
         "branch_id":branchId,
+        "product_id":productId,
         "page":page,
       },
       success:function(response){

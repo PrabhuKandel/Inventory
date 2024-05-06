@@ -7,7 +7,7 @@ use App\Models\Warehouse;
 use App\Models\Office;
 use App\Repositories\CommonRepository;
 use App\Http\Middleware\BranchAccessMiddleware;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 
 
@@ -129,5 +129,37 @@ class WarehouseController extends Controller
 
             return back()->withSuccess('Sorry cant delete, Product present in warehouse');
         }
+    }
+
+    public function warehousesOfBranchs(Request $request)
+    {
+
+        $branchId =  $request->input('branch_id');
+
+
+        $branchId = is_array($branchId) ? $branchId : [$branchId];
+
+
+        $Ids = [];
+        $ids_str = "";
+        foreach ($branchId as $key => $value) {
+            //checking if headoffice is selected 
+            if (!is_null($value)) {
+                $ids_str .= intval($value);
+                $ids_str .= $key < count($branchId) - 1 ? "," : '';
+                $Ids[] = intval($value);
+            }
+        };
+
+
+        $head = count($Ids) < count($branchId);
+
+        //checking if headquarter is present and if headquarter is only present (ie. $ids_str is null) then skip some part of query
+        $filterOffice = $head ? " WHERE (" . ($ids_str ? "warehouses.office_id IN ($ids_str) OR" : '') . " warehouses.office_id IS NULL)" : " WHERE warehouses.office_id IN ($ids_str)";
+
+        $warehouses = DB::select("
+        SELECT * FROM warehouses" . $filterOffice);
+
+        return response()->json(['warehouses' => $warehouses, 'branchId' => $branchId, 'ids' => $ids_str, 'head' => $head]);
     }
 }

@@ -30,6 +30,8 @@ use App\Http\Controllers\ReportController;
 Route::get('/', function () {
     return view('layouts.app');
 });
+Route::get('branchs/getwarehouses', [WarehouseController::class, 'warehousesOfBranchs']);
+
 Route::get('/login', [loginController::class, 'index'])->name('login');
 Route::post('/signin', [loginController::class, 'submit'])->name('login.submit');
 
@@ -40,6 +42,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('branchs/{id}/dashboards', [DashboardController::class, 'index'])->name('dashboards.branch');
 
     Route::resource('branchs', BranchController::class);
+
 
     Route::controller(WarehouseController::class)->prefix('branchs/{id}/warehouses')->group(function () {
         Route::get('/', 'index')->name('branchwarehouses.index');
@@ -78,6 +81,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('reports/product-availability-warehouse/generate', [ReportController::class, 'availabilityByWarehouse'])->name('headAvailability.warehouse.report');
     Route::get('branchs/{id}/reports/product-availability/generate', [ReportController::class, 'availabilityReport'])->name('branchAvailability.report');
     Route::get('branchs/{id}/reports/product-availability-warehouse/generate', [ReportController::class, 'availabilityByWarehouse'])->name('branchAvailability.warehouse.report');
+
 
     Route::resource('roles', RoleController::class);
     Route::controller(PurchaseandSaleController::class)->prefix('{type}')->group(function () {
