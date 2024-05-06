@@ -77,4 +77,85 @@ class ReportRepository extends  CommonRepository
     $totalPages = ceil($total / $perPage);
     return response()->json(['reports' => $reports, 'perPage' => $perPage, 'page' => $page, 'total' => $total, 'totalPages' => $totalPages, 'transactionType' => $transactionType]);
   }
+
+
+  public function productAvailability(Request $request)
+  {
+
+    $branchId =  $request->input('branch_id');
+    $branchId = is_array($branchId) ? $branchId : [$branchId];
+
+    $Ids = [];
+    $ids_str = "";
+    foreach ($branchId as $key => $value) {
+      //checking if headoffice is selected 
+      if (!is_null($value)) {
+        $ids_str .= intval($value);
+        $ids_str .= $key < count($branchId) - 1 ? "," : '';
+        $Ids[] = intval($value);
+      }
+    };
+
+    $head = count($Ids) < count($branchId);
+
+    //checking if headquarter is present and if headquarter is only present (ie. $ids_str is null) then skip some part of query
+    $filterOffice = $head ? " WHERE (" . ($ids_str ? "transcations.office_id IN ($ids_str) OR" : '') . " transcations.office_id IS NULL)" : " WHERE transcations.office_id IN ($ids_str)";
+
+    $reports = DB::select("
+    SELECT  
+    transcations.product_id,
+    products.name AS product_name,
+    SUM(CASE WHEN transcations.type = 'in' THEN transcations.quantity ELSE -transcations.quantity END) AS total_quantity
+    FROM transcations
+    LEFT JOIN  products ON transcations.product_id= products.id"
+      . $filterOffice .
+      "GROUP BY
+       transcations.product_id, products.name");
+
+    // dd($reports);
+    return response()->json(['reports' => $reports]);
+  }
+
+  public function productAvailabilityByWarehouse(Request $request)
+  {
+
+
+    $branchId = (int)  $request->input('branch_id');
+
+    $warehouseId =  $request->input('warehouse_id');
+    $productId =  $request->input('product_id');
+    $warehouseId = is_array($warehouseId) ? $warehouseId : [$warehouseId];
+    $productId = is_array($productId) ? $productId : [$productId];
+
+
+    $productIdsStr = implode(',', $productId);
+    $warehouseIdsStr = implode(',', $warehouseId);
+
+    // dd($branchId);
+
+    // dd($productIdsStr, $warehouseIdsStr);
+    $filterProduct = $productIdsStr ? " AND transcations.product_id IN ($productIdsStr)" : "";
+    $filterWarehouse = $warehouseIdsStr ? " AND transcations.warehouse_id IN ($warehouseIdsStr) " : "";
+    $filterOffice = $branchId ? "AND transcations.office_id = ($branchId)" : "";
+    // dd($filterOffice);
+
+
+    $reports = DB::select("
+     SELECT  
+     transcations.product_id,
+     products.name AS product_name,
+     SUM(CASE WHEN transcations.type = 'in' THEN transcations.quantity ELSE -transcations.quantity END) AS total_quantity
+     FROM transcations
+     LEFT JOIN  products ON transcations.product_id= products.id
+     LEFT JOIN  warehouses ON transcations.warehouse_id= warehouses.id
+     WHERE transcations.product_id IS NOT NULL
+     " . $filterOffice
+      . $filterWarehouse .
+      $filterProduct .
+
+      "  GROUP BY
+        transcations.product_id ,products.name ");
+
+    return response()->json(['reports' => $reports]);
+  }
 }

@@ -2,7 +2,7 @@
 @section('content')
 @php
 $edit = isset($purchaseSaleDetail) && $purchaseSaleDetail ? true : false;
-$purSaleId = $edit ? $purchaseSaleDetail->id : '';
+$purSaleId = isset($purchaseSaleId) && $purchaseSaleId? $purchaseSaleId:'' ;
 @endphp
 {{-- @dd(old()); --}}
 {{-- <script src="{{ asset('js/app.js') }}"></script> --}}
@@ -18,14 +18,25 @@ $purSaleId = $edit ? $purchaseSaleDetail->id : '';
 
 
 <div class="form-container mb-5">
-    <form id="myForm" class="purchase-form"
-        action="{{ $edit ? (isset($branch) && $branch ? '/branchs/' . $branch . '/' . $_type . '/' . $purchaseSaleDetail->id . '/update' : '/' . $_type . '/' . $purchaseSaleDetail->id . '/update') : '' }}"
-        method="POST">
+    <form id="myForm" class="purchase-form" {{--
+        action="{{ $edit ? (isset($branch) && $branch ? '/branchs/' . $branch . '/' . $_type . '/' . $purchaseSaleId. '/update' : '/' . $_type . '/' . $purchaseSaleId . '/update') : '' }}"
+        --}} method="POST">
         @csrf
         <div class="form-group-row d-flex justify-content-start">
             <div class=" form-group col-md-2 ml-0   ">
                 <label for="validationDefault02">Date</label>
                 <input type="date" class="form-control   date" name="created_date" pattern="">
+            </div>
+            <div class=" form-group col-md-2 ml-0 ">
+                <label for="validationDefault02">Select Contact </label>
+                <select id="inputState" class="form-control " name='contact_id'>
+                    <option selected value="">Choose Contact...</option>
+                    @foreach ($contacts as $contact)
+                    <option value="{{ $contact->id }}" {{ $edit && $purchaseSaleDetail[0]->contact_id ==
+                        $contact->id ? 'selected' : '' }}>
+                        {{ $contact->name }}</option>
+                    @endforeach
+                </select>
             </div>
         </div>
         <table class="table">
@@ -43,23 +54,15 @@ $purSaleId = $edit ? $purchaseSaleDetail->id : '';
             </thead>
 
             <tbody class="more-form ">
+                @if($edit)
+                @foreach($purchaseSaleDetail as $detail)
                 <tr>
-                    <td>
-                        <select id="inputState" class="form-control " name='contact_id[]'>
-                            <option selected value="">Choose Contact...</option>
-                            @foreach ($contacts as $contact)
-                            <option value="{{ $contact->id }}" {{ $edit && $purchaseSaleDetail->contact_id ==
-                                $contact->id ? 'selected' : '' }}>
-                                {{ $contact->name }}</option>
-                            @endforeach
-                        </select>
-                    </td>
                     <td>
                         <select id="inputProduct" class="form-control selectProduct" name='product_id[]'>
                             <option selected value="">Choose...</option>
                             @foreach ($products as $product)
                             <option value="{{ $product->id }}" rate="{{ $product->rate }}"
-                                unit="{{ $product->unit->name }}" {{ $edit && $purchaseSaleDetail->product_id ==
+                                unit="{{ $product->unit->name }}" {{ $edit && $detail->product_id ==
                                 $product->id ? 'selected' : '' }}>
                                 {{ $product->name }}</option>
                             @endforeach
@@ -70,7 +73,7 @@ $purSaleId = $edit ? $purchaseSaleDetail->id : '';
                         <select class="form-control inputWarehouse" name='warehouse_id[]'>
                             <option selected value="">Select Warehouse...</option>
                             @foreach ($warehouses as $warehouse)
-                            <option value="{{ $warehouse->id }}" {{ $edit && $purchaseSaleDetail->warehouse_id ==
+                            <option value="{{ $warehouse->id }}" {{ $edit && $detail->warehouse_id ==
                                 $warehouse->id ? 'selected' : '' }}>
                                 {{ $warehouse->name }} </option>
                             @endforeach
@@ -96,12 +99,15 @@ $purSaleId = $edit ? $purchaseSaleDetail->id : '';
                     <td>
 
                         <input type="number" class="form-control quantity" name="quantity[]"
-                            value="{{ $edit ? $purchaseSaleDetail->quantiy : '' }}">
+                            value="{{ $edit ? $detail->quantity : '' }}">
                     </td>
                     <td>
                         <input type="number" class="form-control totalInput" name='total[]'>
                     </td>
                 </tr>
+                @endforeach
+                @endif
+
             </tbody>
         </table>
         <div class=" ">
@@ -116,7 +122,8 @@ $purSaleId = $edit ? $purchaseSaleDetail->id : '';
 
 <script>
     $(document).ready(function() {
-
+        //detail contain the detail  data requested to update
+       
             //fetching availability
 
             let url;
@@ -169,12 +176,16 @@ $purSaleId = $edit ? $purchaseSaleDetail->id : '';
                     contentType: 'application/json',
                     dataType: "json",
                     success: function(response) {
-
-                        $('.inputAvailability').eq(index).val(response.quantity);
+                        console.log(response);
+                  
+                       $('.inputAvailability').eq(index).val(response.quantity);
+                
+                       
                     },
                     error: function(xhr, status, error) {
+                    console.log(xhr);
 
-                        $('.inputAvailability').eq(index).val("");
+                        $('.inputAvailability').eq(index).val(0);
 
                     }
 
@@ -184,15 +195,7 @@ $purSaleId = $edit ? $purchaseSaleDetail->id : '';
 
             //to create new purchase or sales form on clicking plus icon
             const formContainer = $('.more-form');
-            const formHtml = ` <tr class="table-row">
-        <td>
-          <select id="inputState" class="form-control " name="contact_id[]">
-            <option selected value="">Choose Customer...</option>
-           @foreach ($contacts as $contact)
-           <option value="{{ $contact->id }}">{{ $contact->name }}</option>
-           @endforeach
-          </select>
-        </td>
+            const formHtml = ` <tr class="table-row">   
         <td>
           <select id="inputProduct"  class="form-control selectProduct" name="product_id[]">
             <option selected value="">Choose...</option>
@@ -242,7 +245,11 @@ $purSaleId = $edit ? $purchaseSaleDetail->id : '';
         </td>
         
       </tr>`;
-
+      if(!edit){
+      $(formContainer).append(formHtml);
+      attachEventListeners();
+      getAvailability();
+      } 
 
             $('#sell-button').on('click', function() {
                 $(formContainer).append(formHtml);
@@ -418,25 +425,26 @@ $purSaleId = $edit ? $purchaseSaleDetail->id : '';
             });
 
             //getting rate and unit of product in input field if edit is true
-
             if (edit) {
 
                 const selectedOption = $('.selectProduct').find('option:selected');
+              
+                selectedOption.each(function(index) {
+                    const rate = $(this).attr('rate');  
+                    const unit = $(this).attr('unit');
+                    const productId=$(this).val();
+                    const warehouseId = $('.inputWarehouse').eq(index).val();
+                    
+                 $('.productRate').eq(index).val(rate);
+                 $('.productunit').eq(index).val(unit);
+                 $('.totalInput').eq(index).val(rate * ($('.quantity').eq(index).val()));     
+                 fetchData(productId, warehouseId, index);
 
+                });
+                
 
-                const rate = selectedOption.attr('rate');
-                $('.productRate').val(rate);
-
-                const unit = selectedOption.attr('unit');
-                $('.productunit').val(unit);
-
-                $('.totalInput').val(rate * ($('.quantity').val()));
-
-                const productId = selectedOption.val();
-                const warehouseId = $('.inputWarehouse').find('option:selected').val();
-                // console.log(productId,warehouseId);
-
-                fetchData(productId, warehouseId, 0);
+               
+             
             }
         })
 </script>

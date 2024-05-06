@@ -60,12 +60,8 @@ class PurchaseandSaleController extends Controller
 
     $purchasesDetails = DB::select("
     SELECT purchase_sales.*, 
-           products.name as product_name,
-           warehouses.name as warehouse_name,
            contacts.name as contact_name
     FROM purchase_sales
-    LEFT JOIN products ON purchase_sales.product_id = products.id
-    LEFT JOIN warehouses ON purchase_sales.warehouse_id = warehouses.id
     LEFT JOIN contacts ON purchase_sales.contact_id = contacts.id
     WHERE purchase_sales.type = ?
       AND (purchase_sales.office_id = ? OR (purchase_sales.office_id IS NULL AND ? = FALSE))
@@ -103,29 +99,20 @@ class PurchaseandSaleController extends Controller
   {
 
 
-    $branch = $this->branch;
-    $_type = $this->type;
-
     $datas = $request->validated();
-    // dd($datas);
-    //managing data 
-    $rowCount = count($datas['contact_id']);
-    $transcationData = [];
 
-    for ($i = 0; $i < $rowCount; $i++) {
-      $row = [];
-      foreach ($datas as $key => $value) {
-        if ($key == 'created_date') {
-          $row[$key] = $value;
-        } else {
-          $row[$key] = $value[$i];
-        }
-      }
-      $transcationData[] = $row;
-    }
+    $res = $this->purchaseSaleRepo->store($datas);
+    if ($res)
+      return response()->json(['success' => true, 'message' => "Transcation success"]);
+    else
+      return response()->json(['success' => false, 'message' => "Transcation failed"]);
+
+
+
 
 
     // for storing sales information
+    /*
     if ($_type == "sales") {
       DB::beginTransaction();
       try {
@@ -174,6 +161,7 @@ class PurchaseandSaleController extends Controller
       DB::commit();
       return response()->json(['success' => true, 'message' => "Product has been purchased"]);
     }
+    */
   }
 
   /**
@@ -184,9 +172,10 @@ class PurchaseandSaleController extends Controller
 
     $branch = $this->branch;
     $purchaseSaleId  = $request->route('typeId');
-    $detail = $this->purchaseSaleRepo->find($purchaseSaleId);
+    $details = $this->purchaseSaleRepo->find($purchaseSaleId);
 
-    return view('administrator.sale_purchase.view', compact('detail', 'branch'));
+
+    return view('administrator.sale_purchase.view', compact('details', 'branch'));
   }
 
   /**
@@ -209,7 +198,8 @@ class PurchaseandSaleController extends Controller
     $purchaseSaleDetail = $this->purchaseSaleRepo->find($purchaseSaleId);
 
 
-    return view('administrator.sale_purchase.create', compact('branch', '_type', 'purchaseSaleDetail'), ['warehouses' => $warehouses, 'contacts' => $contacts, 'products' => $products]);
+
+    return view('administrator.sale_purchase.create', compact('branch', '_type', 'purchaseSaleDetail', 'purchaseSaleId'), ['warehouses' => $warehouses, 'contacts' => $contacts, 'products' => $products]);
   }
 
   /**
@@ -217,44 +207,15 @@ class PurchaseandSaleController extends Controller
    */
   public function update(PurchaseSaleRequest $request)
   {
-    //
-    $branch = $this->branch;
-    $_type = $this->type;
+    //  
     $id = $request->route('typeId');
     $datas = $request->validated();
-    $data['product_id'] = $datas['product_id'][0];
-    $data['contact_id'] = $datas['contact_id'][0];
-    $data['quantity'] = $datas['quantity'][0];
-    $data['total'] = $datas['total'][0];
-    $data['warehouse_id'] = $datas['warehouse_id'][0];
-    $data['created_date'] = $datas['created_date'];
 
-    if ($_type == "purchases") {
-      try {
-        $this->purchaseSaleRepo->update($data, $id);
-        return response()->json(['success' => true, 'message' => "Updated successfully"]);
-      } catch (\Exception $e) {
-
-        return response()->json(['success' => false, 'message' => $e]);
-      }
-    }
-
-
-    if ($_type == "sales") {
-      $quantity = $this->transcationRepo->calculateAvailability($branch ? $branch : 0, $data['product_id'], $data['warehouse_id']);
-
-
-      try {
-        if ($data['quantity'] <= $quantity) {
-          $this->purchaseSaleRepo->update($data, $id);
-          return response()->json(['success' => true, 'message' => "Updated successfully"]);
-        }
-        throw new Exception("Failed");
-      } catch (Exception $e) {
-
-        return response()->json(['success' => false, 'message' => "Failed to update"]);
-      }
-    }
+    $res  = $this->purchaseSaleRepo->update($datas, $id);
+    if ($res)
+      return response()->json(['success' => true, 'message' => "Details updated"]);
+    else
+      return response()->json(['success' => false, 'message' => "Failed to update"]);
   }
   /**
    * Remove the specified resource from storage.

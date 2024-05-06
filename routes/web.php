@@ -74,6 +74,10 @@ Route::middleware(['auth'])->group(function () {
 
     Route::resource('reports', ReportController::class);
     Route::get('branchs/{id}/reports', [ReportController::class, 'index'])->name('branchsReports.index');
+    Route::get('reports/product-availability/generate', [ReportController::class, 'availabilityReport'])->name('headAvailability.report');
+    Route::get('reports/product-availability-warehouse/generate', [ReportController::class, 'availabilityByWarehouse'])->name('headAvailability.warehouse.report');
+    Route::get('branchs/{id}/reports/product-availability/generate', [ReportController::class, 'availabilityReport'])->name('branchAvailability.report');
+    Route::get('branchs/{id}/reports/product-availability-warehouse/generate', [ReportController::class, 'availabilityByWarehouse'])->name('branchAvailability.warehouse.report');
 
     Route::resource('roles', RoleController::class);
     Route::controller(PurchaseandSaleController::class)->prefix('{type}')->group(function () {

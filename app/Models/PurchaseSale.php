@@ -15,10 +15,7 @@ class PurchaseSale extends Model
     use HasFactory;
     protected $table = 'purchase_sales';
     protected $fillable = [
-        'quantiy',
         'type',
-        'warehouse_id',
-        'product_id',
         'contact_id',
         'office_id',
     ];
@@ -40,9 +37,6 @@ class PurchaseSale extends Model
     }
     public function transcation()
     {
-        return $this->hasMany(Transcation::class,purchaseSale_id);
+        return $this->hasMany(Transcation::class, purchaseSale_id);
     }
 }
-
-
-

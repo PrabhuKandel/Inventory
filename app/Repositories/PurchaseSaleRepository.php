@@ -30,53 +30,61 @@ class PurchaseSaleRepository extends CommonRepository
   public function find($id)
   {
     $details =  DB::select("
-    SELECT purchase_sales.*, 
+    SELECT transcations.*,
     products.name as product_name,
     warehouses.name as warehouse_name,
     contacts.name as contact_name
-    FROM purchase_sales
-    LEFT JOIN  products ON products.id=purchase_sales.product_id
-    LEFT JOIN  warehouses ON warehouses.id=purchase_sales.warehouse_id
-    LEFT JOIN  contacts ON contacts.id=purchase_sales.contact_id
-    WHERE  purchase_sales.id=$id");
+    FROM transcations
+    LEFT JOIN products ON transcations.product_id = products.id
+    LEFT JOIN warehouses ON transcations.warehouse_id = warehouses.id
+    LEFT JOIN contacts ON transcations.contact_id = contacts.id
+    WHERE  purchaseSale_id=$id");
 
-    return $details[0];
+    return $details;
   }
 
-  public function store(array $data)
+  public function store(array $datas)
 
   {
+
+    // dd($datas);
 
     try {
       $this->setContext(request());
       $branch = $this->branch;
       $type = $this->type;
 
+      //matching requested quantity with availability
+
+
+      //update this all
       $purchaseSale = new PurchaseSale([
-        'warehouse_id' => $data['warehouse_id'],
-        'product_id' => $data['product_id'],
-        'quantiy' => $data['quantity'],
         'type' => $type == 'sales' ? 'sale' : "purchase",
-        'contact_id' => $data['contact_id'],
+        'contact_id' => $datas['contact_id'],
         'office_id' => $branch ? $branch : null,
       ]);
 
       $purchaseSale->save();
 
-      $transcation = new  Transcation([
-        'type' => $type == "sales" ? "out" : "in",
-        'quantity' => $data['quantity'],
-        'amount' => $data['total'],
-        'warehouse_id' => $data['warehouse_id'],
-        'contact_id' => $data['contact_id'],
-        'product_id' => $data['product_id'],
-        'user_id' => Auth::user()->id,
-        'created_date' => $data['created_date'],
-        'office_id' => $branch ? $branch : null,
-        'purchaseSale_id' => $purchaseSale->id,
-      ]);
 
-      $transcation->save();
+      for ($i = 0; $i < count($datas['product_id']); $i++) {
+
+        $transcation = new Transcation([
+          'type' => $type == "sales" ? "out" : "in",
+          'created_date' => $datas['created_date'],
+          'contact_id' => $datas['contact_id'],
+          'office_id' =>  $branch ? $branch : null,
+          'user_id' => Auth::user()->id,
+          'quantity' => $datas['quantity'][$i],
+          'amount' => $datas['total'][$i],
+          'product_id' => $datas['product_id'][$i],
+          'warehouse_id' => $datas['warehouse_id'][$i],
+          'purchaseSale_id' => $purchaseSale->id,
+
+        ]);
+        $transcation->save();
+      }
+      return true;
     } catch (\Exception $e) {
       throw $e;
     }
@@ -97,10 +105,11 @@ class PurchaseSaleRepository extends CommonRepository
     return $warehouses;
   }
 
-  public function update($data, $id)
+  public function update($datas, $id)
   {
 
 
+    // DB::transaction();
     try {
       $this->setContext(request());
       $branch = $this->branch;
@@ -109,25 +118,31 @@ class PurchaseSaleRepository extends CommonRepository
 
       // Update PurchaseSale record
       PurchaseSale::where('id', $id)->update([
-        'warehouse_id' => $data['warehouse_id'],
-        'product_id' => $data['product_id'],
-        'quantiy' => $data['quantity'],
-        'contact_id' => $data['contact_id'],
+
+        'type' => $type == 'sales' ? 'sale' : "purchase",
+        'contact_id' => $datas['contact_id'],
         'office_id' => $branch ? $branch : null,
       ]);
 
-      // Update Transcation record
-      Transcation::where('purchaseSale_id', $id)->update([
 
-        'quantity' => $data['quantity'],
-        'amount' => $data['total'],
-        'warehouse_id' => $data['warehouse_id'],
-        'contact_id' => $data['contact_id'],
-        'product_id' => $data['product_id'],
-        'user_id' => Auth::user()->id,
-        'created_date' => $data['created_date'],
-        'office_id' => $branch ? $branch : null,
-      ]);
+
+      for ($i = 0; $i < count($datas['product_id']); $i++) {
+
+        Transcation::where('purchaseSale_id', $id)->update([
+          'type' => $type == "sales" ? "out" : "in",
+          'created_date' => $datas['created_date'],
+          'contact_id' => $datas['contact_id'],
+          'office_id' =>  $branch ? $branch : null,
+          'user_id' => Auth::user()->id,
+          'quantity' => $datas['quantity'][$i],
+          'amount' => $datas['total'][$i],
+          'product_id' => $datas['product_id'][$i],
+          'warehouse_id' => $datas['warehouse_id'][$i],
+
+        ]);
+        // Update Transcation record
+      }
+      return true;
     } catch (\Exception $e) {
       throw $e;
     }
