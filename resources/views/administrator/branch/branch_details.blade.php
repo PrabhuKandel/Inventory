@@ -11,19 +11,19 @@
 <div class="d-flex justify-content-between">
   <h4>Branch Details</h4>
   @can('create-branch')
-  <a href="{{ route('branchs.create') }}"><button class="btn btn-primary mb-3  " type="submit">Add
-      Branch</button></a>
+  <a href="{{ route('branchs.create') }}" class="btn btn-primary  ">
+    <i class="fa-solid fa-plus"></i> Add Branch
+  </a>
   @endcan
 </div>
-<table class="table align-middle mb-0 bg-white">
-  <thead class="bg-light">
+<table class="table table-striped align-middle mt-2 ">
+  <thead class="">
     <tr>
-      <th>SN</th>
-      <th>Name</th>
-      <th>Address</th>
-      <th>Created date</th>
-      {{-- <th>View</th> --}}
-      <th>Actions</th>
+      <th class="fw-bold">SN</th>
+      <th class="fw-bold">Name</th>
+      <th class="fw-bold">Address</th>
+      <th class="fw-bold">Created date</th>
+      <th class="fw-bold">Actions</th>
     </tr>
   </thead>
 
@@ -50,27 +50,22 @@
       <p class="fw-normal mb-1">{{ $branch_1->created_date }}</p>
     </td>
     <td>
-      <div class="d-felx">
-      </div>
-
-      <div class="d-flex">
+      <div class="d-flex gap-3">
         @can('view-branch')
-        <a href="{{ route('branchs.show', $branch_1->id) }}"
-          class="  rounded btn  btn-warning px-2 pb-1 pt-1 mr-2 ">View</a>
+        <a href="{{ route('branchs.show', $branch_1->id) }}"><i
+            class="fa-solid fa-magnifying-glass fs-4 text-primary"></i></a>
         @endcan
         @can('edit-branch')
-        <a href="{{ route('branchs.edit', $branch_1->id) }}"
-          class="  rounded btn  btn-success px-2 pb-1 pt-1 mr-2 ">Edit</a>
+        <a href="{{ route('branchs.edit', $branch_1->id) }}" class="fa-solid fa-pen-to-square fs-4 text-success ">
+        </a>
         @endcan
         @can('delete-branch')
         <form action="{{ route('branchs.destroy', $branch_1->id) }}" method="POST">
           @csrf
           @method('DELETE')
-          <button type="submit" class="rounded btn-danger px-2 pb-1 pt-1">Delete</button>
+          <button type="submit" class="btn btn-link text-danger p-0 "><i class="fa-solid fa-trash fs-4"></i></button>
         </form>
         @endcan
-
-
       </div>
     </td>
     </tr>

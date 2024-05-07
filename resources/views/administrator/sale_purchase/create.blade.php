@@ -4,9 +4,6 @@
 $edit = isset($purchaseSaleDetail) && $purchaseSaleDetail ? true : false;
 $purSaleId = isset($purchaseSaleId) && $purchaseSaleId? $purchaseSaleId:'' ;
 @endphp
-{{-- @dd(old()); --}}
-{{-- <script src="{{ asset('js/app.js') }}"></script> --}}
-
 <div id="success-message">
 
 </div>
@@ -61,12 +58,12 @@ $purSaleId = isset($purchaseSaleId) && $purchaseSaleId? $purchaseSaleId:'' ;
                         <select id="inputProduct" class="form-control selectProduct" name='product_id[]'>
                             <option selected value="">Choose...</option>
                             @foreach ($products as $product)
-                            <option value="{{ $product->id }}" rate="{{ $product->rate }}"
-                                unit="{{ $product->unit->name }}" {{ $edit && $detail->product_id ==
+                            <option value="{{ $product->id }}" {{ $edit && $detail->product_id ==
                                 $product->id ? 'selected' : '' }}>
                                 {{ $product->name }}</option>
-                            @endforeach
 
+
+                            @endforeach
                         </select>
                     </td>
                     <td>
@@ -122,6 +119,15 @@ $purSaleId = isset($purchaseSaleId) && $purchaseSaleId? $purchaseSaleId:'' ;
 
 <script>
     $(document).ready(function() {
+
+          //storing rate and unit of product in object
+        let products = @json($products);
+        let productsInfo = {};
+        $.each(products, function (index,value){
+            productsInfo[value.id] = {unit:value.unit_name, rate:value.rate}
+        });
+
+
         //detail contain the detail  data requested to update
        
             //fetching availability
@@ -202,7 +208,7 @@ $purSaleId = isset($purchaseSaleId) && $purchaseSaleId? $purchaseSaleId:'' ;
             @foreach ($products as $product)
     
         
-            <option value="{{ $product->id }}"  rate="{{ $product->rate }}"   unit="{{ $product->unit->name }}">{{ $product->name }}</option>
+            <option value="{{ $product->id }}"  >{{ $product->name }}</option>
     @endforeach
     
           </select>
@@ -284,13 +290,12 @@ $purSaleId = isset($purchaseSaleId) && $purchaseSaleId? $purchaseSaleId:'' ;
                     $(this).on('change', function() {
                         // Get the selected product's rate and set it as the value of the rate input
                         const selectedOption = $(this).find('option:selected');
+                        //getting product id of selectd option each index
+                        const product_id = selectedOption.attr('value');
 
-                        //getting rate attribute
-                        const rate = selectedOption.attr('rate');
-                        rateInputAll.eq(index).val(rate);
-                        //getting unit attribute
-                        const unit = selectedOption.attr('unit');
-                        unitInputAll.eq(index).val(unit);
+                        //getting rate and unit of selected product from productInfo object
+                        rateInputAll.eq(index).val(productsInfo[product_id].rate);
+                        unitInputAll.eq(index).val(productsInfo[product_id].unit);
                         // calculateTotal( index);
 
                     });

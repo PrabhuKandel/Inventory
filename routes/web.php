@@ -76,12 +76,15 @@ Route::middleware(['auth'])->group(function () {
     Route::get('branchs/{id}/products/{product}/show', [ProductController::class, 'show'])->name('branchProducts.show');
 
     Route::resource('reports', ReportController::class);
-    Route::get('branchs/{id}/reports', [ReportController::class, 'index'])->name('branchsReports.index');
     Route::get('reports/product-availability/generate', [ReportController::class, 'availabilityReport'])->name('headAvailability.report');
     Route::get('reports/product-availability-warehouse/generate', [ReportController::class, 'availabilityByWarehouse'])->name('headAvailability.warehouse.report');
-    Route::get('branchs/{id}/reports/product-availability/generate', [ReportController::class, 'availabilityReport'])->name('branchAvailability.report');
-    Route::get('branchs/{id}/reports/product-availability-warehouse/generate', [ReportController::class, 'availabilityByWarehouse'])->name('branchAvailability.warehouse.report');
 
+
+    Route::controller(ReportController::class)->prefix('branchs/{id}/reports')->group(function () {
+        Route::get('/', 'index')->name('branchsReports.index');
+        Route::get('/product-availability/generate', 'availabilityReport')->name('branchAvailability.report');
+        Route::get('/product-availability-warehouse/generate', 'availabilityByWarehouse')->name('branchAvailability.warehouse.report');
+    });
 
     Route::resource('roles', RoleController::class);
     Route::controller(PurchaseandSaleController::class)->prefix('{type}')->group(function () {

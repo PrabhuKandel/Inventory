@@ -85,6 +85,9 @@ class ReportRepository extends  CommonRepository
     $branchId =  $request->input('branch_id');
     $branchId = is_array($branchId) ? $branchId : [$branchId];
     $productId = $request->input('product_id');
+    $perPage = 8;
+    $page = request()->input('page', 1);
+    $offset = ($page - 1) * $perPage;
 
     $Ids = [];
     $ids_str = "";
@@ -102,20 +105,39 @@ class ReportRepository extends  CommonRepository
     //checking if headquarter is present and if headquarter is only present (ie. $ids_str is null) then skip some part of query
     $filterOffice = $head ? " WHERE (" . ($ids_str ? "transcations.office_id IN ($ids_str) OR" : '') . " transcations.office_id IS NULL)" : " WHERE transcations.office_id IN ($ids_str)";
 
-    $reports = DB::select("
+    $total = DB::select(" SELECT COUNT(*) as total FROM transcations"   . $filterOffice .
+      "AND transcations.product_id = ($productId)")[0]->total;
+
+    $reports = DB::select(
+      "
     SELECT  
-    transcations.product_id,
+    transcations.*,
     products.name AS product_name,
-    SUM(CASE WHEN transcations.type = 'in' THEN transcations.quantity ELSE -transcations.quantity END) AS total_quantity
-    FROM transcations
-    LEFT JOIN  products ON transcations.product_id= products.id"
-      . $filterOffice .
-      "AND transcations.product_id = ($productId)
-      GROUP BY
-       transcations.product_id, products.name");
+    (
+      SELECT 
+      SUM(
+          CASE 
+              WHEN t.type = 'in' THEN t.quantity 
+              ELSE -t.quantity 
+          END
+         )
+     FROM 
+      transcations t
+     WHERE  t.product_id = transcations.product_id
+     AND t.id <= transcations.id
+      ) AS balance
+     FROM transcations 
+     LEFT JOIN  products ON transcations.product_id= products.id"
+        . $filterOffice .
+        "AND transcations.product_id = ($productId)
+        LIMIT $perPage
+        OFFSET $offset
+        "
+    );
+    $totalPages = ceil($total / $perPage);
 
     // dd($reports);
-    return response()->json(['reports' => $reports]);
+    return response()->json(['reports' => $reports, 'totalPages' => $totalPages, 'page' => $page, 'perPage' => $perPage, 'total' => $total]);
   }
 
   public function productAvailabilityByWarehouse(Request $request)
@@ -123,41 +145,47 @@ class ReportRepository extends  CommonRepository
 
 
     $branch = (int)  $request->input('branch');
+    $perPage = 8;
+    $page = request()->input('page', 1);
+    $offset = ($page - 1) * $perPage;
+
 
     $warehouseId =  $request->input('warehouse_id');
     $productId =  $request->input('product_id');
-    $warehouseId = is_array($warehouseId) ? $warehouseId : [$warehouseId];
-    $productId = is_array($productId) ? $productId : [$productId];
 
+    $total = DB::select(" SELECT COUNT(*) as total FROM transcations WHERE transcations.product_id  = $productId
+    AND transcations.warehouse_id = $warehouseId")[0]->total;
 
-    $productIdsStr = implode(',', $productId);
-    $warehouseIdsStr = implode(',', $warehouseId);
-
-
-
-    // dd($productIdsStr, $warehouseIdsStr);
-    $filterProduct = $productIdsStr ? " AND transcations.product_id IN ($productIdsStr)" : "";
-    $filterWarehouse = $warehouseIdsStr ? " AND transcations.warehouse_id IN ($warehouseIdsStr) " : "";
-    // $filterOffice = $branch ? "AND transcations.office_id = ($branch)" : "";
-    // dd($filterOffice);
-
-
-    $reports = DB::select("
-     SELECT  
-     transcations.product_id,
+    $reports = DB::select(
+      "
+     SELECT  transcations.*,
      products.name AS product_name,
-     SUM(CASE WHEN transcations.type = 'in' THEN transcations.quantity ELSE -transcations.quantity END) AS total_quantity
+     (
+     SELECT 
+     SUM(
+         CASE 
+             WHEN t.type = 'in' THEN t.quantity 
+             ELSE -t.quantity 
+         END
+        )
+    FROM 
+     transcations t
+    WHERE  t.product_id = transcations.product_id
+    AND t.warehouse_id = transcations.warehouse_id
+    AND t.id <= transcations.id
+     ) AS balance
      FROM transcations
      LEFT JOIN  products ON transcations.product_id= products.id
      LEFT JOIN  warehouses ON transcations.warehouse_id= warehouses.id
-     WHERE transcations.product_id IS NOT NULL
-     "
-      . $filterWarehouse .
-      $filterProduct .
+     WHERE transcations.product_id  = $productId
+     AND transcations.warehouse_id = $warehouseId
+     LIMIT $perPage
+     OFFSET $offset 
+    "
+    );
 
-      "  GROUP BY
-        transcations.product_id ,products.name ");
+    $totalPages = ceil($total / $perPage);
 
-    return response()->json(['reports' => $reports]);
+    return response()->json(['reports' => $reports, 'totalPages' => $totalPages, 'page' => $page, 'perPage' => $perPage, 'total' => $total]);
   }
 }

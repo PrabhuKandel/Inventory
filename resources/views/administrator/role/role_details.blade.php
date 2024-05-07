@@ -14,16 +14,17 @@
 <div class="d-flex justify-content-between">
   <h4>Roles Details </h4>
   @can('create-role')
-  <a href="{{route('roles.create')}}"><button class="btn btn-primary  mb-3" type="submit">Create Roles</button></a>
+  <a href="{{route('roles.create')}}"><button class="btn btn-primary " type="submit"><i class="fa-solid fa-plus"></i>
+      Create Roles</button></a>
   @endcan
 </div>
 
-<table class="table align-middle mb-0 bg-white">
+<table class="table table-striped align-middle mt-2 bg-white">
   <thead class="bg-light">
     <tr>
-      <th>SN</th>
-      <th>Name</th>
-      <th>Actions</th>
+      <th class="fw-bold">SN</th>
+      <th class="fw-bold">Name</th>
+      <th class="fw-bold">Actions</th>
     </tr>
   </thead>
   @php
@@ -42,18 +43,19 @@
       <p class="fw-bold mb-1">{{$role->name}}</p>
     </td>
     <td>
-      <div class="d-flex">
+      <div class="d-flex gap-3">
         @can('view-role')
-        <a href="{{  route('roles.show',$role->id) }}" class="  rounded btn  btn-warning px-2 pb-1 pt-1 mr-2 ">View</a>
+        <a href="{{  route('roles.show',$role->id) }}"><i
+            class="fa-solid fa-magnifying-glass fs-4 text-primary"></i></a>
         @endcan
         @can('edit-role')
-        <a href="{{route('roles.edit',$role->id)}}" class="  rounded btn  btn-success px-2 pb-1 pt-1 mr-2 ">Edit</a>
+        <a href="{{route('roles.edit',$role->id)}}" class="fa-solid fa-pen-to-square fs-4 text-success"></a>
         @endcan
         @can('delete-role')
         <form action="{{route('roles.destroy',$role->id)}}" method="POST">
           @csrf
           @method('DELETE')
-          <button type="submit" class="rounded btn-danger px-2 pb-1 pt-1">Delete</button>
+          <button type="submit" class="btn btn-link text-danger p-0 "><i class="fa-solid fa-trash fs-4"></i></button>
         </form>
         @endcan
       </div>

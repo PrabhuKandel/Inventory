@@ -10,19 +10,20 @@
 @endif
 <div class="d-flex justify-content-between">
   <h4>User Details</h4>
-  <a href="{{route('users.create')}}"><button class="btn btn-primary  mb-3" type="submit">Add New User</button></a>
+  <a href="{{route('users.create')}}"><button class="btn btn-primary " type="submit"> <i class="fa-solid fa-plus"></i>
+      Add New User</button></a>
 </div>
 
-<table class="table align-middle mb-0 bg-white">
+<table class="table table-striped align-middle mt-2 bg-white">
   <thead class="bg-light">
     <tr>
-      <th>SN</th>
-      <th>Name</th>
-      <th>Email</th>
-      <th>Address</th>
-      <th>Roles</th>
-      <th>Created date</th>
-      <th>Actions</th>
+      <th class="fw-bold">SN</th>
+      <th class="fw-bold">Name</th>
+      <th class="fw-bold">Email</th>
+      <th class="fw-bold">Address</th>
+      <th class="fw-bold">Roles</th>
+      <th class="fw-bold">Created date</th>
+      <th class="fw-bold">Actions</th>
     </tr>
   </thead>
 
@@ -58,19 +59,19 @@
       <p class="fw-normal ms-2">{{$user->created_date}}</p>
     </td>
     <td>
-      <div class="d-flex align-items-start">
+      <div class="d-flex align-items-start gap-3">
         @can('view-user')
         <a href="{{ (isset($branch) && $branch) ? '/branchs/'.$branch.'/users/'.$user->id.'/show': route('users.show',$user->id) }}"
-          class="  rounded btn  btn-warning px-2 pb-1  pt-1 mr-2 ">View</a>
+          class="  fa-solid fa-magnifying-glass fs-4 text-primary "></a>
         @endcan
         @can('edit-user')
-        <a href="{{route('users.edit',$user->id) }}" class="  rounded btn  btn-success px-2 pb-1 pt-1 mr-2 ">Edit</a>
+        <a href="{{route('users.edit',$user->id) }}" class=" fa-solid fa-pen-to-square fs-4 text-success "></a>
         @endcan
         @can('delete-user')
         <form action="{{ route('users.destroy', $user->id) }}" method="POST">
           @csrf
           @method('DELETE')
-          <button type="submit" class="rounded btn-danger px-2 pb-1 pt-1">Delete</button>
+          <button type="submit" class="btn btn-link text-danger p-0 "><i class="fa-solid fa-trash fs-4"></i></button>
         </form>
         @endcan
       </div>

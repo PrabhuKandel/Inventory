@@ -10,21 +10,22 @@
 <div class="d-flex justify-content-between">
   <h4>Products Details</h4>
   @can('create-product')
-  <a href="{{route('products.create')}}"><button class="btn btn-primary  mb-3" type="submit">Create Product</button></a>
+  <a href="{{route('products.create')}}"><button class="btn btn-primary" type="submit"> <i class="fa-solid fa-plus"></i>
+      Create Product</button></a>
   @endcan
 </div>
 
 
-<table class="table align-middle mb-0 bg-white">
+<table class="table table-striped align-middle mt-2 bg-white">
   <thead class="bg-light">
     <tr>
-      <th>SN</th>
-      <th>Name</th>
-      <th>Rate</th>
-      <th>Category</th>
-      <th>Unit</th>
-      <th>Created at</th>
-      <th>Actions</th>
+      <th class="fw-bold">SN</th>
+      <th class="fw-bold">Name</th>
+      <th class="fw-bold">Rate</th>
+      <th class="fw-bold">Category</th>
+      <th class="fw-bold">Unit</th>
+      <th class="fw-bold">Created at</th>
+      <th class="fw-bold">Actions</th>
     </tr>
   </thead>
   @php
@@ -41,7 +42,7 @@
         <p class="fw-bold mb-1">{{$product->name}}</p>
       </td>
       <td>
-        <p class="fw-bold mb-1">{{$product->rate}}$</p>
+        <p class=" mb-1">{{$product->rate}}$</p>
       </td>
 
       <td>
@@ -55,20 +56,20 @@
         <p class="fw-normal ms-2">{{$product->created_date}}</p>
       </td>
       <td>
-        <div class="d-flex">
+        <div class="d-flex gap-3">
           @can('view-product')
-          <a href="{{ (isset($branch) && $branch) ? '/branchs/'.$branch.'/products/'.$product->id.'/show': route('products.show',$product->id) }}"
-            class="  rounded btn  btn-warning px-2 pb-1  pt-1 mr-2 ">View</a>
+          <a
+            href="{{ (isset($branch) && $branch) ? '/branchs/'.$branch.'/products/'.$product->id.'/show': route('products.show',$product->id) }}"><i
+              class="fa-solid fa-magnifying-glass fs-4 text-primary"></i></a>
           @endcan
           @can('edit-product')
-          <a href="{{route('products.edit',$product->id) }}"
-            class="  rounded btn  btn-success px-2 pb-1 pt-1 mr-2 ">Edit</a>
+          <a href="{{route('products.edit',$product->id) }}" class=" fa-solid fa-pen-to-square fs-4 text-success "></a>
           @endcan
           @can('delete-product')
           <form action="{{ route('products.destroy', $product->id) }}" method="POST">
             @csrf
             @method('DELETE')
-            <button type="submit" class="rounded btn-danger px-2 pb-1 pt-1">Delete</button>
+            <button type="submit" class="btn btn-link text-danger p-0 "><i class="fa-solid fa-trash fs-4"></i></button>
           </form>
           @endcan
         </div>

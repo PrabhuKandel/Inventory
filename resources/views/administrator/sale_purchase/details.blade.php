@@ -12,21 +12,21 @@
   <a href="{{ isset($branch) && $branch ? '/branchs/'.$branch.'/'. $_type.'/create': '/'.$_type.'/create' }}">
     @if ($_type == "purchases" && auth()->user()->can('create-purchase') ||$_type == "sales" &&
     auth()->user()->can('create-sale'))
-    <button class="btn btn-primary mb-3" type="submit">{{$_type=="purchases"?"Purchase Product":"Sell
-      Product"}}</button>
+    <button class="btn btn-primary " type="submit">{{$_type=="purchases"?"Goods In":"Goods
+      Out"}}</button>
     @endif
   </a>
   @endcanany
 
 </div>
 
-<table class="table align-middle mb-3 bg-white">
+<table class="table table-striped align-middle mt-2 bg-white">
   <thead class="bg-light">
     <tr>
-      <th>SN</th>
-      <th>Contacts</th>
-      <th>Date</th>
-      <th>Actions</th>
+      <th class="fw-bold">SN</th>
+      <th class="fw-bold">Contacts</th>
+      <th class="fw-bold">Date</th>
+      <th class="fw-bold">Actions</th>
     </tr>
   </thead>
 
@@ -46,20 +46,21 @@
         <p class="fw-bold mb-1">{{$detail->contact_name}}</p>
       </td>
       <td>
-        <p class="fw-bold mb-1">{{$detail->created_at}}</p>
+        <p class=" mb-1">{{$detail->created_at}}</p>
       </td>
       <td>
-        <div class="d-flex">
+        <div class="d-flex gap-3">
           @if ($_type == "purchases" && auth()->user()->can('view-purchase') ||$_type == "sales" &&
           auth()->user()->can('view-sale'))
-          <a href="{{ (isset($branch) && $branch) ? '/branchs/'.$branch.'/'.$_type.'/'.$detail->id.'/show':'/'.$_type.'/'.$detail->id.'/show' }}"
-            class="  rounded btn  btn-warning px-2 pb-1  pt-1 mr-2 ">View</a>
+          <a
+            href="{{ (isset($branch) && $branch) ? '/branchs/'.$branch.'/'.$_type.'/'.$detail->id.'/show':'/'.$_type.'/'.$detail->id.'/show' }}"><i
+              class="fa-solid fa-magnifying-glass fs-4 text-primary"></i></a>
           @endif
 
           @if ($_type == "purchases" && auth()->user()->can('edit-purchase') ||$_type == "sales" &&
           auth()->user()->can('edit-sale'))
           <a href="{{ (isset($branch) && $branch) ? '/branchs/'.$branch.'/'.$_type.'/'.$detail->id.'/edit':'/'.$_type.'/'.$detail->id.'/edit' }}"
-            class="  rounded btn  btn-success px-2 pb-1 pt-1 mr-2 ">Edit</a>
+            class="fa-solid fa-pen-to-square fs-4 text-success  "></a>
           @endif
 
 
@@ -70,7 +71,7 @@
             @method('DELETE')
             @if ($_type == "purchases" && auth()->user()->can('delete-purchase') ||$_type == "sales" &&
             auth()->user()->can('delete-sale'))
-            <button type="submit" class="rounded btn-danger px-2 pb-1 pt-1">Delete</button>
+            <button type="submit" class="btn btn-link text-danger p-0 "><i class="fa-solid fa-trash fs-4"></i></button>
             @endif
           </form>
 

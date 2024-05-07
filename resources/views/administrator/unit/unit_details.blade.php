@@ -13,20 +13,19 @@
 <div class="d-flex justify-content-between">
   <h4>Units Details</h4>
   @can('create-unit')
-  <a href="{{ route('units.create') }}"><button class="btn btn-dark  mb-3" type="submit">Create Unit</button></a>
+  <a href="{{ route('units.create') }}"><button class="btn btn-primary" type="submit"><i class="fa-solid fa-plus"></i>
+      Create Unit</button></a>
   @endcan
 </div>
 
-
-
-<table class="table align-middle mb-0 bg-white">
+<table class="table table-striped align-middle mt-2 bg-white">
   <thead class="bg-light">
     <tr>
-      <th>SN</th>
-      <th>Name</th>
-      <th>Description</th>
-      <th>Created at</th>
-      <th>Actions</th>
+      <th class="fw-bold">SN</th>
+      <th class="fw-bold">Name</th>
+      <th class="fw-bold">Description</th>
+      <th class="fw-bold">Created at</th>
+      <th class="fw-bold">Actions</th>
     </tr>
   </thead>
   @php
@@ -51,19 +50,19 @@
       <p class="fw-normal ms-2">{{ $unit->created_date }}</p>
     </td>
     <td>
-      <div class="d-flex">
+      <div class="d-flex gap-3">
         @can('view-unit')
         <a href="{{ isset($branch) && $branch ? '/branchs/' . $branch . '/units/' . $unit->id . '/show' : route('units.show', $unit->id) }}"
-          class="  rounded btn  btn-warning px-2 pb-1  pt-1 mr-2 ">View</a>
+          class=" "><i class="fa-solid fa-magnifying-glass fs-4 text-primary"></i></a>
         @endcan
         @can('edit-unit')
-        <a href="{{ route('units.edit', $unit->id) }}" class="  rounded btn  btn-success px-2 pb-1 pt-1 mr-2 ">Edit</a>
+        <a href="{{ route('units.edit', $unit->id) }}" class=" fa-solid fa-pen-to-square fs-4 text-success "></a>
         @endcan
         @can('delete-unit')
         <form action="{{ route('units.destroy', $unit->id) }}" method="POST">
           @csrf
           @method('DELETE')
-          <button type="submit" class="rounded btn-danger px-2 pb-1 pt-1">Delete</button>
+          <button type="submit" class="btn btn-link text-danger p-0 "><i class="fa-solid fa-trash fs-4"></i></button>
         </form>
         @endcan
       </div>

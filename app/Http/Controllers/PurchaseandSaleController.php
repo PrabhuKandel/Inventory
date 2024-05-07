@@ -87,7 +87,13 @@ class PurchaseandSaleController extends Controller
 
     $contact_type = $_type == 'sales' ? "customer" : "supplier";
     $contacts = Contact::where('type', $contact_type)->select('id', 'name')->get();
-    $products = Product::all();
+    $products = DB::select("
+    Select products.*,
+    units.name as unit_name
+    from products
+    left join units on products.unit_id = units.id
+    ");
+    // dd($products);
 
     return view('administrator.sale_purchase.create', compact('branch', '_type'), ['warehouses' => $warehouses, 'contacts' => $contacts, 'products' => $products]);
   }
@@ -106,62 +112,6 @@ class PurchaseandSaleController extends Controller
       return response()->json(['success' => true, 'message' => "Transcation success"]);
     else
       return response()->json(['success' => false, 'message' => "Transcation failed"]);
-
-
-
-
-
-    // for storing sales information
-    /*
-    if ($_type == "sales") {
-      DB::beginTransaction();
-      try {
-        foreach ($transcationData as $data) {
-          $quantity = $this->transcationRepo->calculateAvailability($branch ? $branch : 0, $data['product_id'], $data['warehouse_id']);
-
-          if ($quantity) {
-
-
-            if ($data['quantity'] > $quantity) {
-
-              return response()->json(['success' => false, 'message' => "Quantity exceed"]);
-            } else {
-
-              $this->purchaseSaleRepo->store($data);
-            }
-          } else {
-            DB::rollback();
-            return response()->json(['success' => false, 'message' => "Requested quantity not present in warehouse"]);
-          }
-        }
-        DB::commit();
-        return response()->json(['success' => true, 'message' => "Product has been sold"]);
-      } catch (\Exception $e) {
-        DB::rollback();
-        // dd($e);
-        return response()->json(['success' => false, 'message' => "Transcation failed"]);
-      }
-    }
-
-
-    //for storing purchase information 
-    if ($_type == "purchases") {
-      DB::beginTransaction();
-      foreach ($transcationData as $data) {
-
-        try {
-
-          $this->purchaseSaleRepo->store($data);
-        } catch (\Exception $e) {
-
-          DB::rollback();
-          return response()->json(['success' => false, 'message' => "Failed to purchase"]);
-        }
-      }
-      DB::commit();
-      return response()->json(['success' => true, 'message' => "Product has been purchased"]);
-    }
-    */
   }
 
   /**

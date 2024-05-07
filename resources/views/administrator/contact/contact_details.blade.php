@@ -11,19 +11,20 @@
 <div class="d-flex justify-content-between">
   <h3>Contact Details</h3>
   @can('create-contact')
-  <a href="{{route('contacts.create')}}"><button class="btn btn-primary mb-3" type="submit">Add Contact</button></a>
+  <a href="{{route('contacts.create')}}"><button class="btn btn-primary " type="submit"> <i
+        class="fa-solid fa-plus"></i> Add Contact</button></a>
   @endcan
 
 </div>
-<table class="table align-middle mb-0 bg-white">
+<table class="table table-striped align-middle mt-2 ">
   <thead class="bg-light">
     <tr>
-      <th>SN</th>
-      <th>Name</th>
-      <th>Address</th>
-      <th>Contact Type</th>
-      <th>Created date</th>
-      <th>Actions</th>
+      <th class="fw-bold">SN</th>
+      <th class="fw-bold">Name</th>
+      <th class="fw-bold">Address</th>
+      <th class="fw-bold">Contact Type</th>
+      <th class="fw-bold">Created date</th>
+      <th class="fw-bold">Actions</th>
     </tr>
   </thead>
   <tbody>
@@ -46,7 +47,7 @@
 
     </td>
     <td>
-      <p class="fw-bold mb-1">{{$contact->type}}</p>
+      <p class=" mb-1">{{$contact->type}}</p>
 
     </td>
     <td>
@@ -55,20 +56,20 @@
     </td>
 
     <td>
-      <div class="d-flex">
+      <div class="d-flex gap-3">
         @can('view-contact')
-        <a href="{{ (isset($branch) && $branch) ? '/branchs/'.$branch.'/contacts/'.$contact->id.'/show': route('contacts.show',$contact->id) }}"
-          class="  rounded btn  btn-warning px-2 pb-1  mb-4 pt-1 mr-2 ">View</a>
+        <a
+          href="{{ (isset($branch) && $branch) ? '/branchs/'.$branch.'/contacts/'.$contact->id.'/show': route('contacts.show',$contact->id) }}"><i
+            class="fa-solid fa-magnifying-glass fs-4 text-primary"></i></a>
         @endcan
         @can('edit-contact')
-        <a href="{{route('contacts.edit',$contact->id) }}"
-          class="  rounded btn  btn-success px-2 pb-1 pt-1 mb-4 mr-2 ">Edit</a>
+        <a href="{{route('contacts.edit',$contact->id) }}" class="fa-solid fa-pen-to-square fs-4 text-success  "></a>
         @endcan
         @can('delete-contact')
         <form action="{{ route('contacts.destroy', $contact->id) }}" method="POST">
           @csrf
           @method('DELETE')
-          <button type="submit" class="rounded btn-danger px-2 pb-1 pt-1">Delete</button>
+          <button type="submit" class="btn btn-link text-danger p-0 "><i class="fa-solid fa-trash fs-4"></i></button>
         </form>
         @endcan
       </div>

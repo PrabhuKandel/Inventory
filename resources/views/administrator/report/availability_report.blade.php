@@ -40,10 +40,10 @@
   <button id="submit-btn" class="btn btn-success mb-3">Generate</button></a>
 </div>
 
-<div class="report-info">
+<div class="report-info " style="height: 400px;">
 
 </div>
-<div class="pagination">
+<div class="pagination ">
 
 
 </div>
@@ -82,18 +82,9 @@ if ($(".branchSelect:checked").length === 0) {
             branchId.push($(this).val());
         });
         // Display the selected values
-        console.log(branchId);
+       
   
   let productId = $('#productSelect').val();
-
-
-
-
-//   let branchId  = $('.branchSelect').val().length>0? $('.branchSelect').val():(branch?branch:office) ;
-//   console.log($('.branchSelect:checked').val());
-
-
-// console.log(office);
   
     
     $.ajax({
@@ -106,17 +97,20 @@ if ($(".branchSelect:checked").length === 0) {
         "page":page,
       },
       success:function(response){
-        console.log(response);
-      //create table header 
-      let datas =  response.datas.reports;
+        //create table header 
+        let datas =  response.datas.reports;
+    
 
       if(response.datas.reports.length!=0){
        $('.report-info').html(`<table class="table align-middle mb-3 bg-white">
   <thead class="bg-light">
     <tr>
       <th class ="fw-bold">SN</th>
+      <th class ="fw-bold">Id</th>
       <th class ="fw-bold">Product </th>
-      <th class ="fw-bold"> Quantity</th>
+      <th class ="fw-bold">Type </th>
+      <th class ="fw-bold">Quantity</th>
+      <th class ="fw-bold">Balance </th>
     </tr>
   </thead>
 
@@ -126,39 +120,54 @@ if ($(".branchSelect:checked").length === 0) {
 </table>
 `);
         //apending newly fetched data
-let count=1;
+let count= (response.datas.page - 1) * response.datas.perPage + 1;
  $.each(datas, function(index,obj) {
  $('.table-body').append(` <tr class="py-1">
 
 <td class="py-1">
   <p class="fw-bold ms-2 ">${count++}
 <td class="py-1">
-  <p class=" ">${obj.product_name}</p>
+  <p class=" ">${obj.purchaseSale_id}</p>
 </td>
 <td class="py-1">
 
-  <p class="">${obj.total_quantity}</p>
+  <p class="">${obj.product_name}</p>
+</td>
+<td class="py-1">
+<p class="">${obj.type}</p>
+</td>
+<td class="py-1">
+<p class="">${obj.quantity}</p>
+</td>
+<td class="py-1">
+<p class="">${obj.balance}</p>
 </td>
 
 </tr>`)
 });
 
-//adding pagination
-// $('.pagination').html(`
-//   <div class="d-flex text-lg">
-//     ${(() => {
-//       let html = '';
-//       for (let i = 1; i <= response.datas.totalPages; i++) {
-//         html += `
-//             <div class="  page-link  border border-primary rounded  ${i == response.datas.page ? "bg-primary text-white" : 'text-primary '} " style="width:30px; text-align:center;  cursor: pointer; " data-page="${i}">
-//               ${i}
-//             </div>
-//         `;
-//       }
-//       return html;
-//     })()}
-//   </div>
-// `);
+// adding pagination
+console.log(response.datas.totalPages);
+ 
+if(response.datas.totalPages>1)
+{
+  
+$('.pagination').html(`
+  <div class="d-flex text-lg">
+    ${(() => {
+      let html = '';
+      for (let i = 1; i <= response.datas.totalPages; i++) {
+        html += `
+            <div class="  page-link  border border-primary rounded  ${i == response.datas.page ? "bg-primary text-white" : 'text-primary '} " style="width:30px; text-align:center;  cursor: pointer; " data-page="${i}">
+              ${i}
+            </div>
+        `;
+      }
+      return html;
+    })()}
+  </div>
+`);
+}
       }
       else{
 
@@ -187,17 +196,21 @@ fetch();
       $('.tbody').empty();
 
     }
+    $('.pagination').fadeOut().empty().fadeIn();
+
+
+
   fetch();
 
 });
   
 
-//handling pagination
-// $('.pagination').on('click', '.page-link', function() {
+// handling pagination
+$('.pagination').on('click', '.page-link', function() {
 
-//   let page = $(this).data('page');
-//   fetch(page);
-// });
+  let page = $(this).data('page');
+  fetch(page);
+});
 
 </script>
 
