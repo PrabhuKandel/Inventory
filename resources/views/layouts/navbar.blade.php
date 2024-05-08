@@ -16,7 +16,7 @@
 
     </a>
     <div class="d-none d-md-flex input-group w-auto my-auto">
-      <h4 style="color:white">Inventory Management System</h4>
+      <h4 style="color:white">I M S</h4>
 
     </div>
     <!-- Search form -->

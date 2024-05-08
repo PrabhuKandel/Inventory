@@ -143,13 +143,18 @@ class PurchaseandSaleController extends Controller
 
     $contact_type = $_type == 'sales' ? "customer" : "supplier";
     $contacts = Contact::where('type', $contact_type)->select('id', 'name')->get();
-    $products = Product::all();
+    $products = DB::select("
+    Select products.*,
+    units.name as unit_name
+    from products
+    left join units on products.unit_id = units.id
+    ");
 
     $purchaseSaleDetail = $this->purchaseSaleRepo->find($purchaseSaleId);
 
 
 
-    return view('administrator.sale_purchase.create', compact('branch', '_type', 'purchaseSaleDetail', 'purchaseSaleId'), ['warehouses' => $warehouses, 'contacts' => $contacts, 'products' => $products]);
+    return view('administrator.sale_purchase.create', compact('branch', '_type', 'purchaseSaleDetail', 'purchaseSaleId', 'products'), ['warehouses' => $warehouses, 'contacts' => $contacts,]);
   }
 
   /**

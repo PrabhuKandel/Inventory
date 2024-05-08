@@ -2,19 +2,19 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
+use  Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use App\Models\Office;
-use Spatie\Permission\Models\Role;
 use App\Models\Transcation;
+use App\traits\FormatAttribute;
 
 class User extends Authenticatable
 {
-    use  HasApiTokens, HasFactory, Notifiable , HasRoles;
+    use  HasApiTokens, HasFactory, Notifiable, HasRoles, FormatAttribute;
 
     /**
      * The attributes that are mass assignable.
@@ -50,10 +50,23 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
+
+
+    //this function will be called when setting or getting name of user 
+    public function name(): Attribute
+    {
+        return $this->formatAttribute();
+    }
+
+    public function address(): Attribute
+    {
+        return $this->formatAttribute();
+    }
+
     public function office()
-{
-    return  $this->belongsTo(Office::class);
-}
+    {
+        return  $this->belongsTo(Office::class);
+    }
 
     public function transcation()
     {

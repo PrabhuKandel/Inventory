@@ -126,6 +126,7 @@ $purSaleId = isset($purchaseSaleId) && $purchaseSaleId? $purchaseSaleId:'' ;
         $.each(products, function (index,value){
             productsInfo[value.id] = {unit:value.unit_name, rate:value.rate}
         });
+        
 
 
         //detail contain the detail  data requested to update
@@ -400,7 +401,7 @@ $purSaleId = isset($purchaseSaleId) && $purchaseSaleId? $purchaseSaleId:'' ;
 
                     data: form.serialize(),
                     success: function(response) {
-                        response.success ? $('#myForm')[0].reset() : '';
+                        response.success && !edit ? $('#myForm')[0].reset() : '';
 
                         console.log(response);
 
@@ -428,27 +429,31 @@ $purSaleId = isset($purchaseSaleId) && $purchaseSaleId? $purchaseSaleId:'' ;
                     }
                 });
             });
-
             //getting rate and unit of product in input field if edit is true
+           
             if (edit) {
+              
 
                 const selectedOption = $('.selectProduct').find('option:selected');
               
                 selectedOption.each(function(index) {
-                    const rate = $(this).attr('rate');  
-                    const unit = $(this).attr('unit');
-                    const productId=$(this).val();
-                    const warehouseId = $('.inputWarehouse').eq(index).val();
+                     
                     
-                 $('.productRate').eq(index).val(rate);
-                 $('.productunit').eq(index).val(unit);
+                    const productId=$(this).attr('value');
+                    const rate = productsInfo[productId].rate;
+                    
+                    const warehouseId = $('.inputWarehouse').eq(index).val();
+                
+                 $('.productRate').eq(index).val(productsInfo[productId].rate);
+                 $('.productunit').eq(index).val(productsInfo[productId].unit);
                  $('.totalInput').eq(index).val(rate * ($('.quantity').eq(index).val()));     
                  fetchData(productId, warehouseId, index);
 
                 });
                 
 
-               
+       
+            
              
             }
         })

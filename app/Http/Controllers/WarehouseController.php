@@ -134,6 +134,8 @@ class WarehouseController extends Controller
     public function warehousesOfBranchs(Request $request)
     {
 
+
+
         $branchId =  $request->input('branch_id');
 
 

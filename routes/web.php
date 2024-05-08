@@ -28,14 +28,15 @@ use App\Http\Controllers\ReportController;
 */
 
 Route::get('/', function () {
-    return view('layouts.app');
+    return view('welcome');
 });
-Route::get('branchs/getwarehouses', [WarehouseController::class, 'warehousesOfBranchs']);
+
 
 Route::get('/login', [loginController::class, 'index'])->name('login');
 Route::post('/signin', [loginController::class, 'submit'])->name('login.submit');
 
 Route::middleware(['auth'])->group(function () {
+    Route::get('branchs/getwarehouses', [WarehouseController::class, 'warehousesOfBranchs'])->name('offices.getWarehouses');
 
     Route::post('/logout', [logoutController::class, 'submit'])->name('logout');
     Route::get('dashboards', [DashboardController::class, 'index'])->name('dashboards.main');
@@ -43,6 +44,7 @@ Route::middleware(['auth'])->group(function () {
 
     Route::resource('branchs', BranchController::class);
 
+    Route::resource('warehouses', WarehouseController::class);
 
     Route::controller(WarehouseController::class)->prefix('branchs/{id}/warehouses')->group(function () {
         Route::get('/', 'index')->name('branchwarehouses.index');
@@ -53,7 +55,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/{warehouse}/show', 'show')->name('branchWarehouses.show');
         Route::put('/{warehouse}/update', 'update')->name('branchwarehouses.update');
     });
-    Route::resource('warehouses', WarehouseController::class);
+
 
     Route::resource('contacts', ContactController::class);
     Route::get('branchs/{id}/contacts', [ContactController::class, 'index'])->name('branchContacts.index');

@@ -189,17 +189,18 @@ function getWarehouses()
             branchId.push($(this).val());
         });
         // Display the selected values
-        console.log(branchId);
+    
       
 
 $.ajax({
 
 url:'/branchs/getwarehouses',
 method:'GET',
+headers: {
+          'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
 data:{
- 
   "branch_id":branchId,
- 
 },
 
 success:function(response){

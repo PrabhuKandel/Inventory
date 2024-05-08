@@ -34,6 +34,8 @@ class UserController extends Controller
     $branch = $this->branch;
     $users = $this->userRepo->getAll();
 
+
+
     return view('administrator.user.user_details', compact('users', 'branch'));
   }
 

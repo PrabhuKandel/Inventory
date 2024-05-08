@@ -48,7 +48,6 @@ class PurchaseSaleRepository extends CommonRepository
   {
 
     // dd($datas);
-
     try {
       $this->setContext(request());
       $branch = $this->branch;
@@ -58,6 +57,7 @@ class PurchaseSaleRepository extends CommonRepository
 
 
       //update this all
+
       $purchaseSale = new PurchaseSale([
         'type' => $type == 'sales' ? 'sale' : "purchase",
         'contact_id' => $datas['contact_id'],
@@ -84,8 +84,10 @@ class PurchaseSaleRepository extends CommonRepository
         ]);
         $transcation->save();
       }
+
       return true;
     } catch (\Exception $e) {
+
       throw $e;
     }
   }
@@ -108,15 +110,15 @@ class PurchaseSaleRepository extends CommonRepository
   public function update($datas, $id)
   {
 
+    $this->setContext(request());
+    $branch = $this->branch;
+    $type = $this->type;
 
-    // DB::transaction();
     try {
-      $this->setContext(request());
-      $branch = $this->branch;
-      $type = $this->type;
 
 
       // Update PurchaseSale record
+
       PurchaseSale::where('id', $id)->update([
 
         'type' => $type == 'sales' ? 'sale' : "purchase",
@@ -142,8 +144,10 @@ class PurchaseSaleRepository extends CommonRepository
         ]);
         // Update Transcation record
       }
+
       return true;
     } catch (\Exception $e) {
+
       throw $e;
     }
   }
