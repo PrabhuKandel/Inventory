@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Product;
 use App\Http\Middleware\BranchAccessMiddleware;
 use App\Models\Contact;
+use App\Models\Office;
 use App\Models\PurchaseSale;
 use App\Models\Transcation;
 use App\Models\Warehouse;
@@ -24,12 +25,9 @@ class DashboardController extends Controller
         $this->branch = explode("/", $request->route()->uri)[0] == 'branchs' ? $request->route()->parameters['id'] : false;
     }
 
-    public function index(Request $request)
+    public function getData()
     {
-
         $branch = $this->branch;
-        //No of warehouses of branch
-
         $warehousesNo = $branch ? Warehouse::where('office_id', $branch)->count() : Warehouse::whereNull('office_id')->count();
 
         $productsNo = Product::count();
@@ -48,15 +46,40 @@ class DashboardController extends Controller
         $inCount = $transactions->where('type', 'purchase')->count();
         $outCount = $transactions->where('type', 'sale')->count();
 
-        return view('administrator.dashboard.index', compact('branch', 'warehousesNo', 'productsNo', 'customersNo', 'suppliersNo', 'inCount', 'outCount'));
+        return compact('warehousesNo', 'productsNo', 'customersNo', 'suppliersNo', 'inCount', 'outCount');
+    }
+
+
+
+
+
+    public function branchindex(Request $request)
+    {
+
+        $branch = $this->branch;
+        //No of warehouses of branch
+
+        $datas = $this->getData();
+
+
+        return view('administrator.dashboard.branchindex', compact('branch', 'warehousesNo', 'productsNo', 'customersNo', 'suppliersNo', 'inCount', 'outCount'));
     }
 
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function headIndex()
     {
-        //
+        $branch = $this->branch;
+        $products = Product::all();
+        $branchs = Office::select('id', 'name')->get();
+
+
+        $datas = $this->getData();
+
+
+
+        return view('administrator.dashboard.headindex', compact('products', 'branchs', 'branch', 'datas'));
     }
 
     /**

@@ -180,9 +180,10 @@ class ReportRepository extends  CommonRepository
      WHERE transcations.product_id  = $productId
      AND transcations.warehouse_id = $warehouseId
      LIMIT $perPage
-     OFFSET $offset 
+      OFFSET $offset 
     "
     );
+
 
     $totalPages = ceil($total / $perPage);
 

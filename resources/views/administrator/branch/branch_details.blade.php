@@ -75,4 +75,5 @@
 
 </table>
 {{ $branches->links() }}
+
 @endsection

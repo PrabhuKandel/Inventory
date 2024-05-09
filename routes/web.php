@@ -39,8 +39,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('branchs/getwarehouses', [WarehouseController::class, 'warehousesOfBranchs'])->name('offices.getWarehouses');
 
     Route::post('/logout', [logoutController::class, 'submit'])->name('logout');
-    Route::get('dashboards', [DashboardController::class, 'index'])->name('dashboards.main');
-    Route::get('branchs/{id}/dashboards', [DashboardController::class, 'index'])->name('dashboards.branch');
+    Route::get('dashboards', [DashboardController::class, 'headindex'])->name('dashboards.main');
+    Route::get('branchs/{id}/dashboards', [DashboardController::class, 'branchindex'])->name('dashboards.branch');
 
     Route::resource('branchs', BranchController::class);
 
@@ -87,6 +87,9 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/product-availability/generate', 'availabilityReport')->name('branchAvailability.report');
         Route::get('/product-availability-warehouse/generate', 'availabilityByWarehouse')->name('branchAvailability.warehouse.report');
     });
+
+
+
 
     Route::resource('roles', RoleController::class);
     Route::controller(PurchaseandSaleController::class)->prefix('{type}')->group(function () {
